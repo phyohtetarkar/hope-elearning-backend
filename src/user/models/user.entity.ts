@@ -1,9 +1,10 @@
 import { AuditingEntity } from '@/common/models/auditing.entity';
 import { Column, Entity, PrimaryColumn } from 'typeorm';
-import { Role, UserDto } from './user.dto';
+import { UserDto } from './user.dto';
+import { UserRole } from './user-role.enum';
 
-@Entity()
-export class User extends AuditingEntity {
+@Entity({ name: 'user' })
+export class UserEntity extends AuditingEntity {
   @PrimaryColumn()
   id: string;
 
@@ -15,10 +16,10 @@ export class User extends AuditingEntity {
 
   @Column({
     type: 'enum',
-    enum: Role,
-    default: Role.USER,
+    enum: UserRole,
+    default: UserRole.USER,
   })
-  role: Role;
+  role: UserRole;
 
   @Column({ nullable: true })
   email?: string;
@@ -44,7 +45,7 @@ export class User extends AuditingEntity {
   })
   bio?: string;
 
-  toDto(): UserDto {
+  toDto() {
     return new UserDto({
       id: this.id,
       fullName: this.fullName,

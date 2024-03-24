@@ -4,7 +4,7 @@ import { normalizeSlug, stringToSlug } from '@/common/utils';
 import { CreateUserInput } from '@/user/models/create-user.input';
 import { UpdateUserInput } from '@/user/models/update-user.input';
 import { UserDto } from '@/user/models/user.dto';
-import { User } from '@/user/models/user.entity';
+import { UserEntity } from '@/user/models/user.entity';
 import { UserQuery } from '@/user/models/user.query';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -15,12 +15,12 @@ import { UserService } from '../user.service';
 export class TypeormUserService implements UserService {
   constructor(
     private dataSource: DataSource,
-    @InjectRepository(User)
-    private userRepo: Repository<User>,
+    @InjectRepository(UserEntity)
+    private userRepo: Repository<UserEntity>,
   ) {}
 
   async create(values: CreateUserInput): Promise<UserDto> {
-    const entity = new User();
+    const entity = new UserEntity();
     entity.id = values.id;
     entity.fullName = values.fullName;
     entity.email = values.email;

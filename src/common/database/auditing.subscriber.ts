@@ -3,6 +3,7 @@ import {
   EntitySubscriberInterface,
   EventSubscriber,
   InsertEvent,
+  SoftRemoveEvent,
   UpdateEvent,
 } from 'typeorm';
 import { AuditingEntity } from '../models/auditing.entity';
@@ -29,11 +30,11 @@ export class AuditingSubscriber
     console.log('beforeInsert', event.entity);
     if (user) {
       event.entity.createdBy = user.id;
-      event.entity.updatedBy = user.id;
+      // event.entity.updatedBy = user.id;
     }
-    const date = new Date();
-    event.entity.createdAt = date;
-    event.entity.updatedAt = date;
+    // const date = new Date();
+    // event.entity.createdAt = date;
+    // event.entity.updatedAt = date;
   }
 
   beforeUpdate(event: UpdateEvent<AuditingEntity>) {
@@ -45,7 +46,18 @@ export class AuditingSubscriber
     if (user) {
       event.entity.updatedBy = user.id;
     }
-    const date = new Date();
-    event.entity.updatedAt = date;
+    // const date = new Date();
+    // event.entity.updatedAt = date;
+  }
+
+  beforeSoftRemove(event: SoftRemoveEvent<AuditingEntity>) {
+    const user = this.als.getStore()?.user;
+    console.log('beforeSoftRemove', event.entity);
+    if (!event.entity) {
+      return;
+    }
+    if (user) {
+      event.entity.deletedBy = user.id;
+    }
   }
 }

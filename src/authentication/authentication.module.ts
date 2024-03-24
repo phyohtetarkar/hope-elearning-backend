@@ -7,6 +7,7 @@ import { AUTHENTICATION_SERVICE } from './services/authentication.service';
 import { EXTERNAL_AUTH_SERVICE } from './services/external-auth.service';
 import { FirebaseAuthService } from './services/internal/firebase-auth.service';
 import { TypeormAuthenticationService } from './services/internal/typeorm-authentication.service';
+import { RolesGuard } from './guards/roles.guard';
 
 @Module({
   imports: [UserModule],
@@ -14,6 +15,10 @@ import { TypeormAuthenticationService } from './services/internal/typeorm-authen
     {
       provide: APP_GUARD,
       useClass: AuthenticationGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
     },
     {
       provide: EXTERNAL_AUTH_SERVICE,

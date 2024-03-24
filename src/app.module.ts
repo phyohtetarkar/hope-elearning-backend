@@ -6,6 +6,7 @@ import { AuthenticationModule } from './authentication/authentication.module';
 import { AuthUserStore } from './common/als/auth-user.store';
 import { CommonModule } from './common/common.module';
 import { UserModule } from './user/user.module';
+import { BlogModule } from './blog/blog.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { UserModule } from './user/user.module';
     CommonModule,
     UserModule,
     AuthenticationModule,
+    BlogModule,
   ],
 })
 export class AppModule implements NestModule {

@@ -1,8 +1,8 @@
-import { Role } from './user.dto';
+import { UserRole } from './user-role.enum';
 
 export class UserQuery {
   name?: string;
   email?: string;
-  role?: Role;
+  role?: UserRole;
   page?: number;
 }

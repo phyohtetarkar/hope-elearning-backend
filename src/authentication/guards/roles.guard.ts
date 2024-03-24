@@ -1,6 +1,6 @@
 import { HAS_ANY_ROLE_KEY } from '@/common/decorators';
-import { Role } from '@/user/models/user.dto';
-import { User } from '@/user/models/user.entity';
+import { UserRole } from '@/user/models/user-role.enum';
+import { UserDto } from '@/user/models/user.dto';
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
@@ -13,7 +13,7 @@ export class RolesGuard implements CanActivate {
   canActivate(
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
-    const requiredRoles = this.reflector.getAllAndOverride<Role[]>(
+    const requiredRoles = this.reflector.getAllAndOverride<UserRole[]>(
       HAS_ANY_ROLE_KEY,
       [context.getHandler(), context.getClass()],
     );
@@ -24,7 +24,7 @@ export class RolesGuard implements CanActivate {
 
     const request = context.switchToHttp().getRequest<Request>();
 
-    const user: User | undefined = request['user'];
+    const user: UserDto | undefined = request['user'];
 
     return requiredRoles.some((role) => user?.role === role);
   }

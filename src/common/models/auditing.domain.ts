@@ -1,8 +1,10 @@
 export class Audit {
   createdAt: number;
-  createdBy?: string | null;
+  createdBy?: string;
   updatedAt: number;
-  updatedBy?: string | null;
+  updatedBy?: string;
+  deletedAt?: number;
+  deletedBy?: string;
 
   constructor(partial: Partial<Audit> = {}) {
     Object.assign(this, partial);

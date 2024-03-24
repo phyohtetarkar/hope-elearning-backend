@@ -1,18 +1,29 @@
-import { Column } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  DeleteDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { Audit } from './auditing.domain';
 
 export abstract class AuditingEntity {
-  @Column({ name: 'created_at', type: 'timestamp' })
+  @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
   createdAt: Date;
 
   @Column({ name: 'created_by', nullable: true, default: 'anonymous' })
   createdBy?: string;
 
-  @Column({ name: 'updated_at', type: 'timestamp' })
+  @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz' })
   updatedAt: Date;
 
   @Column({ name: 'updated_by', nullable: true, default: 'anonymous' })
   updatedBy?: string;
+
+  @DeleteDateColumn({ name: 'deleted_at', type: 'timestamptz' })
+  deletedAt?: Date;
+
+  @Column({ name: 'deleted_by', nullable: true })
+  deletedBy?: string;
 
   toAudit(): Audit {
     return new Audit({
@@ -20,6 +31,8 @@ export abstract class AuditingEntity {
       createdBy: this.createdBy,
       updatedAt: this.updatedAt.getTime(),
       updatedBy: this.updatedBy,
+      deletedAt: this.deletedAt?.getTime(),
+      deletedBy: this.deletedBy,
     });
   }
 }

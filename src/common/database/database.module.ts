@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { AuditingSubscriber } from './auditing.subscriber';
 
 @Module({
   imports: [
@@ -20,5 +21,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       inject: [ConfigService],
     }),
   ],
+  providers: [AuditingSubscriber],
 })
 export class DatabaseModule {}
