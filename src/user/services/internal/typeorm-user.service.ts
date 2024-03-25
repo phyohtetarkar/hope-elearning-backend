@@ -67,7 +67,7 @@ export class TypeormUserService implements UserService {
     return entity ? entity.toDto() : null;
   }
 
-  async findAll(query: UserQuery): Promise<Page<UserDto>> {
+  async find(query: UserQuery): Promise<Page<UserDto>> {
     const page = query.page ?? 0;
     const offset = page * PAGE_SIZE;
     const limit = PAGE_SIZE;

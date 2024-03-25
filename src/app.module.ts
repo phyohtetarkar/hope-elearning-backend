@@ -7,6 +7,8 @@ import { AuthUserStore } from './common/als/auth-user.store';
 import { CommonModule } from './common/common.module';
 import { UserModule } from './user/user.module';
 import { BlogModule } from './blog/blog.module';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
 
 @Module({
   imports: [
@@ -19,6 +21,8 @@ import { BlogModule } from './blog/blog.module';
     AuthenticationModule,
     BlogModule,
   ],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule implements NestModule {
   constructor(private readonly als: AsyncLocalStorage<AuthUserStore>) {}

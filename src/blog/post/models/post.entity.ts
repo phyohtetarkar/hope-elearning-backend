@@ -1,18 +1,17 @@
-import { TagEntity } from '@/blog/tag/models/tag.entity';
 import { AuditingEntity } from '@/common/models/auditing.entity';
 import { UserEntity } from '@/user/models/user.entity';
 import {
   Column,
   Entity,
   JoinColumn,
-  JoinTable,
-  ManyToMany,
   ManyToOne,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { PostStatus } from './post-status.enum';
-import { PostViewEntity } from './post-view.entity';
+import { PostTagEntity } from './post-tag.entity';
+import { PostStatisticEntity } from './post-statistic.entity';
 
 @Entity({ name: 'post' })
 export class PostEntity extends AuditingEntity {
@@ -22,17 +21,17 @@ export class PostEntity extends AuditingEntity {
   @Column({ type: 'text', nullable: true })
   cover?: string;
 
-  @Column({ type: 'text' })
-  title: string;
+  @Column({ type: 'text', nullable: true })
+  title?: string;
 
   @Column({ type: 'text', unique: true })
   slug: string;
 
-  @Column({ type: 'text' })
-  excerpt: string;
+  @Column({ type: 'text', nullable: true })
+  excerpt?: string;
 
-  @Column({ type: 'text' })
-  body: string;
+  @Column({ type: 'text', nullable: true })
+  body?: string;
 
   @Column({
     type: 'enum',
@@ -40,6 +39,9 @@ export class PostEntity extends AuditingEntity {
     default: PostStatus.DRAFT,
   })
   status: PostStatus;
+
+  @Column({ default: false })
+  featured: boolean;
 
   @Column({
     name: 'published_at',
@@ -52,15 +54,11 @@ export class PostEntity extends AuditingEntity {
   @JoinColumn({ name: 'author_id' })
   author: UserEntity;
 
-  @ManyToMany(() => TagEntity)
-  @JoinTable({
-    name: 'post_tag',
-    joinColumn: { name: 'post_id' },
-    inverseJoinColumn: { name: 'tag_id' },
+  @OneToMany(() => PostTagEntity, (type) => type.post, {
+    cascade: true,
   })
-  tags: Promise<TagEntity[]>;
+  tags?: PostTagEntity[];
 
-  @OneToOne(() => PostViewEntity)
-  @JoinColumn({ name: 'id' })
-  postView?: PostViewEntity;
+  @OneToOne(() => PostStatisticEntity, (type) => type.post)
+  statistic?: PostStatisticEntity;
 }

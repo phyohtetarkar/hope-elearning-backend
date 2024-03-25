@@ -11,7 +11,7 @@ export interface UserService {
 
   findById(id: string): Promise<UserDto | null>;
 
-  findAll(query: UserQuery): Promise<Page<UserDto>>;
+  find(query: UserQuery): Promise<Page<UserDto>>;
 }
 
 export const USER_SERVICE = 'UserService';

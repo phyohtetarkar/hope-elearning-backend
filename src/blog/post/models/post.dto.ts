@@ -11,8 +11,13 @@ export class PostDto {
   excerpt: string;
   body?: string;
   status: PostStatus;
+  featured: boolean;
   publishedAt: number;
   author: UserDto;
   tags: TagDto[];
   audit?: Audit;
+
+  constructor(partial: Partial<PostDto> = {}) {
+    Object.assign(this, partial);
+  }
 }

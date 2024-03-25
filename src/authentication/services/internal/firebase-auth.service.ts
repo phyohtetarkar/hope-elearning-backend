@@ -6,12 +6,14 @@ import { Auth } from 'firebase-admin/lib/auth/auth';
 import { SingUpInput } from '../../models/sign-up.input';
 import { ExternalAuthService } from '../external-auth.service';
 import { AuthUserDto } from '@/authentication/models/auth-user.dto';
+import { dirname } from 'path';
 
 @Injectable()
 export class FirebaseAuthService implements ExternalAuthService {
   private auth: Auth;
 
   constructor(configService: ConfigService) {
+    console.log(dirname(require.main?.filename ?? '/content'));
     const serviceAccountPath = configService.get<string>(
       'FIREBASE_SERVICE_ACCOUNT',
     );
