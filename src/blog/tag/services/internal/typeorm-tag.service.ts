@@ -9,6 +9,7 @@ import { TagEntity } from '../../models/tag.entity';
 import { TagInput } from '../../models/tag.input';
 import { TagQuery } from '../../models/tag.query';
 import { TagService } from '../tag.service';
+import { PostTagEntity } from '@/blog/post/models/post-tag.entity';
 
 @Injectable()
 export class TypeormTagService implements TagService {
@@ -16,6 +17,8 @@ export class TypeormTagService implements TagService {
     private dataSource: DataSource,
     @InjectRepository(TagEntity)
     private tagRepo: Repository<TagEntity>,
+    @InjectRepository(PostTagEntity)
+    private postTagRepo: Repository<PostTagEntity>,
   ) {}
 
   async save(values: TagInput): Promise<TagDto> {
@@ -31,12 +34,20 @@ export class TypeormTagService implements TagService {
     return result.toDto();
   }
 
+  async delete(id: number): Promise<void> {
+    await this.dataSource.transaction(async (em) => {
+      this.postTagRepo.delete(id);
+      //this.tagRepo.delete(id);
+      em.delete(TagEntity, { id });
+    });
+  }
+
   async findById(id: number): Promise<TagDto | null> {
     const entity = await this.tagRepo.findOneBy({ id: id });
     return entity ? entity.toDto() : null;
   }
 
-  async findAll(query: TagQuery): Promise<Page<TagDto>> {
+  async find(query: TagQuery): Promise<Page<TagDto>> {
     const page = query.page ?? 0;
     const offest = page * PAGE_SIZE;
     const limit = PAGE_SIZE;

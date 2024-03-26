@@ -12,6 +12,7 @@ import {
 import { PostStatus } from './post-status.enum';
 import { PostTagEntity } from './post-tag.entity';
 import { PostStatisticEntity } from './post-statistic.entity';
+import { PostDto } from './post.dto';
 
 @Entity({ name: 'post' })
 export class PostEntity extends AuditingEntity {
@@ -61,4 +62,21 @@ export class PostEntity extends AuditingEntity {
 
   @OneToOne(() => PostStatisticEntity, (type) => type.post)
   statistic?: PostStatisticEntity;
+
+  toDto() {
+    return new PostDto({
+      id: this.id,
+      cover: this.cover,
+      title: this.title,
+      slug: this.slug,
+      excerpt: this.excerpt,
+      body: this.body,
+      status: this.status,
+      featured: this.featured,
+      //publishedAt: this.publishedAt,
+      author: this.author.toDto(),
+      tags: this.tags?.map((e) => e.tag.toDto()),
+      audit: this.toAudit(),
+    });
+  }
 }
