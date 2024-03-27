@@ -17,8 +17,6 @@ export class TypeormTagService implements TagService {
     private dataSource: DataSource,
     @InjectRepository(TagEntity)
     private tagRepo: Repository<TagEntity>,
-    @InjectRepository(PostTagEntity)
-    private postTagRepo: Repository<PostTagEntity>,
   ) {}
 
   async save(values: TagInput): Promise<TagDto> {
@@ -36,8 +34,7 @@ export class TypeormTagService implements TagService {
 
   async delete(id: number): Promise<void> {
     await this.dataSource.transaction(async (em) => {
-      this.postTagRepo.delete(id);
-      //this.tagRepo.delete(id);
+      em.delete(PostTagEntity, { tagId: id });
       em.delete(TagEntity, { id });
     });
   }

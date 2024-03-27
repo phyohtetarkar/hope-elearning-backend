@@ -78,6 +78,7 @@ export class PostEntity extends AuditingEntity {
       excerpt: this.excerpt ?? undefined,
       body: this.body ?? undefined,
       status: this.status,
+      access: this.access,
       featured: this.featured,
       publishedAt: this.publishedAt?.getTime(),
       author: this.author.toDto(),

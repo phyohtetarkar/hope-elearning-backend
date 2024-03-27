@@ -1,10 +1,13 @@
 import { TagEntity } from '@/blog/tag/models/tag.entity';
 import { PAGE_SIZE } from '@/common/constants';
+import { DomainError } from '@/common/errors/domain.error';
 import { Page } from '@/common/models/page.domain';
 import { normalizeSlug, stringToSlug } from '@/common/utils';
+import { UserEntity } from '@/user/models/user.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, In, Not, Repository } from 'typeorm';
+import { DataSource, In, Not, Raw, Repository } from 'typeorm';
+import { PostStatisticEntity } from '../../models/post-statistic.entity';
 import { PostStatus } from '../../models/post-status.enum';
 import { PostTagEntity } from '../../models/post-tag.entity';
 import { PostUpdateInput } from '../../models/post-update.input';
@@ -12,9 +15,6 @@ import { PostDto } from '../../models/post.dto';
 import { PostEntity } from '../../models/post.entity';
 import { PostQuery } from '../../models/post.query';
 import { PostService } from '../post.service';
-import { PostStatisticEntity } from '../../models/post-statistic.entity';
-import { UserEntity } from '@/user/models/user.entity';
-import { DomainError } from '@/common/errors/domain.error';
 
 @Injectable()
 export class TypeormPostService implements PostService {
@@ -22,10 +22,6 @@ export class TypeormPostService implements PostService {
     private dataSource: DataSource,
     @InjectRepository(PostEntity)
     private postRepo: Repository<PostEntity>,
-    @InjectRepository(PostTagEntity)
-    private postTagRepo: Repository<PostTagEntity>,
-    @InjectRepository(TagEntity)
-    private tagRepo: Repository<TagEntity>,
   ) {}
 
   async save(values: PostUpdateInput): Promise<PostDto> {
@@ -106,10 +102,26 @@ export class TypeormPostService implements PostService {
 
     const [list, count] = await this.postRepo.findAndCount({
       where: {
-        //q
         author: query.authorId ? { id: query.authorId } : undefined,
         status: query.status,
         featured: query.featured,
+        title: query.q
+          ? Raw((alias) => `LOWER(${alias}) LIKE LOWER(:title)`, {
+              title: `${query.q}%`,
+            })
+          : undefined,
+        tags: query.q
+          ? Raw(
+              (alias) => `SELECT *
+          FROM el_post p
+          INNER JOIN el_post_tag pt ON p.id = pt.post_id
+          INNER JOIN el_tag t ON pt.tag_id = t.id
+          WHERE LOWER(${alias}) LIKE LOWER(:name)`,
+              {
+                name: `${query.q}%`,
+              },
+            )
+          : undefined,
       },
       order: {
         createdAt: 'DESC',
