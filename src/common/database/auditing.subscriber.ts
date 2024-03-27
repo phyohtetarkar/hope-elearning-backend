@@ -26,10 +26,10 @@ export class AuditingSubscriber
   }
 
   beforeInsert(event: InsertEvent<AuditingEntity>) {
-    const user = this.als.getStore()?.user;
+    const userId = this.als.getStore()?.userId;
     console.log('beforeInsert', event.entity);
-    if (user) {
-      event.entity.createdBy = user.id;
+    if (userId) {
+      event.entity.createdBy = userId;
       // event.entity.updatedBy = user.id;
     }
     // const date = new Date();
@@ -38,26 +38,26 @@ export class AuditingSubscriber
   }
 
   beforeUpdate(event: UpdateEvent<AuditingEntity>) {
-    const user = this.als.getStore()?.user;
+    const userId = this.als.getStore()?.userId;
     console.log('afterUpdate', event.entity);
     if (!event.entity) {
       return;
     }
-    if (user) {
-      event.entity.updatedBy = user.id;
+    if (userId) {
+      event.entity.updatedBy = userId;
     }
     // const date = new Date();
     // event.entity.updatedAt = date;
   }
 
   beforeSoftRemove(event: SoftRemoveEvent<AuditingEntity>) {
-    const user = this.als.getStore()?.user;
+    const userId = this.als.getStore()?.userId;
     console.log('beforeSoftRemove', event.entity);
     if (!event.entity) {
       return;
     }
-    if (user) {
-      event.entity.deletedBy = user.id;
+    if (userId) {
+      event.entity.deletedBy = userId;
     }
   }
 }

@@ -7,7 +7,7 @@ import { Request } from 'express';
 import { Observable } from 'rxjs';
 
 @Injectable()
-export class RolesGuard implements CanActivate {
+export class AuthorizationGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
 
   canActivate(

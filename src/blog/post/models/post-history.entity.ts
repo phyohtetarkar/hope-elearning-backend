@@ -1,5 +1,6 @@
 import { UserEntity } from '@/user/models/user.entity';
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
+import { PostEntity } from './post.entity';
 
 @Entity({ name: 'post_history' })
 export class PostHistoryEntity {
@@ -20,6 +21,10 @@ export class PostHistoryEntity {
 
   @Column({ type: 'text' })
   body: string;
+
+  @ManyToOne(() => PostEntity)
+  @JoinColumn({ name: 'post_id' })
+  post: PostEntity;
 
   @ManyToOne(() => UserEntity)
   @JoinColumn({ name: 'author_id' })

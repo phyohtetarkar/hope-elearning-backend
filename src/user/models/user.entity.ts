@@ -21,29 +21,29 @@ export class UserEntity extends AuditingEntity {
   })
   role: UserRole;
 
-  @Column({ nullable: true })
-  email?: string;
+  @Column({ type: 'varchar', nullable: true })
+  email?: string | null;
 
-  @Column({ nullable: true })
-  phone?: string;
-
-  @Column({
-    type: 'text',
-    nullable: true,
-  })
-  headline?: string;
+  @Column({ type: 'varchar', nullable: true })
+  phone?: string | null;
 
   @Column({
     type: 'text',
     nullable: true,
   })
-  image?: string;
+  headline?: string | null;
 
   @Column({
     type: 'text',
     nullable: true,
   })
-  bio?: string;
+  image?: string | null;
+
+  @Column({
+    type: 'text',
+    nullable: true,
+  })
+  bio?: string | null;
 
   toDto() {
     return new UserDto({
@@ -51,11 +51,11 @@ export class UserEntity extends AuditingEntity {
       fullName: this.fullName,
       username: this.username,
       role: this.role,
-      email: this.email,
-      phone: this.phone,
-      headline: this.headline,
-      image: this.image,
-      bio: this.bio,
+      email: this.email ?? undefined,
+      phone: this.phone ?? undefined,
+      headline: this.headline ?? undefined,
+      image: this.image ?? undefined,
+      bio: this.bio ?? undefined,
       audit: this.toAudit(),
     });
   }

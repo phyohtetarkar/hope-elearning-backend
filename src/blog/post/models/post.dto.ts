@@ -2,6 +2,7 @@ import { TagDto } from '@/blog/tag/models/tag.dto';
 import { Audit } from '@/common/models/auditing.domain';
 import { UserDto } from '@/user/models/user.dto';
 import { PostStatus } from './post-status.enum';
+import { PostAccess } from './post-access.enum';
 
 export class PostDto {
   id: number;
@@ -11,6 +12,7 @@ export class PostDto {
   excerpt: string;
   body?: string;
   status: PostStatus;
+  access: PostAccess;
   featured: boolean;
   publishedAt: number;
   author: UserDto;

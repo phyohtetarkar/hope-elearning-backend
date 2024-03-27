@@ -7,7 +7,7 @@ export class PostStatisticEntity {
   @PrimaryColumn({ type: 'bigint' })
   id: number;
 
-  @Column({ name: 'total_view', type: 'bigint' })
+  @Column({ name: 'total_view', type: 'bigint', default: 0 })
   totalView: number;
 
   @OneToOne(() => PostEntity, (type) => type.statistic)

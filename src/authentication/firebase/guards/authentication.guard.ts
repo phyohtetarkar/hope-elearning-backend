@@ -11,18 +11,14 @@ import {
 import { Reflector } from '@nestjs/core';
 import { AsyncLocalStorage } from 'async_hooks';
 import { Request } from 'express';
-import {
-  EXTERNAL_AUTH_SERVICE,
-  ExternalAuthService,
-} from '../services/external-auth.service';
+import { FirebaseAuthService } from '../services/firebase-auth.service';
 
 @Injectable()
 export class AuthenticationGuard implements CanActivate {
   constructor(
     private als: AsyncLocalStorage<AuthUserStore>,
     private reflector: Reflector,
-    @Inject(EXTERNAL_AUTH_SERVICE)
-    private authService: ExternalAuthService,
+    private authService: FirebaseAuthService,
     @Inject(USER_SERVICE)
     private userService: UserService,
   ) {}
@@ -38,17 +34,19 @@ export class AuthenticationGuard implements CanActivate {
     }
 
     const request = context.switchToHttp().getRequest<Request>();
-    const token = this.extractTokenFromHeader(request);
+    const token = this.extractTokenFromCookie(request);
 
     if (!token) {
       throw new UnauthorizedException();
     }
 
-    const uid = await this.authService.verifyToken(token);
+    const decodedToken = await this.authService.verifyToken(token);
 
-    if (!uid) {
+    if (!decodedToken) {
       throw new UnauthorizedException();
     }
+
+    const uid = decodedToken.uid;
 
     let user = await this.userService.findById(uid);
 
@@ -60,14 +58,20 @@ export class AuthenticationGuard implements CanActivate {
         throw new UnauthorizedException();
       }
 
-      user = await this.userService.create({ ...authUser });
+      user = await this.userService.create({
+        id: authUser.uid,
+        fullName: authUser.displayName ?? 'User',
+        email: authUser.email,
+        phone: authUser.phoneNumber,
+      });
     }
 
     request['user'] = user;
 
     const store = this.als.getStore();
     if (store) {
-      store.user = user;
+      store.userId = user.id;
+      store.role = user.role;
     }
 
     return true;
@@ -76,5 +80,10 @@ export class AuthenticationGuard implements CanActivate {
   private extractTokenFromHeader(request: Request): string | undefined {
     const [type, token] = request.headers.authorization?.split(' ') ?? [];
     return type === 'Bearer' ? token : undefined;
+  }
+
+  private extractTokenFromCookie(request: Request): string | undefined {
+    const accessToken = request.cookies['access_token'];
+    return accessToken;
   }
 }

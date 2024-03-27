@@ -1,5 +1,5 @@
 export class PostUpdateInput {
-  id: number;
+  id?: number;
   cover?: string;
   title: string;
   slug: string;

@@ -1,5 +1,6 @@
-import { UserDto } from '@/user/models/user.dto';
+import { UserRole } from '@/user/models/user-role.enum';
 
 export class AuthUserStore {
-  user?: UserDto;
+  userId?: string;
+  role?: UserRole;
 }

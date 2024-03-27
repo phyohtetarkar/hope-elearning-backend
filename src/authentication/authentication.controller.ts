@@ -1,31 +1,19 @@
 import { Public } from '@/common/decorators';
-import {
-  BadRequestException,
-  Body,
-  Controller,
-  Inject,
-  Post,
-} from '@nestjs/common';
-import { SingUpInput } from './models/sign-up.input';
-import {
-  AUTHENTICATION_SERVICE,
-  AuthenticationService,
-} from './services/authentication.service';
+import { Body, Controller, Post, Res } from '@nestjs/common';
+import { CookieLoginInput } from './models/cookie-login.input';
+import { Response } from 'express';
 
 @Controller('auth')
 export class AuthenticationController {
-  constructor(
-    @Inject(AUTHENTICATION_SERVICE)
-    private authService: AuthenticationService,
-  ) {}
-
   @Public()
-  @Post()
-  async signUp(@Body() values: SingUpInput) {
-    try {
-      await this.authService.signUp(values);
-    } catch (error) {
-      throw new BadRequestException(error);
-    }
+  @Post('cookie-login')
+  async cookieLogin(
+    @Res({ passthrough: true }) response: Response,
+    @Body() values: CookieLoginInput,
+  ) {
+    response.cookie('access-token', {});
   }
+
+  @Post('logout')
+  logout(@Res({ passthrough: true }) response: Response) {}
 }

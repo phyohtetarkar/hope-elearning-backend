@@ -13,6 +13,7 @@ import { PostStatus } from './post-status.enum';
 import { PostTagEntity } from './post-tag.entity';
 import { PostStatisticEntity } from './post-statistic.entity';
 import { PostDto } from './post.dto';
+import { PostAccess } from './post-access.enum';
 
 @Entity({ name: 'post' })
 export class PostEntity extends AuditingEntity {
@@ -20,19 +21,19 @@ export class PostEntity extends AuditingEntity {
   id: number;
 
   @Column({ type: 'text', nullable: true })
-  cover?: string;
+  cover?: string | null;
 
   @Column({ type: 'text', nullable: true })
-  title?: string;
+  title?: string | null;
 
   @Column({ type: 'text', unique: true })
   slug: string;
 
   @Column({ type: 'text', nullable: true })
-  excerpt?: string;
+  excerpt?: string | null;
 
   @Column({ type: 'text', nullable: true })
-  body?: string;
+  body?: string | null;
 
   @Column({
     type: 'enum',
@@ -40,6 +41,13 @@ export class PostEntity extends AuditingEntity {
     default: PostStatus.DRAFT,
   })
   status: PostStatus;
+
+  @Column({
+    type: 'enum',
+    enum: PostAccess,
+    default: PostAccess.PUBLIC,
+  })
+  access: PostAccess;
 
   @Column({ default: false })
   featured: boolean;
@@ -49,15 +57,13 @@ export class PostEntity extends AuditingEntity {
     type: 'timestamptz',
     nullable: true,
   })
-  publishedAt?: Date;
+  publishedAt?: Date | null;
 
   @ManyToOne(() => UserEntity)
   @JoinColumn({ name: 'author_id' })
   author: UserEntity;
 
-  @OneToMany(() => PostTagEntity, (type) => type.post, {
-    cascade: true,
-  })
+  @OneToMany(() => PostTagEntity, (type) => type.post)
   tags?: PostTagEntity[];
 
   @OneToOne(() => PostStatisticEntity, (type) => type.post)
@@ -66,16 +72,16 @@ export class PostEntity extends AuditingEntity {
   toDto() {
     return new PostDto({
       id: this.id,
-      cover: this.cover,
-      title: this.title,
+      cover: this.cover ?? undefined,
+      title: this.title ?? undefined,
       slug: this.slug,
-      excerpt: this.excerpt,
-      body: this.body,
+      excerpt: this.excerpt ?? undefined,
+      body: this.body ?? undefined,
       status: this.status,
       featured: this.featured,
-      //publishedAt: this.publishedAt,
+      publishedAt: this.publishedAt?.getTime(),
       author: this.author.toDto(),
-      tags: this.tags?.map((e) => e.tag.toDto()),
+      tags: this.tags?.map((e) => e.tag.toDto()) ?? [],
       audit: this.toAudit(),
     });
   }

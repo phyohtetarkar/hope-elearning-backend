@@ -6,11 +6,13 @@ import { PostEntity } from './models/post.entity';
 import { PostTagEntity } from './models/post-tag.entity';
 import { POST_SERVICE } from './services/post.service';
 import { TypeormPostService } from './services/internal/typeorm-post.service';
+import { TagEntity } from '../tag/models/tag.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
       PostEntity,
+      TagEntity,
       PostTagEntity,
       PostHistoryEntity,
       PostStatisticEntity,

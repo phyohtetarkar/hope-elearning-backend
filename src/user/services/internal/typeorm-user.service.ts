@@ -1,4 +1,6 @@
+import { AuthUserStore } from '@/common/als/auth-user.store';
 import { PAGE_SIZE } from '@/common/constants';
+import { DomainError } from '@/common/errors/domain.error';
 import { Page } from '@/common/models/page.domain';
 import { normalizeSlug, stringToSlug } from '@/common/utils';
 import { CreateUserInput } from '@/user/models/create-user.input';
@@ -8,6 +10,7 @@ import { UserEntity } from '@/user/models/user.entity';
 import { UserQuery } from '@/user/models/user.query';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { AsyncLocalStorage } from 'async_hooks';
 import { DataSource, Not, Raw, Repository } from 'typeorm';
 import { UserService } from '../user.service';
 
@@ -15,6 +18,7 @@ import { UserService } from '../user.service';
 export class TypeormUserService implements UserService {
   constructor(
     private dataSource: DataSource,
+    private als: AsyncLocalStorage<AuthUserStore>,
     @InjectRepository(UserEntity)
     private userRepo: Repository<UserEntity>,
   ) {}
@@ -32,39 +36,51 @@ export class TypeormUserService implements UserService {
       },
     );
 
-    const result = await this.userRepo.save(entity);
+    const result = await this.userRepo.insert(entity);
 
-    return result.toDto();
+    console.log(result);
+
+    return new UserDto();
   }
 
-  async update(id: string, values: UpdateUserInput): Promise<void> {
-    const exists = await this.userRepo.existsBy({ id: id });
+  async update(values: UpdateUserInput): Promise<void> {
+    if (values.id !== this.als.getStore()?.userId) {
+      throw new DomainError('User not found');
+    }
+
+    const exists = await this.userRepo.existsBy({ id: values.id });
     if (!exists) {
-      throw 'User not found';
+      throw new DomainError('User not found');
     }
 
     const duplicate = await this.userRepo.existsBy({
-      id: Not(id),
+      id: Not(values.id),
       username: values.username,
     });
 
     if (duplicate) {
-      throw 'Username already taken';
+      throw new DomainError('Username already taken');
     }
 
     await this.userRepo.update(
-      { id: id },
+      { id: values.id },
       {
         fullName: values.fullName,
         username: values.username,
-        headline: values.headline,
+        headline: values.headline ?? null,
+        bio: values.bio ?? null,
       },
     );
   }
 
-  async findById(id: string): Promise<UserDto | null> {
+  async findById(id: string): Promise<UserDto | undefined> {
     const entity = await this.userRepo.findOneBy({ id: id });
-    return entity ? entity.toDto() : null;
+    return entity?.toDto();
+  }
+
+  async findByUsername(username: string): Promise<UserDto | undefined> {
+    const entity = await this.userRepo.findOneBy({ username: username });
+    return entity?.toDto();
   }
 
   async find(query: UserQuery): Promise<Page<UserDto>> {

@@ -4,7 +4,7 @@ import { Page } from '@/common/models/page.domain';
 import { normalizeSlug, stringToSlug } from '@/common/utils';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, In, Not, Repository } from 'typeorm';
 import { PostStatus } from '../../models/post-status.enum';
 import { PostTagEntity } from '../../models/post-tag.entity';
 import { PostUpdateInput } from '../../models/post-update.input';
@@ -12,6 +12,9 @@ import { PostDto } from '../../models/post.dto';
 import { PostEntity } from '../../models/post.entity';
 import { PostQuery } from '../../models/post.query';
 import { PostService } from '../post.service';
+import { PostStatisticEntity } from '../../models/post-statistic.entity';
+import { UserEntity } from '@/user/models/user.entity';
+import { DomainError } from '@/common/errors/domain.error';
 
 @Injectable()
 export class TypeormPostService implements PostService {
@@ -26,22 +29,51 @@ export class TypeormPostService implements PostService {
   ) {}
 
   async save(values: PostUpdateInput): Promise<PostDto> {
-    const entity = new PostEntity();
-    entity.id = values.id;
-    entity.cover = values.cover;
-    entity.title = values.title;
-    entity.excerpt = values.excerpt;
-    entity.body = values.body;
-    entity.author.id = values.authorId;
-    entity.slug = await normalizeSlug(stringToSlug(values.title), (v) => {
-      return this.postRepo.existsBy({ slug: v });
+    return await this.dataSource.transaction(async (em) => {
+      const author = await em.findOneBy(UserEntity, { id: values.authorId });
+
+      if (!author) {
+        throw new DomainError('Author not found');
+      }
+
+      const entity = new PostEntity();
+      entity.id = values.id ?? 0;
+      entity.cover = values.cover;
+      entity.title = values.title;
+      entity.excerpt = values.excerpt;
+      entity.body = values.body;
+      entity.author = author;
+      entity.slug = await normalizeSlug(stringToSlug(values.title), (v) => {
+        return em.existsBy(PostEntity, { id: Not(entity.id), slug: v });
+      });
+
+      const result = await em.save(entity);
+      await em.delete(PostTagEntity, { postId: result.id });
+
+      const tagEntities = await em.findBy(TagEntity, { id: In(values.tags) });
+
+      const postTags = await em.save(
+        PostTagEntity,
+        tagEntities.map((t) => {
+          const pt = new PostTagEntity();
+          pt.postId = result.id;
+          pt.tagId = t.id;
+          return pt;
+        }),
+      );
+
+      if (!values.id) {
+        const postStatisticEntity = new PostStatisticEntity();
+        postStatisticEntity.totalView = 0;
+        postStatisticEntity.id = result.id;
+
+        await em.save(postStatisticEntity);
+      }
+
+      result.tags = postTags;
+
+      return result.toDto();
     });
-
-    // entity.tag
-
-    const result = await this.postRepo.save(entity);
-
-    return result.toDto();
   }
 
   async updateStatus(id: number, status: PostStatus): Promise<void> {
@@ -75,7 +107,7 @@ export class TypeormPostService implements PostService {
     const [list, count] = await this.postRepo.findAndCount({
       where: {
         //q
-        //author
+        author: query.authorId ? { id: query.authorId } : undefined,
         status: query.status,
         featured: query.featured,
       },

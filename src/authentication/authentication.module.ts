@@ -1,16 +1,22 @@
 import { UserModule } from '@/user/user.module';
 import { Module } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthenticationController } from './authentication.controller';
-import { AuthenticationGuard } from './guards/authentication.guard';
-import { AUTHENTICATION_SERVICE } from './services/authentication.service';
-import { EXTERNAL_AUTH_SERVICE } from './services/external-auth.service';
-import { FirebaseAuthService } from './services/internal/firebase-auth.service';
-import { TypeormAuthenticationService } from './services/internal/typeorm-authentication.service';
-import { RolesGuard } from './guards/roles.guard';
+import { AuthenticationGuard, FirebaseModule } from './firebase';
+import { AuthorizationGuard } from './guards/authorization.guard';
 
 @Module({
-  imports: [UserModule],
+  imports: [
+    UserModule,
+    FirebaseModule.registerAsync({
+      imports: [UserModule],
+      useFactory: (configService: ConfigService) => ({
+        serviceAccount: configService.get<string>('FIREBASE_SERVICE_ACCOUNT'),
+      }),
+      inject: [ConfigService],
+    }),
+  ],
   providers: [
     {
       provide: APP_GUARD,
@@ -18,15 +24,7 @@ import { RolesGuard } from './guards/roles.guard';
     },
     {
       provide: APP_GUARD,
-      useClass: RolesGuard,
-    },
-    {
-      provide: EXTERNAL_AUTH_SERVICE,
-      useClass: FirebaseAuthService,
-    },
-    {
-      provide: AUTHENTICATION_SERVICE,
-      useClass: TypeormAuthenticationService,
+      useClass: AuthorizationGuard,
     },
   ],
   controllers: [AuthenticationController],
