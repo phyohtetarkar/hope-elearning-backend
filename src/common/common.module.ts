@@ -1,9 +1,14 @@
 import { Module } from '@nestjs/common';
-import { AlsModule } from './als/als.module';
-import { DatabaseModule } from './database/database.module';
 import { StorageModule } from './storage/storage.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [StorageModule, AlsModule, DatabaseModule],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: ['.env.development.local'],
+    }),
+    StorageModule,
+  ],
 })
 export class CommonModule {}

@@ -6,8 +6,8 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AppService } from './app.service';
-import { Public } from './common/decorators';
 import { rename, openSync, closeSync } from 'fs';
+import { Public } from './security/decorators/public.decorator';
 
 @Controller()
 export class AppController {
