@@ -58,7 +58,8 @@ export class TypeormTagService implements TagService {
   }
 
   async findBySlug(slug: string): Promise<TagDto | null> {
-    return null;
+    const entity = await this.tagRepo.findOneBy({ slug: slug });
+    return entity?.toDto() ?? null;
   }
 
   async find(query: TagQuery): Promise<Page<TagDto>> {

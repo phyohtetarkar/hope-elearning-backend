@@ -7,10 +7,12 @@ import { CommonModule } from './common';
 import { BlogModule } from './blog/blog.module';
 import * as cors from 'cors';
 import { AuthenticationMiddleware } from './common/middlewares/authentication.middleware';
+import { TagController } from './blog/tag.controller';
+import { TagAdminController } from './blog/tag-admin.controller';
 
 @Module({
   imports: [CommonModule, UserModule, AuthenticationModule, BlogModule],
-  controllers: [AppController],
+  controllers: [AppController, TagController, TagAdminController],
   providers: [AppService],
 })
 export class AppModule implements NestModule {

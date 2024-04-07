@@ -31,6 +31,11 @@ export class PostAdminController {
     return await this.postService.update(values);
   }
 
+  @Get()
+  async find(@Query() query: PostQuery) {
+    return await this.postService.find(query);
+  }
+
   @Get(':id')
   async getPost(@Param('id', ParseIntPipe) id: number) {
     return await this.postService.findById(id);
@@ -39,10 +44,5 @@ export class PostAdminController {
   @Delete(':id')
   async deletePost(@Param('id', ParseIntPipe) id: number) {
     await this.postService.delete(id);
-  }
-
-  @Get()
-  async find(@Query() query: PostQuery) {
-    return await this.postService.find(query);
   }
 }
