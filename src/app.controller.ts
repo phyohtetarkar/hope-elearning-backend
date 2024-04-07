@@ -1,5 +1,6 @@
 import {
   Controller,
+  Get,
   Post,
   UploadedFile,
   UseInterceptors,
@@ -7,13 +8,11 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AppService } from './app.service';
 import { rename, openSync, closeSync } from 'fs';
-import { Public } from './security/decorators/public.decorator';
 
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  @Public()
   @Post()
   @UseInterceptors(FileInterceptor('file'))
   getHello(@UploadedFile() file: Express.Multer.File): string {
@@ -27,5 +26,10 @@ export class AppController {
       console.log(err);
     });
     return this.appService.getHello();
+  }
+
+  @Get()
+  sayHello(): string {
+    return 'Hello, world';
   }
 }

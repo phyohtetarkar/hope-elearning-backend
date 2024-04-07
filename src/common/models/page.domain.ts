@@ -4,6 +4,10 @@ export class Page<T> {
   totalPage: number;
   pageSize: number;
 
+  constructor(partial: Partial<Page<T>> = {}) {
+    Object.assign(this, partial);
+  }
+
   static from<T>({
     list,
     count,
@@ -15,12 +19,12 @@ export class Page<T> {
     offset: number;
     limit: number;
   }): Page<T> {
-    return {
+    return new Page({
       contents: list,
-      // eslint-disable-next-line prettier/prettier
-      currentPage: offset / limit + 1,
+      // prettier-ignore
+      currentPage: (offset / limit) + 1,
       totalPage: Math.ceil(count / limit),
       pageSize: list.length,
-    };
+    });
   }
 }

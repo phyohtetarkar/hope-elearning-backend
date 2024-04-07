@@ -11,7 +11,7 @@ export async function normalizeSlug(
   exists: (value: string) => Promise<boolean>,
   serial: boolean = true,
 ) {
-  let result = slug;
+  let result = stringToSlug(slug);
   let i = 1;
   while (await exists(result)) {
     if (serial) {
