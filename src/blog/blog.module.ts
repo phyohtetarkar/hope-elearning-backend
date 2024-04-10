@@ -1,16 +1,18 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { TagEntity } from '@/common/entities/tag.entity';
-import { PostEntity } from '@/common/entities/post.entity';
-import { UserEntity } from '@/common/entities/user.entity';
-import { TAG_SERVICE } from './services/tag.service';
-import { POST_SERVICE } from './services/post.service';
-import { PostTagEntity } from '@/common/entities/post-tag.entity';
-import { PostStatisticEntity } from '@/common/entities/post-statistic.entity';
-import { TypeormTagService } from './services/internal/typeorm-tag.service';
-import { TypeormPostService } from './services/internal/typeorm-post.service';
-import { PostController } from './post.controller';
-import { PostAdminController } from './post-admin.controller';
+import { TagEntity } from '@/core/entities/tag.entity';
+import { PostEntity } from '@/core/entities/post.entity';
+import { UserEntity } from '@/core/entities/user.entity';
+import { PostTagEntity } from '@/core/entities/post-tag.entity';
+import { PostStatisticEntity } from '@/core/entities/post-statistic.entity';
+import { TypeormTagService } from './services/typeorm-tag.service';
+import { TypeormPostService } from './services/typeorm-post.service';
+import { PostController } from './controllers/post.controller';
+import { PostAdminController } from './controllers/post-admin.controller';
+import { TagController } from './controllers/tag.controller';
+import { TagAdminController } from './controllers/tag-admin.controller';
+import { POST_SERVICE, TAG_SERVICE } from '@/core/services';
+import { PostAuthorEntity } from '@/core/entities/post-author.entity';
 
 @Module({
   imports: [
@@ -19,6 +21,7 @@ import { PostAdminController } from './post-admin.controller';
       TagEntity,
       PostEntity,
       PostTagEntity,
+      PostAuthorEntity,
       PostStatisticEntity,
     ]),
   ],
@@ -32,6 +35,11 @@ import { PostAdminController } from './post-admin.controller';
       useClass: TypeormPostService,
     },
   ],
-  controllers: [PostController, PostAdminController],
+  controllers: [
+    TagController,
+    TagAdminController,
+    PostController,
+    PostAdminController,
+  ],
 })
 export class BlogModule {}

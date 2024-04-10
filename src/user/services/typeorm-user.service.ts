@@ -1,0 +1,80 @@
+import { normalizeSlug } from '@/common/utils';
+import { UserEntity } from '@/core/entities/user.entity';
+import {
+  PageDto,
+  QueryDto,
+  UserCreateDto,
+  UserDto,
+  UserQueryDto,
+} from '@/core/models';
+import { UserService } from '@/core/services';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { DataSource, Raw, Repository } from 'typeorm';
+
+@Injectable()
+export class TypeormUserService implements UserService {
+  constructor(
+    private dataSource: DataSource,
+    @InjectRepository(UserEntity)
+    private userRepo: Repository<UserEntity>,
+  ) {}
+
+  async create(values: UserCreateDto): Promise<UserDto> {
+    const result = await this.userRepo.insert({
+      id: values.id,
+      fullName: values.fullName,
+      email: values.email,
+      phone: values.phone,
+      username: await normalizeSlug(values.fullName, (v) => {
+        return this.userRepo.existsBy({ username: v });
+      }),
+    });
+
+    console.log(result);
+
+    const userId = result.identifiers[0].id;
+
+    const user = await this.userRepo.findOneByOrFail({ id: userId });
+
+    return user.toDto();
+  }
+
+  async findById(id: string): Promise<UserDto | null> {
+    const entity = await this.userRepo.findOneBy({ id: id });
+    return entity?.toDto() ?? null;
+  }
+
+  async findByUsername(username: string): Promise<UserDto | null> {
+    const entity = await this.userRepo.findOneBy({ username: username });
+    return entity?.toDto() ?? null;
+  }
+
+  async find(query: UserQueryDto): Promise<PageDto<UserDto>> {
+    const { limit, offset } = QueryDto.getPageable(query);
+
+    const [list, count] = await this.userRepo.findAndCount({
+      where: {
+        role: query.role ? query.role : undefined,
+        email: query.email ? query.email : undefined,
+        fullName: query.name
+          ? Raw((alias) => `LOWER(${alias}) LIKE LOWER(:name)`, {
+              name: `${query.name}%`,
+            })
+          : undefined,
+      },
+      order: {
+        createdAt: 'DESC',
+      },
+      skip: offset,
+      take: limit,
+    });
+
+    return PageDto.from({
+      list: list.map((e) => e.toDto()),
+      count: count,
+      offset: offset,
+      limit: limit,
+    });
+  }
+}

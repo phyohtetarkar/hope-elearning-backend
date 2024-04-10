@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { ConfigurableModuleClass } from './firebase.module-definition';
-import { FirebaseAuthService } from './firebase-auth.service';
+import { FirebaseService } from './firebase.service';
 
 @Module({
-  providers: [FirebaseAuthService],
-  exports: [FirebaseAuthService],
+  providers: [FirebaseService],
+  exports: [FirebaseService],
 })
 export class FirebaseModule extends ConfigurableModuleClass {}

@@ -1,6 +1,6 @@
+import { Public } from '@/common/decorators';
+import { USER_SERVICE, UserService } from '@/core/services';
 import { Controller, Inject, Post } from '@nestjs/common';
-import { USER_SERVICE, UserService } from './services/user.service';
-import { Public } from '@/common/decorators/public.decorator';
 
 @Controller('users')
 export class UserController {

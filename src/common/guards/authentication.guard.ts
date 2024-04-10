@@ -8,20 +8,17 @@ import {
 import { Reflector } from '@nestjs/core';
 import { AsyncLocalStorage } from 'async_hooks';
 import { Request } from 'express';
-import {
-  USER_SERVICE,
-  UserService,
-} from '@/user/services/user.service';
-import { FirebaseAuthService } from '../firebase/firebase-auth.service';
+import { FirebaseService } from '../firebase/firebase.service';
 import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
-import { SecurityContext } from '@/common';
+import { SecurityContext } from '../../core/security/security-context.domain';
+import { USER_SERVICE, UserService } from '@/core/services';
 
 @Injectable()
 export class AuthenticationGuard implements CanActivate {
   constructor(
     private als: AsyncLocalStorage<SecurityContext>,
     private reflector: Reflector,
-    private authService: FirebaseAuthService,
+    private authService: FirebaseService,
     @Inject(USER_SERVICE)
     private userService: UserService,
   ) {}
