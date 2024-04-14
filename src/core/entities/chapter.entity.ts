@@ -1,24 +1,39 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { AuditingEntity } from './auditing.entity';
-import { ChapterLessonEntity } from './chapter-lesson.entity';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { ChapterDto } from '../models/chapter.dto';
+import { AuditingEntity } from './auditing.entity';
+import { CourseEntity } from './course.entity';
+import { LessonEntity } from './lesson.entity';
 
 @Entity({ name: 'chapter' })
 export class ChapterEntity extends AuditingEntity {
   @PrimaryGeneratedColumn({ type: 'bigint' })
   id: number;
 
-  @Column({ type: 'varchar', length: 2000 })
-  name: string;
+  @Column({ length: 2000 })
+  title: string;
 
-  @OneToMany(() => ChapterLessonEntity, (type) => type.chapter)
-  lessons: ChapterLessonEntity[];
+  @Column({ length: 2000, unique: true })
+  slug: string;
+
+  @ManyToOne(() => CourseEntity, (type) => type.chapters)
+  course: CourseEntity;
+
+  @OneToMany(() => LessonEntity, (type) => type.chapter)
+  lessons?: LessonEntity[];
 
   toDto() {
     return new ChapterDto({
       id: this.id,
-      name: this.name,
-      lessons: this.lessons.map((e) => e.chapter.toDto()),
+      title: this.title,
+      slug: this.slug,
+      course: this.course.toDto(),
+      lessons: this.lessons?.map((e) => e.chapter.toDto()),
       audit: this.toAudit(),
     });
   }

@@ -1,10 +1,9 @@
 import { AuditingDto } from './auditing.dto';
-import { CourseDto } from './course.dto';
 
 export class CategoryDto {
   id: number;
   name: string;
-  course: CourseDto;
+  slug: string;
   audit?: AuditingDto;
 
   constructor(partial: Partial<CategoryDto> = {}) {

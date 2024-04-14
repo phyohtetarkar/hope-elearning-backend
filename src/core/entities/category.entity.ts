@@ -1,31 +1,23 @@
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  OneToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
-import { AuditingEntity } from './auditing.entity';
-import { CourseEntity } from './course.entity';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { CategoryDto } from '../models/category.dto';
+import { AuditingEntity } from './auditing.entity';
 
 @Entity({ name: 'category' })
 export class CategoryEntity extends AuditingEntity {
   @PrimaryGeneratedColumn({ type: 'bigint' })
   id: number;
 
-  @Column({ type: 'varchar', length: 2000 })
+  @Column({ length: 2000 })
   name: string;
 
-  @OneToOne(() => CourseEntity, (type) => type.category)
-  @JoinColumn({ name: 'id' })
-  course: CourseEntity;
+  @Column({ length: 2000, unique: true })
+  slug: string;
 
   toDto() {
     return new CategoryDto({
       id: this.id,
       name: this.name,
-      course: this.course.toDto(),
+      slug: this.slug,
       audit: this.toAudit(),
     });
   }

@@ -6,13 +6,14 @@ import { UserDto } from './user.dto';
 
 export class CourseDto {
   id: number;
-  name: string;
+  title: string;
+  slug: string;
   description: string;
   level: string | null;
   publishedAt?: number;
   authors: UserDto[];
   skills: SkillDto[];
-  chapters: ChapterDto[];
+  chapters?: ChapterDto[];
   category: CategoryDto;
   audit?: AuditingDto;
 

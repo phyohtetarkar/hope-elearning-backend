@@ -1,31 +1,40 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { AuditingEntity } from './auditing.entity';
 import { LessonDto } from '../models/lesson.dto';
+import { ChapterEntity } from './chapter.entity';
 
 @Entity({ name: 'lesson' })
 export class LessonEntity extends AuditingEntity {
   @PrimaryGeneratedColumn({ type: 'bigint' })
   id: number;
 
-  @Column({ type: 'varchar', length: 2000 })
-  name: string;
+  @Column({ length: 2000 })
+  title: string;
+
+  @Column({ length: 2000, unique: true })
+  slug: string;
 
   @Column({ type: 'text' })
-  content: string;
+  lexical: string;
 
   @Column({ type: 'int' })
   duration: number;
 
   @Column({ default: false })
-  completeStatus: boolean;
+  completed: boolean;
+
+  @ManyToOne(() => ChapterEntity, (type) => type.lessons)
+  chapter: ChapterEntity;
 
   toDto() {
     return new LessonDto({
       id: this.id,
-      name: this.name,
-      content: this.content,
+      title: this.title,
+      slug: this.slug,
+      lexical: this.lexical,
       duration: this.duration,
-      completeStatus: this.completeStatus,
+      completed: this.completed,
+      chapter: this.chapter.toDto(),
       audit: this.toAudit(),
     });
   }
