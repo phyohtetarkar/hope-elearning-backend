@@ -186,7 +186,14 @@ export class TypeormPostService implements PostService {
   }
 
   async findBySlug(slug: string): Promise<PostDto | null> {
-    const entity = await this.postRepo.findOneBy({ slug: slug });
+    const entity = await this.postRepo.findOne({
+      relations: {
+        statistic: true,
+      },
+      where: {
+        slug: slug,
+      },
+    });
     if (entity) {
       this.postStatisticRepo.increment({ id: entity.id }, 'totalView', 1);
     }

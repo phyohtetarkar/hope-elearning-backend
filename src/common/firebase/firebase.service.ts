@@ -1,11 +1,10 @@
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { Inject, UnauthorizedException } from '@nestjs/common';
 import { cert, initializeApp } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
 import { Auth } from 'firebase-admin/lib/auth/auth';
-import { MODULE_OPTIONS_TOKEN } from './firebase.module-definition';
 import { FirebaseModuleOptions } from './firebase-module-options.interface';
+import { MODULE_OPTIONS_TOKEN } from './firebase.module-definition';
 
-@Injectable()
 export class FirebaseService {
   private auth: Auth;
 

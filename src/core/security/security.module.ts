@@ -1,4 +1,10 @@
-import { Global, MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import {
+  Global,
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from '@nestjs/common';
 import * as cors from 'cors';
 import { AuthenticationMiddleware } from '../middlewares/authentication.middleware';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -6,9 +12,10 @@ import { UserEntity } from '../entities/user.entity';
 import { AsyncLocalStorage } from 'async_hooks';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthorizationGuard } from '../guards/authorization.guard';
-import { SecurityContextProvider } from './security-context.provider';
-import { FirebaseService, JwtVerificationService } from '../services';
+import { SecurityContextService } from './security-context.service';
 import { CaslAbilityFactory } from './casl-ability.factory';
+import { JwtVerificationService } from './jwt-verification.service';
+import { FirebaseService } from './firebase.service';
 
 @Global()
 @Module({
@@ -22,12 +29,12 @@ import { CaslAbilityFactory } from './casl-ability.factory';
       provide: APP_GUARD,
       useClass: AuthorizationGuard,
     },
-    SecurityContextProvider,
+    SecurityContextService,
     JwtVerificationService,
     FirebaseService,
     CaslAbilityFactory,
   ],
-  exports: [SecurityContextProvider, CaslAbilityFactory],
+  exports: [SecurityContextService, CaslAbilityFactory],
 })
 export class SecurityModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
@@ -41,6 +48,7 @@ export class SecurityModule implements NestModule {
       )
       .forRoutes('*')
       .apply(AuthenticationMiddleware)
+      .exclude({ path: '/content/:path*', method: RequestMethod.GET })
       .forRoutes('*');
     // .apply((req: Request, res: Response, next: NextFunction) => {
     //   const store: SecurityContext = {};

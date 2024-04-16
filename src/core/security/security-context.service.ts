@@ -3,7 +3,7 @@ import { AsyncLocalStorage } from 'async_hooks';
 import { SecurityContext } from './security-context.domain';
 
 @Injectable()
-export class SecurityContextProvider {
+export class SecurityContextService {
   constructor(private als: AsyncLocalStorage<SecurityContext>) {}
   getAuthenticatedUser() {
     const user = this.als.getStore()?.user;

@@ -9,7 +9,8 @@ import { NextFunction, Request, Response } from 'express';
 import { Repository } from 'typeorm';
 import { UserEntity } from '../entities/user.entity';
 import { SecurityContext } from '../security/security-context.domain';
-import { FirebaseService, JwtVerificationService } from '../services';
+import { JwtVerificationService } from '../security/jwt-verification.service';
+import { FirebaseService } from '../security/firebase.service';
 
 @Injectable()
 export class AuthenticationMiddleware
@@ -49,9 +50,9 @@ export class AuthenticationMiddleware
 
         user = await this.userRepo.save({
           id: authUser.uid,
-          fullName: authUser.displayName ?? 'User',
+          nickname: authUser.displayName ?? 'New User',
           email: authUser.email,
-          phone: authUser.phoneNumber,
+          image: authUser.photoURL,
         });
       }
 

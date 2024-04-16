@@ -7,13 +7,13 @@ export class PostAuthorEntity {
   @PrimaryColumn({ name: 'post_id', type: 'bigint' })
   postId: number;
 
-  @PrimaryColumn({ name: 'author_id', length: 128 })
+  @PrimaryColumn({ name: 'author_id' })
   authorId: string;
 
   @Column({ name: 'sort_order' })
   sortOrder: number;
 
-  @ManyToOne(() => PostEntity, (type) => type.tags)
+  @ManyToOne(() => PostEntity, (type) => type.authors)
   @JoinColumn({ name: 'post_id' })
   post: PostEntity;
 

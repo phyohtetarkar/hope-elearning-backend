@@ -10,11 +10,10 @@ export enum UserRole {
 
 export class UserDto {
   id: string;
-  fullName: string;
+  nickname: string;
   username: string;
   role: UserRole;
   email?: string;
-  phone?: string;
   headline?: string;
   image?: string;
   bio?: string;

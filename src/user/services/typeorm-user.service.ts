@@ -23,10 +23,9 @@ export class TypeormUserService implements UserService {
   async create(values: UserCreateDto): Promise<UserDto> {
     const result = await this.userRepo.insert({
       id: values.id,
-      fullName: values.fullName,
+      nickname: values.nickname,
       email: values.email,
-      phone: values.phone,
-      username: await normalizeSlug(values.fullName, (v) => {
+      username: await normalizeSlug(values.nickname, (v) => {
         return this.userRepo.existsBy({ username: v });
       }),
     });
@@ -57,7 +56,7 @@ export class TypeormUserService implements UserService {
       where: {
         role: query.role ? query.role : undefined,
         email: query.email ? query.email : undefined,
-        fullName: query.name
+        nickname: query.name
           ? Raw((alias) => `LOWER(${alias}) LIKE LOWER(:name)`, {
               name: `${query.name}%`,
             })

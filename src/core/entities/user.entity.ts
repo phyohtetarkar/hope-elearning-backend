@@ -4,13 +4,13 @@ import { UserDto, UserRole } from '@/core/models/user.dto';
 
 @Entity({ name: 'user' })
 export class UserEntity extends AuditingEntity {
-  @PrimaryColumn({ type: 'varchar', length: 128 })
+  @PrimaryColumn()
   id: string;
 
-  @Column({ name: 'full_name' })
-  fullName: string;
+  @Column({ length: 500 })
+  nickname: string;
 
-  @Column({ unique: true })
+  @Column({ unique: true, length: 500 })
   username: string;
 
   @Column({
@@ -22,9 +22,6 @@ export class UserEntity extends AuditingEntity {
 
   @Column({ type: 'varchar', nullable: true })
   email?: string | null;
-
-  @Column({ type: 'varchar', nullable: true })
-  phone?: string | null;
 
   @Column({
     type: 'varchar',
@@ -49,11 +46,10 @@ export class UserEntity extends AuditingEntity {
   toDto() {
     return new UserDto({
       id: this.id,
-      fullName: this.fullName,
+      nickname: this.nickname,
       username: this.username,
       role: this.role,
       email: this.email ?? undefined,
-      phone: this.phone ?? undefined,
       headline: this.headline ?? undefined,
       image: this.image ?? undefined,
       bio: this.bio ?? undefined,

@@ -8,7 +8,7 @@ export class PostHistoryEntity {
   @PrimaryColumn({ name: 'post_id', type: 'bigint' })
   postId: number;
 
-  @PrimaryColumn({ name: 'author_id', length: 128 })
+  @PrimaryColumn({ name: 'author_id' })
   authorId: string;
 
   @PrimaryColumn({ name: 'created_at', type: 'timestamptz' })

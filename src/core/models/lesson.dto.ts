@@ -6,8 +6,6 @@ export class LessonDto {
   title: string;
   slug: string;
   lexical: string;
-  duration: number;
-  completed: boolean;
   chapter: ChapterDto;
   audit?: AuditingDto;
 

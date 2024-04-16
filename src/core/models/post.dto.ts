@@ -1,3 +1,4 @@
+import { Expose } from 'class-transformer';
 import { AuditingDto } from './auditing.dto';
 import { TagDto } from './tag.dto';
 import { UserDto } from './user.dto';
@@ -21,7 +22,10 @@ export class PostDto {
   title: string;
   slug: string;
   excerpt: string;
+
+  @Expose({ groups: ['detail'] })
   lexical?: string;
+
   status: PostStatus;
   access: PostAccess;
   featured: boolean;

@@ -7,7 +7,7 @@ import {
   UpdateEvent,
 } from 'typeorm';
 import { AuditingEntity } from '../entities/auditing.entity';
-import { SecurityContextProvider } from '@/core/security/security-context.provider';
+import { SecurityContextService } from '@/core/security/security-context.service';
 
 @EventSubscriber()
 export class AuditingSubscriber
@@ -15,7 +15,7 @@ export class AuditingSubscriber
 {
   constructor(
     dataSource: DataSource,
-    private security: SecurityContextProvider,
+    private security: SecurityContextService,
   ) {
     dataSource.subscribers.push(this);
   }

@@ -30,7 +30,7 @@ export class TypeormProfileService implements UserProfileService {
     await this.userRepo.update(
       { id: values.id },
       {
-        fullName: values.fullName,
+        nickname: values.nickname,
         username: username,
         headline: values.headline ?? null,
         bio: values.bio ?? null,

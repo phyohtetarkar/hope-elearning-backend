@@ -7,7 +7,7 @@ export class CourseAuthorEntity {
   @PrimaryColumn({ name: 'course_id', type: 'bigint' })
   courseId: number;
 
-  @PrimaryColumn({ name: 'author_id', length: 128 })
+  @PrimaryColumn({ name: 'author_id' })
   authorId: string;
 
   @Column({ name: 'sort_order' })

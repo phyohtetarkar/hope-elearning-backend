@@ -1,7 +1,16 @@
 import { PostQueryDto, PostStatus } from '@/core/models';
 import { POST_SERVICE, PostService } from '@/core/services';
-import { Controller, Get, Inject, Param, Query } from '@nestjs/common';
+import {
+  ClassSerializerInterceptor,
+  Controller,
+  Get,
+  Inject,
+  Param,
+  Query,
+  UseInterceptors,
+} from '@nestjs/common';
 
+@UseInterceptors(ClassSerializerInterceptor)
 @Controller('/content/posts')
 export class PostController {
   constructor(@Inject(POST_SERVICE) private postService: PostService) {}

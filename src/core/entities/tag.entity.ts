@@ -7,7 +7,7 @@ export class TagEntity extends AuditingEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', unique: true })
+  @Column({ unique: true })
   slug: string;
 
   @Column()

@@ -5,7 +5,7 @@ export class UserUpdateDto {
   id: string;
 
   @IsNotEmpty()
-  fullName: string;
+  nickname: string;
 
   @IsNotEmpty()
   username: string;

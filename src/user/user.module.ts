@@ -5,6 +5,7 @@ import { UserEntity } from '@/core/entities/user.entity';
 import { TypeormUserService } from './services/typeorm-user.service';
 import { TypeormProfileService } from './services/typeorm-profile.service';
 import { PROFILE_SERVICE, USER_SERVICE } from '@/core/services';
+import { UserProfileController } from './user-profile.controller';
 
 @Module({
   imports: [TypeOrmModule.forFeature([UserEntity])],
@@ -18,6 +19,6 @@ import { PROFILE_SERVICE, USER_SERVICE } from '@/core/services';
       useClass: TypeormProfileService,
     },
   ],
-  controllers: [UserController],
+  controllers: [UserController, UserProfileController],
 })
 export class UserModule {}

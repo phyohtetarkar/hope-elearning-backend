@@ -22,7 +22,7 @@ export class PostEntity extends AuditingEntity {
   @Column({ type: 'varchar', length: 2000, nullable: true })
   title?: string | null;
 
-  @Column({ type: 'varchar', length: 2000, unique: true })
+  @Column({ length: 2000, unique: true })
   slug: string;
 
   @Column({ type: 'text', nullable: true })
@@ -79,7 +79,9 @@ export class PostEntity extends AuditingEntity {
       access: this.access,
       featured: this.featured,
       publishedAt: this.publishedAt?.getTime(),
-      authors: this.authors.map((e) => e.author.toDto()),
+      authors: this.authors
+        .sort((a, b) => a.sortOrder - b.sortOrder)
+        .map((e) => e.author.toDto()),
       tags:
         this.tags
           ?.sort((a, b) => a.sortOrder - b.sortOrder)

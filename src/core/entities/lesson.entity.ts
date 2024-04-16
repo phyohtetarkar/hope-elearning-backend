@@ -17,12 +17,6 @@ export class LessonEntity extends AuditingEntity {
   @Column({ type: 'text' })
   lexical: string;
 
-  @Column({ type: 'int' })
-  duration: number;
-
-  @Column({ default: false })
-  completed: boolean;
-
   @ManyToOne(() => ChapterEntity, (type) => type.lessons)
   chapter: ChapterEntity;
 
@@ -32,8 +26,6 @@ export class LessonEntity extends AuditingEntity {
       title: this.title,
       slug: this.slug,
       lexical: this.lexical,
-      duration: this.duration,
-      completed: this.completed,
       chapter: this.chapter.toDto(),
       audit: this.toAudit(),
     });
