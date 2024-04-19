@@ -205,7 +205,7 @@ export class TypeormPostService implements PostService {
 
     const [list, count] = await this.postRepo.findAndCount({
       relations: {
-        tags: true,
+        tags: !!query.tagId,
         authors: true,
       },
       where: {

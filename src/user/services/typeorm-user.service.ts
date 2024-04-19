@@ -28,9 +28,8 @@ export class TypeormUserService implements UserService {
       username: await normalizeSlug(values.nickname, (v) => {
         return this.userRepo.existsBy({ username: v });
       }),
+      image: values.image,
     });
-
-    console.log(result);
 
     const userId = result.identifiers[0].id;
 

@@ -1,16 +1,15 @@
 import {
+  Inject,
   Injectable,
   NestMiddleware,
   UnauthorizedException,
 } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { AsyncLocalStorage } from 'async_hooks';
 import { NextFunction, Request, Response } from 'express';
-import { Repository } from 'typeorm';
-import { UserEntity } from '../entities/user.entity';
-import { SecurityContext } from '../security/security-context.domain';
-import { JwtVerificationService } from '../security/jwt-verification.service';
 import { FirebaseService } from '../security/firebase.service';
+import { JwtVerificationService } from '../security/jwt-verification.service';
+import { SecurityContext } from '../security/security-context.domain';
+import { USER_SERVICE, UserService } from '../services';
 
 @Injectable()
 export class AuthenticationMiddleware
@@ -20,8 +19,8 @@ export class AuthenticationMiddleware
     private als: AsyncLocalStorage<SecurityContext>,
     private jwtVerificationService: JwtVerificationService,
     private firebaseServce: FirebaseService,
-    @InjectRepository(UserEntity)
-    private userRepo: Repository<UserEntity>,
+    @Inject(USER_SERVICE)
+    private userService: UserService,
   ) {}
 
   async use(req: Request, res: Response, next: NextFunction) {
@@ -38,7 +37,7 @@ export class AuthenticationMiddleware
         throw new Error('User not found');
       }
 
-      let user = await this.userRepo.findOneBy({ id: sub });
+      let user = await this.userService.findById(sub);
 
       if (!user) {
         // first time user sync
@@ -48,7 +47,7 @@ export class AuthenticationMiddleware
           throw new Error('User not found');
         }
 
-        user = await this.userRepo.save({
+        user = await this.userService.create({
           id: authUser.uid,
           nickname: authUser.displayName ?? 'New User',
           email: authUser.email,
@@ -56,9 +55,9 @@ export class AuthenticationMiddleware
         });
       }
 
-      req['user'] = user.toDto();
+      req['user'] = user;
 
-      const store: SecurityContext = { user: user.toDto() };
+      const store: SecurityContext = { user: user };
 
       this.als.run(store, () => next());
     } catch (e) {

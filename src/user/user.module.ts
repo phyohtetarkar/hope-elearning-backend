@@ -20,5 +20,6 @@ import { UserProfileController } from './user-profile.controller';
     },
   ],
   controllers: [UserController, UserProfileController],
+  exports: [USER_SERVICE],
 })
 export class UserModule {}
