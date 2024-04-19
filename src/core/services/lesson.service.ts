@@ -1,8 +1,10 @@
-import { PageDto } from '../models';
-import { LessonCreateDto } from '../models/lesson-create.dto';
-import { LessonQueryDto } from '../models/lesson-query-dto';
-import { LessonUpdateDto } from '../models/lesson-update.dto';
-import { LessonDto } from '../models/lesson.dto';
+import {
+  LessonCreateDto,
+  LessonDto,
+  LessonQueryDto,
+  LessonUpdateDto,
+  PageDto,
+} from '../models';
 
 export interface LessonService {
   create(values: LessonCreateDto): Promise<number>;

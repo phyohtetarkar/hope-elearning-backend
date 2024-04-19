@@ -1,8 +1,10 @@
-import { PageDto } from '../models';
-import { ChapterCreateDto } from '../models/chapter-create.dto';
-import { ChapterQueryDto } from '../models/chapter-query.dto';
-import { ChapterUpdateDto } from '../models/chapter-update.dto';
-import { ChapterDto } from '../models/chapter.dto';
+import {
+  ChapterCreateDto,
+  ChapterDto,
+  ChapterQueryDto,
+  ChapterUpdateDto,
+  PageDto,
+} from '../models';
 
 export interface ChapterService {
   create(values: ChapterCreateDto): Promise<number>;

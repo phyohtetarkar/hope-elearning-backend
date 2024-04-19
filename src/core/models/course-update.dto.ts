@@ -14,7 +14,7 @@ export class CourseUpdateDto {
   level: string;
 
   @IsNotEmpty()
-  category: string;
+  category: number;
 
   @IsArray()
   @ArrayMinSize(1)
@@ -26,5 +26,5 @@ export class CourseUpdateDto {
 
   @IsArray()
   @ArrayMinSize(1)
-  chapters: string[];
+  chapters: number[];
 }

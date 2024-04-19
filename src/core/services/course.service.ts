@@ -1,8 +1,10 @@
-import { PageDto } from '../models';
-import { CourseCreateDto } from '../models/course-create.dto';
-import { CourseQueryDto } from '../models/course-query.dto';
-import { CourseUpdateDto } from '../models/course-update.dto';
-import { CourseDto } from '../models/course.dto';
+import {
+  CourseCreateDto,
+  CourseDto,
+  CourseQueryDto,
+  CourseUpdateDto,
+  PageDto,
+} from '../models';
 
 export interface CourseService {
   create(values: CourseCreateDto): Promise<number>;

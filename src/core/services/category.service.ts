@@ -1,8 +1,10 @@
-import { PageDto } from '../models';
-import { CategoryCreateDto } from '../models/category-create.dto';
-import { CategoryQueryDto } from '../models/category-query.dto';
-import { CategoryUpdateDto } from '../models/category-update.dto';
-import { CategoryDto } from '../models/category.dto';
+import {
+  CategoryCreateDto,
+  CategoryDto,
+  CategoryQueryDto,
+  CategoryUpdateDto,
+  PageDto,
+} from '../models';
 
 export interface CategorySerive {
   create(values: CategoryCreateDto): Promise<number>;

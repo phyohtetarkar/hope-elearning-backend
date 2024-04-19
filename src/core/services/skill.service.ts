@@ -1,8 +1,10 @@
-import { PageDto } from '../models';
-import { SkillCreateDto } from '../models/skill-create.dto';
-import { SkillQueryDto } from '../models/skill-query.dto';
-import { SkillUpdateDto } from '../models/skill-update.dto';
-import { SkillDto } from '../models/skill.dto';
+import {
+  PageDto,
+  SkillCreateDto,
+  SkillDto,
+  SkillQueryDto,
+  SkillUpdateDto,
+} from '../models';
 
 export interface SkillService {
   create(values: SkillCreateDto): Promise<number>;

@@ -11,7 +11,7 @@ export class CourseCreateDto {
   level: string;
 
   @IsNotEmpty()
-  category: string;
+  category: number;
 
   @IsArray()
   @ArrayMinSize(1)
@@ -23,5 +23,5 @@ export class CourseCreateDto {
 
   @IsArray()
   @ArrayMinSize(1)
-  chapters: string[];
+  chapters: number[];
 }

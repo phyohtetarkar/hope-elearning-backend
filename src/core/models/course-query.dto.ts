@@ -5,7 +5,7 @@ export class CourseQueryDto extends QueryDto {
   level?: string;
   authorId?: string;
   skillId?: number;
-  categoryId?: string;
+  categoryId?: number;
 
   constructor(partial: Partial<CourseQueryDto> = {}) {
     super();
