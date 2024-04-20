@@ -1,13 +1,12 @@
+import { SecurityContextService } from '@/core/security/security-context.service';
 import {
   DataSource,
   EntitySubscriberInterface,
   EventSubscriber,
   InsertEvent,
-  SoftRemoveEvent,
   UpdateEvent,
 } from 'typeorm';
 import { AuditingEntity } from '../entities/auditing.entity';
-import { SecurityContextService } from '@/core/security/security-context.service';
 
 @EventSubscriber()
 export class AuditingSubscriber
@@ -49,14 +48,14 @@ export class AuditingSubscriber
     // event.entity.updatedAt = date;
   }
 
-  beforeSoftRemove(event: SoftRemoveEvent<AuditingEntity>) {
-    const userId = this.security.getAuthenticatedUserOpt()?.id;
-    console.log('beforeSoftRemove', event.entity);
-    if (!event.entity) {
-      return;
-    }
-    if (userId) {
-      event.entity.deletedBy = userId;
-    }
-  }
+  // beforeSoftRemove(event: SoftRemoveEvent<AuditingEntity>) {
+  //   const userId = this.security.getAuthenticatedUserOpt()?.id;
+  //   console.log('beforeSoftRemove', event.entity);
+  //   if (!event.entity) {
+  //     return;
+  //   }
+  //   if (userId) {
+  //     event.entity.deletedBy = userId;
+  //   }
+  // }
 }

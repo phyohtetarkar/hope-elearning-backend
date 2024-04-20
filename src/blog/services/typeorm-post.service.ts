@@ -27,28 +27,15 @@ export class TypeormPostService implements PostService {
     private postRepo: Repository<PostEntity>,
     @InjectRepository(PostStatisticEntity)
     private postStatisticRepo: Repository<PostStatisticEntity>,
+    @InjectRepository(PostAuthorEntity)
+    private postAuthorRepo: Repository<PostAuthorEntity>,
   ) {}
 
   async create(values: PostCreateDto): Promise<number> {
     return await this.dataSource.transaction(async (em) => {
-      // const authorExists = await em.existsBy(UserEntity, {
-      //   id: values.authorId,
-      // });
-
       if (values.authors.length === 0) {
         throw new DomainError('Required at least one author');
       }
-
-      // const authUser = this.security.getAuthenticatedUser();
-
-      // if (
-      //   authUser.role !== UserRole.OWNER &&
-      //   authUser.role !== UserRole.ADMIN
-      // ) {
-      //   if (author.id !== authUser.id) {
-      //     throw new DomainError('forbidden');
-      //   }
-      // }
 
       const result = await em.insert(PostEntity, {
         cover: values.cover,
@@ -95,29 +82,10 @@ export class TypeormPostService implements PostService {
 
   async update(values: PostUpdateDto): Promise<number> {
     return await this.dataSource.transaction(async (em) => {
-      // const authorExists = await em.existsBy(UserEntity, {
-      //   id: values.authorId,
-      // });
-
-      if (values.authors.length === 0) {
-        throw new DomainError('Required at least one author');
-      }
-
-      // const authUser = this.security.getAuthenticatedUser();
-
-      // const isAdminOrOwner = UserDto.isAdminOrOwner(authUser);
-
-      // if (!isAdminOrOwner) {
-      //   if (author.id !== authUser.id) {
-      //     throw new DomainError('forbidden');
-      //   }
-      // }
-
       const postId = values.id ?? 0;
 
       const exists = await em.existsBy(PostEntity, {
         id: postId,
-        // author: !isAdminOrOwner ? { id: values.authorId } : undefined,
       });
 
       if (!exists) {
@@ -134,18 +102,18 @@ export class TypeormPostService implements PostService {
         }),
       });
 
-      const postAuthors = values.authors.map((id, i) => {
-        return {
-          authorId: id,
-          postId: postId,
-          sortOrder: i,
-        } as PostAuthorEntity;
-      });
+      if (values.authors && values.authors.length > 0) {
+        const postAuthors = values.authors.map((id, i) => {
+          return {
+            authorId: id,
+            postId: postId,
+            sortOrder: i,
+          } as PostAuthorEntity;
+        });
 
-      await em.delete(PostAuthorEntity, { postId: postId });
-      await em.insert(PostAuthorEntity, postAuthors);
-
-      await em.delete(PostTagEntity, { postId: postId });
+        await em.delete(PostAuthorEntity, { postId: postId });
+        await em.insert(PostAuthorEntity, postAuthors);
+      }
 
       if (values.tags && values.tags.length > 0) {
         const postTags = values.tags.map((id, i) => {
@@ -155,6 +123,7 @@ export class TypeormPostService implements PostService {
             sortOrder: i,
           } as PostTagEntity;
         });
+        await em.delete(PostTagEntity, { postId: postId });
         await em.insert(PostTagEntity, postTags);
       }
 
@@ -175,13 +144,29 @@ export class TypeormPostService implements PostService {
     await this.dataSource.transaction(async (em) => {
       await em.delete(PostTagEntity, { postId: id });
       await em.delete(PostHistoryEntity, { postId: id });
+      await em.delete(PostAuthorEntity, { postId: id });
       await em.delete(PostStatisticEntity, id);
       await em.delete(PostEntity, id);
     });
   }
 
+  async existsByIdAndAuthor(id: number, authorId: string): Promise<boolean> {
+    return await this.postAuthorRepo.existsBy({
+      postId: id,
+      authorId: authorId,
+    });
+  }
+
   async findById(id: number): Promise<PostDto | null> {
-    const entity = await this.postRepo.findOneBy({ id: id });
+    const entity = await this.postRepo.findOne({
+      relations: {
+        tags: { tag: true },
+        authors: { author: true },
+      },
+      where: {
+        id: id,
+      },
+    });
     return entity?.toDto() ?? null;
   }
 
@@ -189,6 +174,8 @@ export class TypeormPostService implements PostService {
     const entity = await this.postRepo.findOne({
       relations: {
         statistic: true,
+        tags: { tag: true },
+        authors: { author: true },
       },
       where: {
         slug: slug,
@@ -205,8 +192,8 @@ export class TypeormPostService implements PostService {
 
     const [list, count] = await this.postRepo.findAndCount({
       relations: {
-        tags: !!query.tagId,
-        authors: true,
+        tags: { tag: true },
+        authors: { author: true },
       },
       where: {
         status: query.status,

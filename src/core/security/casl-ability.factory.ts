@@ -21,7 +21,7 @@ export class CaslAbilityFactory {
       createMongoAbility<[Action, Subjects], MongoQuery>,
     );
 
-    if (UserDto.isAdminOrOwner(user)) {
+    if (user.isAdminOrOwner()) {
       can(Action.Manage, [PostDto]);
     }
 

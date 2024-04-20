@@ -27,7 +27,9 @@ export class PostDto {
   lexical?: string;
 
   status: PostStatus;
+
   access: PostAccess;
+
   featured: boolean;
   publishedAt?: number;
   authors: UserDto[];

@@ -23,7 +23,7 @@ export class UserDto {
     Object.assign(this, partial);
   }
 
-  static isAdminOrOwner(user: UserDto): boolean {
-    return user.role === UserRole.ADMIN || user.role === UserRole.OWNER;
+  isAdminOrOwner(): boolean {
+    return this.role === UserRole.ADMIN || this.role === UserRole.OWNER;
   }
 }

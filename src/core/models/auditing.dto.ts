@@ -3,8 +3,8 @@ export class AuditingDto {
   createdBy?: string;
   updatedAt: string;
   updatedBy?: string;
-  deletedAt?: string;
-  deletedBy?: string;
+  // deletedAt?: string;
+  // deletedBy?: string;
 
   constructor(partial: Partial<AuditingDto> = {}) {
     Object.assign(this, partial);

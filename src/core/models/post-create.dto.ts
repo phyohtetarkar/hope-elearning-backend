@@ -1,10 +1,9 @@
-import { ArrayMinSize, IsArray, IsNotEmpty } from 'class-validator';
+import { ArrayMinSize, IsArray, IsNotEmpty, IsOptional } from 'class-validator';
 
 export class PostCreateDto {
   cover?: string;
 
-  @IsNotEmpty()
-  title: string;
+  title?: string;
 
   @IsNotEmpty()
   slug: string;
@@ -14,9 +13,10 @@ export class PostCreateDto {
   lexical?: string;
 
   @IsArray()
-  @ArrayMinSize(1)
+  @ArrayMinSize(1, { message: 'Required at least one author' })
   authors: string[];
 
+  @IsOptional()
   @IsArray()
   tags?: number[];
 }

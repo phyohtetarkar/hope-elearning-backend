@@ -16,6 +16,8 @@ export interface PostService {
 
   delete(id: number): Promise<void>;
 
+  existsByIdAndAuthor(id: number, authorId: string): Promise<boolean>;
+
   findById(id: number): Promise<PostDto | null>;
 
   findBySlug(slug: string): Promise<PostDto | null>;

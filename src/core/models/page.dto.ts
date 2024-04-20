@@ -19,11 +19,19 @@ export class PageDto<T> {
     offset?: number;
     limit?: number;
   }): PageDto<T> {
-    const totalPage = limit > 0 ? Math.ceil(count / limit) : 0;
+    if (limit <= 0) {
+      return new PageDto({
+        contents: list,
+        currentPage: count > 0 ? 1 : 0,
+        totalPage: count > 0 ? 1 : 0,
+        pageSize: count,
+      });
+    }
+    const totalPage = Math.ceil(count / limit);
     return new PageDto({
       contents: list,
       // prettier-ignore
-      currentPage: limit > 0 ? (offset / limit) + 1 : 0,
+      currentPage: count > 0 ? (offset / limit) + 1 : 0,
       totalPage: totalPage,
       pageSize: list.length,
     });

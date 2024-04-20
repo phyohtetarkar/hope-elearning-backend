@@ -1,4 +1,10 @@
-import { ArrayMinSize, IsArray, IsInt, IsNotEmpty } from 'class-validator';
+import {
+  ArrayMinSize,
+  IsArray,
+  IsInt,
+  IsNotEmpty,
+  IsOptional,
+} from 'class-validator';
 
 export class PostUpdateDto {
   @IsInt()
@@ -6,8 +12,7 @@ export class PostUpdateDto {
 
   cover?: string;
 
-  @IsNotEmpty()
-  title: string;
+  title?: string;
 
   @IsNotEmpty()
   slug: string;
@@ -16,9 +21,12 @@ export class PostUpdateDto {
 
   lexical?: string;
 
+  @IsOptional()
   @IsArray()
-  @ArrayMinSize(1)
-  authors: string[];
+  @ArrayMinSize(1, { message: 'Required at least one author' })
+  authors?: string[];
 
+  @IsOptional()
+  @IsArray()
   tags?: number[];
 }
