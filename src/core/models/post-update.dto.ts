@@ -1,10 +1,13 @@
 import {
   ArrayMinSize,
   IsArray,
+  IsDateString,
+  IsEnum,
   IsInt,
   IsNotEmpty,
   IsOptional,
 } from 'class-validator';
+import { PostAccess } from './post.dto';
 
 export class PostUpdateDto {
   @IsInt()
@@ -21,6 +24,9 @@ export class PostUpdateDto {
 
   lexical?: string;
 
+  @IsEnum(PostAccess)
+  access: PostAccess;
+
   @IsOptional()
   @IsArray()
   @ArrayMinSize(1, { message: 'Required at least one author' })
@@ -29,4 +35,7 @@ export class PostUpdateDto {
   @IsOptional()
   @IsArray()
   tags?: number[];
+
+  @IsDateString()
+  updatedAt: string;
 }

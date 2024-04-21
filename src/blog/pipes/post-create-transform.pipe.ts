@@ -10,10 +10,6 @@ export class PostCreateTransformPipe
 
   transform(value: PostCreateDto, metadata: ArgumentMetadata): PostCreateDto {
     const user = this.security.getAuthenticatedUser();
-    if (user.isAdminOrOwner()) {
-      return value;
-    }
-
     value.authors = [user.id];
 
     return value;

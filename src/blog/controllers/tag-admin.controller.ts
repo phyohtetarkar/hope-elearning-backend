@@ -1,5 +1,10 @@
 import { Roles } from '@/common/decorators';
-import { TagQueryDto, TagUpdateDto, UserRole } from '@/core/models';
+import {
+  TagCreateDto,
+  TagQueryDto,
+  TagUpdateDto,
+  UserRole,
+} from '@/core/models';
 import { TAG_SERVICE, TagService } from '@/core/services';
 import {
   Body,
@@ -20,7 +25,7 @@ export class TagAdminController {
   constructor(@Inject(TAG_SERVICE) private tagService: TagService) {}
 
   @Post()
-  async create(@Body() values: TagUpdateDto) {
+  async create(@Body() values: TagCreateDto) {
     return await this.tagService.create(values);
   }
 

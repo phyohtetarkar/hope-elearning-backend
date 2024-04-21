@@ -5,11 +5,11 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { PostAccess, PostDto, PostStatus } from '../models/post.dto';
 import { AuditingEntity } from './auditing.entity';
 import { PostAuthorEntity } from './post-author.entity';
 import { PostStatisticEntity } from './post-statistic.entity';
 import { PostTagEntity } from './post-tag.entity';
+import { PostAccess, PostDto, PostStatus } from '../models';
 
 @Entity({ name: 'post' })
 export class PostEntity extends AuditingEntity {

@@ -84,12 +84,21 @@ export class TypeormPostService implements PostService {
     return await this.dataSource.transaction(async (em) => {
       const postId = values.id ?? 0;
 
-      const exists = await em.existsBy(PostEntity, {
+      const entity = await em.findOneBy(PostEntity, {
         id: postId,
       });
 
-      if (!exists) {
+      if (!entity) {
         throw new DomainError('Post not found');
+      }
+
+      const dbUpdatedAt = new Date(entity.updatedAt).getTime();
+      const userUpdatedAt = new Date(values.updatedAt).getTime();
+
+      if (dbUpdatedAt > userUpdatedAt) {
+        throw new DomainError(
+          'Update conflict by another user. Please refresh.',
+        );
       }
 
       await em.update(PostEntity, postId, {
@@ -97,12 +106,16 @@ export class TypeormPostService implements PostService {
         cover: values.cover ?? null,
         excerpt: values.excerpt ?? null,
         lexical: values.lexical ?? null,
-        slug: await normalizeSlug(values.slug, (v) => {
-          return em.existsBy(PostEntity, { id: Not(postId), slug: v });
-        }),
+        access: values.access,
+        slug:
+          entity.slug !== values.slug
+            ? await normalizeSlug(values.slug, (v) => {
+                return em.existsBy(PostEntity, { id: Not(postId), slug: v });
+              })
+            : undefined,
       });
 
-      if (values.authors && values.authors.length > 0) {
+      if (values.authors) {
         const postAuthors = values.authors.map((id, i) => {
           return {
             authorId: id,
@@ -115,7 +128,7 @@ export class TypeormPostService implements PostService {
         await em.insert(PostAuthorEntity, postAuthors);
       }
 
-      if (values.tags && values.tags.length > 0) {
+      if (values.tags) {
         const postTags = values.tags.map((id, i) => {
           return {
             postId: postId,
