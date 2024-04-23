@@ -1,6 +1,6 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { AuditingEntity } from './auditing.entity';
-import { SkillDto } from '../models/skill.dto';
+import { SkillDto } from '../models';
 
 @Entity({ name: 'skill' })
 export class SkillEntity extends AuditingEntity {

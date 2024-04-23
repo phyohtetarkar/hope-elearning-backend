@@ -15,6 +15,8 @@ export interface CategorySerive {
 
   findById(id: number): Promise<CategoryDto | null>;
 
+  findBySlug(slug: string): Promise<CategoryDto | null>;
+
   find(query: CategoryQueryDto): Promise<PageDto<CategoryDto>>;
 }
 

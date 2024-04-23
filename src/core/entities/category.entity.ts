@@ -1,6 +1,6 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-import { CategoryDto } from '../models/category.dto';
 import { AuditingEntity } from './auditing.entity';
+import { CategoryDto } from '../models';
 
 @Entity({ name: 'category' })
 export class CategoryEntity extends AuditingEntity {

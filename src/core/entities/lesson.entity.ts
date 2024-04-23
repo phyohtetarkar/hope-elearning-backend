@@ -1,7 +1,7 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { AuditingEntity } from './auditing.entity';
-import { LessonDto } from '../models/lesson.dto';
 import { ChapterEntity } from './chapter.entity';
+import { LessonDto } from '../models';
 
 @Entity({ name: 'lesson' })
 export class LessonEntity extends AuditingEntity {

@@ -5,10 +5,10 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { ChapterDto } from '../models/chapter.dto';
 import { AuditingEntity } from './auditing.entity';
 import { CourseEntity } from './course.entity';
 import { LessonEntity } from './lesson.entity';
+import { ChapterDto } from '../models';
 
 @Entity({ name: 'chapter' })
 export class ChapterEntity extends AuditingEntity {

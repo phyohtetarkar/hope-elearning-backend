@@ -6,4 +6,7 @@ export class SkillUpdateDto {
 
   @IsNotEmpty()
   name: string;
+
+  @IsNotEmpty()
+  slug: string;
 }

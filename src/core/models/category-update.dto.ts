@@ -6,4 +6,7 @@ export class CategoryUpdateDto {
 
   @IsNotEmpty()
   name: string;
+
+  @IsNotEmpty()
+  slug: string;
 }

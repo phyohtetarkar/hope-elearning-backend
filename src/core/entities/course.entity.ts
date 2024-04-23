@@ -5,12 +5,12 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { CourseDto } from '../models/course.dto';
 import { AuditingEntity } from './auditing.entity';
 import { CategoryEntity } from './category.entity';
 import { ChapterEntity } from './chapter.entity';
 import { CourseAuthorEntity } from './course-author.entity';
 import { CourseSkillEntity } from './course-skill.entity';
+import { CourseDto } from '../models';
 
 @Entity({ name: 'course' })
 export class CourseEntity extends AuditingEntity {

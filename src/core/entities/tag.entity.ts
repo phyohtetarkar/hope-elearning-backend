@@ -1,6 +1,6 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { AuditingEntity } from './auditing.entity';
-import { TagDto } from '@/core/models/tag.dto';
+import { TagDto } from '../models';
 
 @Entity({ name: 'tag' })
 export class TagEntity extends AuditingEntity {

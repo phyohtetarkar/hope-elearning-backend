@@ -15,6 +15,8 @@ export interface SkillService {
 
   findById(id: number): Promise<SkillDto | null>;
 
+  findBySlug(slug: string): Promise<SkillDto | null>;
+
   find(query: SkillQueryDto): Promise<PageDto<SkillDto>>;
 }
 
