@@ -4,13 +4,13 @@ import { CategoryDto } from '../models';
 
 @Entity({ name: 'category' })
 export class CategoryEntity extends AuditingEntity {
-  @PrimaryGeneratedColumn({ type: 'bigint' })
+  @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ length: 2000 })
+  @Column()
   name: string;
 
-  @Column({ length: 2000, unique: true })
+  @Column({ unique: true })
   slug: string;
 
   toDto() {

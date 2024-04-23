@@ -4,13 +4,13 @@ import { SkillDto } from '../models';
 
 @Entity({ name: 'skill' })
 export class SkillEntity extends AuditingEntity {
-  @PrimaryGeneratedColumn({ type: 'bigint' })
+  @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ length: 2000 })
+  @Column()
   name: string;
 
-  @Column({ length: 2000, unique: true })
+  @Column({ unique: true })
   slug: string;
 
   toDto() {
