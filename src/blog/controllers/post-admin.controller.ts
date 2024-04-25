@@ -7,12 +7,15 @@ import {
   Controller,
   Delete,
   Get,
+  HttpStatus,
   Inject,
   Param,
   ParseIntPipe,
   Post,
   Put,
   Query,
+  Res,
+  SerializeOptions,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -20,6 +23,7 @@ import { PostCreateTransformPipe } from '../pipes/post-create-transform.pipe';
 import { PostUpdateTransformPipe } from '../pipes/post-update-transform.pipe';
 import { PostOwnerGuard } from '../guards/post-owner.guard';
 import { PostQueryTransformPipe } from '../pipes/post-query-transform.pipe';
+import { Response } from 'express';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('/admin/posts')
@@ -32,6 +36,9 @@ export class PostAdminController {
     return await this.postService.create(values);
   }
 
+  @SerializeOptions({
+    groups: ['detail'],
+  })
   @Put()
   async update(@Body(PostUpdateTransformPipe) values: PostUpdateDto) {
     return await this.postService.update(values);
@@ -42,10 +49,20 @@ export class PostAdminController {
     return await this.postService.find(query);
   }
 
+  @SerializeOptions({
+    groups: ['detail'],
+  })
   @UseGuards(PostOwnerGuard)
   @Get(':id')
-  async getPost(@Param('id', ParseIntPipe) id: number) {
-    return await this.postService.findById(id);
+  async getPost(
+    @Param('id', ParseIntPipe) id: number,
+    @Res({ passthrough: true }) resp: Response,
+  ) {
+    const result = await this.postService.findById(id);
+    if (!result) {
+      resp.status(HttpStatus.NO_CONTENT);
+    }
+    return result;
   }
 
   @UseGuards(PostOwnerGuard)

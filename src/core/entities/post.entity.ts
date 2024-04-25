@@ -9,7 +9,7 @@ import { AuditingEntity } from './auditing.entity';
 import { PostAuthorEntity } from './post-author.entity';
 import { PostStatisticEntity } from './post-statistic.entity';
 import { PostTagEntity } from './post-tag.entity';
-import { PostAccess, PostDto, PostStatus } from '../models';
+import { PostVisibility, PostDto, PostStatus } from '../models';
 
 @Entity({ name: 'post' })
 export class PostEntity extends AuditingEntity {
@@ -40,10 +40,10 @@ export class PostEntity extends AuditingEntity {
 
   @Column({
     type: 'enum',
-    enum: PostAccess,
-    default: PostAccess.PUBLIC,
+    enum: PostVisibility,
+    default: PostVisibility.PUBLIC,
   })
-  access: PostAccess;
+  visibility: PostVisibility;
 
   @Column({ default: false })
   featured: boolean;
@@ -76,7 +76,7 @@ export class PostEntity extends AuditingEntity {
       excerpt: this.excerpt ?? undefined,
       lexical: this.lexical ?? undefined,
       status: this.status,
-      access: this.access,
+      visibility: this.visibility,
       featured: this.featured,
       publishedAt: this.publishedAt?.getTime(),
       authors: this.authors

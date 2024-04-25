@@ -4,11 +4,14 @@ import {
   ClassSerializerInterceptor,
   Controller,
   Get,
+  HttpStatus,
   Inject,
   Param,
   Query,
+  Res,
   UseInterceptors,
 } from '@nestjs/common';
+import { Response } from 'express';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('/content/posts')
@@ -24,7 +27,14 @@ export class PostController {
   }
 
   @Get(':slug')
-  async getPost(@Param('slug') slug: string) {
-    return await this.postService.findBySlug(slug);
+  async getPost(
+    @Param('slug') slug: string,
+    @Res({ passthrough: true }) resp: Response,
+  ) {
+    const result = await this.postService.findBySlug(slug);
+    if (!result) {
+      resp.status(HttpStatus.NO_CONTENT);
+    }
+    return result;
   }
 }

@@ -1,5 +1,5 @@
 import { IsEnum, IsOptional } from 'class-validator';
-import { PostAccess, PostStatus } from './post.dto';
+import { PostStatus, PostVisibility } from './post.dto';
 import { QueryDto } from './query.dto';
 
 export class PostQueryDto extends QueryDto {
@@ -12,8 +12,8 @@ export class PostQueryDto extends QueryDto {
   status?: PostStatus;
 
   @IsOptional()
-  @IsEnum(PostAccess)
-  access?: PostAccess;
+  @IsEnum(PostVisibility)
+  visibility?: PostVisibility;
 
   featured?: boolean;
 

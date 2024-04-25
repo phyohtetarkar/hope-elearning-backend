@@ -1,15 +1,13 @@
+import { UserQueryDto } from '@/core/models';
 import { USER_SERVICE, UserService } from '@/core/services';
-import { Controller, Inject, Post } from '@nestjs/common';
+import { Controller, Get, Inject, Query } from '@nestjs/common';
 
-@Controller('users')
+@Controller('/admin/users')
 export class UserController {
   constructor(@Inject(USER_SERVICE) private userService: UserService) {}
 
-  @Post()
-  async update() {
-    await this.userService.create({
-      id: 'cartoon-3',
-      nickname: 'Ko Ko',
-    });
+  @Get()
+  async find(@Query() query: UserQueryDto) {
+    return await this.userService.find(query);
   }
 }

@@ -3,6 +3,8 @@ import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from './database/database.module';
 import { SecurityModule } from './security/security.module';
 import { StorageModule } from './storage/storage.module';
+import { APP_FILTER } from '@nestjs/core';
+import { DomainExceptionFilter } from './filters';
 
 @Module({
   imports: [
@@ -13,6 +15,12 @@ import { StorageModule } from './storage/storage.module';
     DatabaseModule,
     SecurityModule,
     StorageModule,
+  ],
+  providers: [
+    {
+      provide: APP_FILTER,
+      useClass: DomainExceptionFilter,
+    },
   ],
 })
 export class CoreModule {}

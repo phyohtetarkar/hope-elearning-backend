@@ -6,11 +6,12 @@ import {
   UserCreateDto,
   UserDto,
   UserQueryDto,
+  UserRole,
 } from '@/core/models';
 import { UserService } from '@/core/services';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Raw, Repository } from 'typeorm';
+import { DataSource, Not, Raw, Repository } from 'typeorm';
 
 @Injectable()
 export class TypeormUserService implements UserService {
@@ -53,8 +54,8 @@ export class TypeormUserService implements UserService {
 
     const [list, count] = await this.userRepo.findAndCount({
       where: {
-        role: query.role ? query.role : undefined,
-        email: query.email ? query.email : undefined,
+        role: query.staffOnly ? Not(UserRole.USER) : query.role,
+        email: query.email,
         nickname: query.name
           ? Raw((alias) => `LOWER(${alias}) LIKE LOWER(:name)`, {
               name: `${query.name}%`,

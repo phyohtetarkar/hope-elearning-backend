@@ -25,7 +25,7 @@ export class AuditingSubscriber
 
   beforeInsert(event: InsertEvent<AuditingEntity>) {
     const userId = this.security.getAuthenticatedUserOpt()?.id;
-    console.log('beforeInsert', event.entity);
+    // console.log('beforeInsert', event.entity);
     if (userId) {
       event.entity.createdBy = userId;
       // event.entity.updatedBy = user.id;
@@ -37,7 +37,7 @@ export class AuditingSubscriber
 
   beforeUpdate(event: UpdateEvent<AuditingEntity>) {
     const userId = this.security.getAuthenticatedUserOpt()?.id;
-    console.log('afterUpdate', event.entity);
+    // console.log('afterUpdate', event.entity);
     if (!event.entity) {
       return;
     }

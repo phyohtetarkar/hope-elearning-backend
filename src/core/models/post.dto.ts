@@ -1,9 +1,9 @@
-import { Expose } from 'class-transformer';
+import { Expose, Transform } from 'class-transformer';
 import { AuditingDto } from './auditing.dto';
 import { TagDto } from './tag.dto';
 import { UserDto } from './user.dto';
 
-export enum PostAccess {
+export enum PostVisibility {
   PUBLIC = 'public',
   MEMBER = 'member',
   PAID_MEMBER = 'paid_member',
@@ -17,6 +17,7 @@ export enum PostStatus {
 }
 
 export class PostDto {
+  @Transform(({ value }) => Number(value))
   id: number;
   cover?: string;
   title: string;
@@ -28,7 +29,7 @@ export class PostDto {
 
   status: PostStatus;
 
-  access: PostAccess;
+  visibility: PostVisibility;
 
   featured: boolean;
   publishedAt?: number;

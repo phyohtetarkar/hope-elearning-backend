@@ -11,7 +11,6 @@ import { AsyncLocalStorage } from 'async_hooks';
 import * as cors from 'cors';
 import { AuthorizationGuard } from '../guards/authorization.guard';
 import { AuthenticationMiddleware } from '../middlewares/authentication.middleware';
-import { CaslAbilityFactory } from './casl-ability.factory';
 import { FirebaseService } from './firebase.service';
 import { JwtVerificationService } from './jwt-verification.service';
 import { SecurityContextService } from './security-context.service';
@@ -31,9 +30,8 @@ import { SecurityContextService } from './security-context.service';
     SecurityContextService,
     JwtVerificationService,
     FirebaseService,
-    CaslAbilityFactory,
   ],
-  exports: [SecurityContextService, CaslAbilityFactory],
+  exports: [SecurityContextService],
 })
 export class SecurityModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

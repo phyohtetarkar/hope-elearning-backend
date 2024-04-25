@@ -80,8 +80,8 @@ export class TypeormPostService implements PostService {
     });
   }
 
-  async update(values: PostUpdateDto): Promise<number> {
-    return await this.dataSource.transaction(async (em) => {
+  async update(values: PostUpdateDto): Promise<PostDto> {
+    const entity = await this.dataSource.transaction(async (em) => {
       const postId = values.id ?? 0;
 
       const entity = await em.findOneBy(PostEntity, {
@@ -101,12 +101,14 @@ export class TypeormPostService implements PostService {
         );
       }
 
+      console.log(values);
+
       await em.update(PostEntity, postId, {
         title: values.title,
         cover: values.cover ?? null,
         excerpt: values.excerpt ?? null,
         lexical: values.lexical ?? null,
-        access: values.access,
+        visibility: values.visibility,
         slug:
           entity.slug !== values.slug
             ? await normalizeSlug(values.slug, (v) => {
@@ -140,8 +142,18 @@ export class TypeormPostService implements PostService {
         await em.insert(PostTagEntity, postTags);
       }
 
-      return postId;
+      return em.findOneOrFail(PostEntity, {
+        relations: {
+          tags: { tag: true },
+          authors: { author: true },
+        },
+        where: {
+          id: postId,
+        },
+      });
     });
+
+    return entity.toDto();
   }
 
   async updateStatus(id: number, status: PostStatus): Promise<void> {
@@ -210,7 +222,7 @@ export class TypeormPostService implements PostService {
       },
       where: {
         status: query.status,
-        access: query.access,
+        visibility: query.visibility,
         featured: query.featured,
         title: query.q
           ? Raw((alias) => `LOWER(${alias}) LIKE LOWER(:title)`, {

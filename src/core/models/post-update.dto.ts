@@ -5,12 +5,13 @@ import {
   IsEnum,
   IsInt,
   IsNotEmpty,
+  IsNumber,
   IsOptional,
 } from 'class-validator';
-import { PostAccess } from './post.dto';
+import { PostVisibility } from './post.dto';
 
 export class PostUpdateDto {
-  @IsInt()
+  @IsNumber()
   id: number;
 
   cover?: string;
@@ -24,8 +25,9 @@ export class PostUpdateDto {
 
   lexical?: string;
 
-  @IsEnum(PostAccess)
-  access: PostAccess;
+  @IsOptional()
+  @IsEnum(PostVisibility)
+  visibility?: PostVisibility;
 
   @IsOptional()
   @IsArray()

@@ -15,6 +15,7 @@ export class PostUpdateTransformPipe
     }
 
     value.authors = undefined;
+    value.visibility = undefined;
 
     return value;
   }
