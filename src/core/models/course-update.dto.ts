@@ -1,30 +1,36 @@
-import { ArrayMinSize, IsArray, IsInt, IsNotEmpty } from 'class-validator';
+import {
+  ArrayMinSize,
+  IsArray,
+  IsEnum,
+  IsInt,
+  IsNotEmpty,
+  IsOptional,
+} from 'class-validator';
+import { CourseLevel } from './course.dto';
 
 export class CourseUpdateDto {
+  @IsNotEmpty()
+  id: string;
+
+  @IsNotEmpty()
+  title: string;
+
+  @IsNotEmpty()
+  slug: string;
+
+  description?: string;
+
+  @IsEnum(CourseLevel)
+  level: CourseLevel;
+
   @IsInt()
-  id: number;
-
-  @IsNotEmpty()
-  name: string;
-
-  @IsNotEmpty()
-  description: string;
-
-  @IsNotEmpty()
-  level: string;
-
-  @IsNotEmpty()
-  category: number;
+  categoryId: number;
 
   @IsArray()
   @ArrayMinSize(1)
   authors: string[];
 
   @IsArray()
-  @ArrayMinSize(1)
-  skills: number[];
-
-  @IsArray()
-  @ArrayMinSize(1)
-  chapters: number[];
+  @IsOptional()
+  skills?: number[];
 }

@@ -1,9 +1,9 @@
 import {
   ChapterCreateDto,
   ChapterDto,
-  ChapterQueryDto,
   ChapterUpdateDto,
   PageDto,
+  QueryDto,
 } from '../models';
 
 export interface ChapterService {
@@ -11,11 +11,11 @@ export interface ChapterService {
 
   update(values: ChapterUpdateDto): Promise<number>;
 
-  delete(id: number): Promise<void>;
+  delete(id: string): Promise<void>;
 
-  findById(id: number): Promise<ChapterDto | null>;
+  findById(id: string): Promise<ChapterDto | null>;
 
-  find(query: ChapterQueryDto): Promise<PageDto<ChapterDto>>;
+  find(query: QueryDto): Promise<PageDto<ChapterDto>>;
 }
 
 export const CHAPTER_SERVICE = 'ChapterService';

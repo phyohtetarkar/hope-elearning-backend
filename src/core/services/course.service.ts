@@ -11,9 +11,11 @@ export interface CourseService {
 
   update(values: CourseUpdateDto): Promise<number>;
 
-  delete(id: number): Promise<void>;
+  delete(id: string): Promise<void>;
 
-  findById(id: number): Promise<CourseDto | null>;
+  findById(id: string): Promise<CourseDto | null>;
+
+  findBySlug(slug: string): Promise<CourseDto | null>;
 
   find(query: CourseQueryDto): Promise<PageDto<CourseDto>>;
 }

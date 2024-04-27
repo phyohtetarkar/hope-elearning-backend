@@ -1,18 +1,13 @@
-import { IsBoolean, IsInt, IsNotEmpty } from 'class-validator';
+import { IsNotEmpty } from 'class-validator';
 
 export class LessonUpdateDto {
-  @IsInt()
-  id: number;
+  @IsNotEmpty()
+  id: string;
+
+  title?: string;
 
   @IsNotEmpty()
-  name: string;
+  slug: string;
 
-  @IsNotEmpty()
-  content: string;
-
-  @IsInt()
-  duration: number;
-
-  @IsBoolean()
-  completeStatus: boolean;
+  lexical?: string;
 }

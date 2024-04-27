@@ -5,7 +5,7 @@ import { TagEntity } from './tag.entity';
 @Entity({ name: 'post_tag' })
 export class PostTagEntity {
   @PrimaryColumn({ name: 'post_id', type: 'bigint' })
-  postId: number;
+  postId: string;
 
   @PrimaryColumn({ name: 'tag_id' })
   tagId: number;

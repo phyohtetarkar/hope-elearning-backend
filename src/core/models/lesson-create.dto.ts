@@ -1,15 +1,11 @@
-import { IsBoolean, IsInt, IsNotEmpty } from 'class-validator';
+import { IsNotEmpty } from 'class-validator';
 
 export class LessonCreateDto {
   @IsNotEmpty()
-  name: string;
+  title: string;
 
   @IsNotEmpty()
-  content: string;
+  slug: string;
 
-  @IsInt()
-  duration: number;
-
-  @IsBoolean()
-  completeStatus: boolean;
+  lexical?: string;
 }

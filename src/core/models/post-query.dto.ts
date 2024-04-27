@@ -4,8 +4,8 @@ import { QueryDto } from './query.dto';
 
 export class PostQueryDto extends QueryDto {
   q?: string;
-  authorId?: string;
-  tagId?: number;
+  author?: string;
+  tag?: number | number[];
 
   @IsOptional()
   @IsEnum(PostStatus)

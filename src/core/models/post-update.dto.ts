@@ -3,16 +3,14 @@ import {
   IsArray,
   IsDateString,
   IsEnum,
-  IsInt,
   IsNotEmpty,
-  IsNumber,
   IsOptional,
 } from 'class-validator';
 import { PostVisibility } from './post.dto';
 
 export class PostUpdateDto {
-  @IsNumber()
-  id: number;
+  @IsNotEmpty()
+  id: string;
 
   cover?: string;
 

@@ -1,5 +1,5 @@
 export class PostStatisticDto {
-  totalView: number;
+  totalView: string;
 
   constructor(partial: Partial<PostStatisticDto> = {}) {
     Object.assign(this, partial);

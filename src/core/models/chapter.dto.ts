@@ -3,7 +3,7 @@ import { CourseDto } from './course.dto';
 import { LessonDto } from './lesson.dto';
 
 export class ChapterDto {
-  id: number;
+  id: string;
   title: string;
   slug: string;
   course: CourseDto;

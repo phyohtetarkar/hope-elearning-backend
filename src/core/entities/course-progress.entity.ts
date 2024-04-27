@@ -9,15 +9,15 @@ export class CourseProgressEntity {
   userId: string;
 
   @PrimaryColumn({ name: 'course_id', type: 'bigint' })
-  courseId: number;
+  courseId: string;
 
   @PrimaryColumn({ name: 'chapter_id', type: 'bigint' })
-  chapterId: number;
+  chapterId: string;
 
   @PrimaryColumn({ name: 'lesson_id', type: 'bigint' })
-  lessonId: number;
+  lessonId: string;
 
-  @Column()
+  @Column({ default: false })
   completed: boolean;
 
   @ManyToOne(() => UserEntity)

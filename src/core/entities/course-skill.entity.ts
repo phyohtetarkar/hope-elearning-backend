@@ -5,7 +5,7 @@ import { SkillEntity } from './skill.entity';
 @Entity({ name: 'course_skill' })
 export class CourseSkillEntity {
   @PrimaryColumn({ name: 'course_id', type: 'bigint' })
-  courseId: number;
+  courseId: string;
 
   @PrimaryColumn({ name: 'skill_id' })
   skillId: number;

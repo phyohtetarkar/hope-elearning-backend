@@ -1,4 +1,4 @@
-export abstract class QueryDto {
+export class QueryDto {
   page?: number;
   limit?: number;
 

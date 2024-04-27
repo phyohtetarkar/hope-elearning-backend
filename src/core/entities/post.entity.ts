@@ -14,7 +14,7 @@ import { PostVisibility, PostDto, PostStatus } from '../models';
 @Entity({ name: 'post' })
 export class PostEntity extends AuditingEntity {
   @PrimaryGeneratedColumn({ type: 'bigint' })
-  id: number;
+  id: string;
 
   @Column({ type: 'varchar', length: 2000, nullable: true })
   cover?: string | null;
@@ -78,14 +78,13 @@ export class PostEntity extends AuditingEntity {
       status: this.status,
       visibility: this.visibility,
       featured: this.featured,
-      publishedAt: this.publishedAt?.getTime(),
+      publishedAt: this.publishedAt?.toISOString(),
       authors: this.authors
-        .sort((a, b) => a.sortOrder - b.sortOrder)
+        ?.sort((a, b) => a.sortOrder - b.sortOrder)
         .map((e) => e.author.toDto()),
-      tags:
-        this.tags
-          ?.sort((a, b) => a.sortOrder - b.sortOrder)
-          .map((e) => e.tag.toDto()) ?? [],
+      tags: this.tags
+        ?.sort((a, b) => a.sortOrder - b.sortOrder)
+        .map((e) => e.tag.toDto()),
       audit: this.toAudit(),
     });
   }

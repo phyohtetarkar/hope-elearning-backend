@@ -1,9 +1,9 @@
 import {
   LessonCreateDto,
   LessonDto,
-  LessonQueryDto,
   LessonUpdateDto,
   PageDto,
+  QueryDto,
 } from '../models';
 
 export interface LessonService {
@@ -11,11 +11,13 @@ export interface LessonService {
 
   update(values: LessonUpdateDto): Promise<number>;
 
-  delete(id: number): Promise<void>;
+  delete(id: string): Promise<void>;
 
-  findById(id: number): Promise<LessonDto | null>;
+  findById(id: string): Promise<LessonDto | null>;
 
-  find(query: LessonQueryDto): Promise<PageDto<LessonDto>>;
+  findBySlug(slug: string): Promise<LessonDto | null>;
+
+  find(query: QueryDto): Promise<PageDto<LessonDto>>;
 }
 
 export const LESSON_SERVICE = 'LessonService';

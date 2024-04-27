@@ -36,9 +36,7 @@ export * from './skill-query.dto';
 export * from './chapter.dto';
 export * from './chapter-create.dto';
 export * from './chapter-update.dto';
-export * from './chapter-query.dto';
 
 export * from './lesson.dto';
 export * from './lesson-create.dto';
 export * from './lesson-update.dto';
-export * from './lesson-query-dto';

@@ -12,13 +12,13 @@ export interface PostService {
 
   update(values: PostUpdateDto): Promise<PostDto>;
 
-  updateStatus(id: number, status: PostStatus): Promise<void>;
+  updateStatus(id: string, status: PostStatus): Promise<void>;
 
-  delete(id: number): Promise<void>;
+  delete(id: string): Promise<void>;
 
-  existsByIdAndAuthor(id: number, authorId: string): Promise<boolean>;
+  existsByIdAndAuthor(id: string, authorId: string): Promise<boolean>;
 
-  findById(id: number): Promise<PostDto | null>;
+  findById(id: string): Promise<PostDto | null>;
 
   findBySlug(slug: string): Promise<PostDto | null>;
 

@@ -11,14 +11,12 @@ export enum PostVisibility {
 
 export enum PostStatus {
   DRAFT = 'draft',
-  IN_REVIEW = 'in_review',
   PUBLISHED = 'published',
   DISABLED = 'disabled',
 }
 
 export class PostDto {
-  @Transform(({ value }) => Number(value))
-  id: number;
+  id: string;
   cover?: string;
   title: string;
   slug: string;
@@ -32,7 +30,7 @@ export class PostDto {
   visibility: PostVisibility;
 
   featured: boolean;
-  publishedAt?: number;
+  publishedAt?: string;
   authors: UserDto[];
   tags: TagDto[];
   audit?: AuditingDto;

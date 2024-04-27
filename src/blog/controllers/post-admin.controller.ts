@@ -10,7 +10,6 @@ import {
   HttpStatus,
   Inject,
   Param,
-  ParseIntPipe,
   Post,
   Put,
   Query,
@@ -19,11 +18,11 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { PostCreateTransformPipe } from '../pipes/post-create-transform.pipe';
-import { PostUpdateTransformPipe } from '../pipes/post-update-transform.pipe';
-import { PostOwnerGuard } from '../guards/post-owner.guard';
-import { PostQueryTransformPipe } from '../pipes/post-query-transform.pipe';
 import { Response } from 'express';
+import { PostOwnerGuard } from '../guards/post-owner.guard';
+import { PostCreateTransformPipe } from '../pipes/post-create-transform.pipe';
+import { PostQueryTransformPipe } from '../pipes/post-query-transform.pipe';
+import { PostUpdateTransformPipe } from '../pipes/post-update-transform.pipe';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('/admin/posts')
@@ -55,7 +54,7 @@ export class PostAdminController {
   @UseGuards(PostOwnerGuard)
   @Get(':id')
   async getPost(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
     @Res({ passthrough: true }) resp: Response,
   ) {
     const result = await this.postService.findById(id);
@@ -67,7 +66,7 @@ export class PostAdminController {
 
   @UseGuards(PostOwnerGuard)
   @Delete(':id')
-  async deletePost(@Param('id', ParseIntPipe) id: number) {
+  async deletePost(@Param('id') id: string) {
     await this.postService.delete(id);
   }
 }

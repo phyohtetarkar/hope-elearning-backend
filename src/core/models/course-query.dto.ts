@@ -1,11 +1,23 @@
+import { IsEnum, IsOptional } from 'class-validator';
+import { CourseLevel, CourseStatus } from './course.dto';
 import { QueryDto } from './query.dto';
 
 export class CourseQueryDto extends QueryDto {
-  name?: string;
-  level?: string;
-  authorId?: string;
-  skillId?: number;
-  categoryId?: number;
+  q?: string;
+
+  @IsOptional()
+  @IsEnum(CourseLevel)
+  level?: CourseLevel;
+
+  @IsOptional()
+  @IsEnum(CourseStatus)
+  status?: CourseStatus;
+
+  category?: number;
+  author?: string;
+
+  @IsOptional()
+  skill?: number | number[];
 
   constructor(partial: Partial<CourseQueryDto> = {}) {
     super();

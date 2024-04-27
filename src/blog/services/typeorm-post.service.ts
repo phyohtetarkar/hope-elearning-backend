@@ -1,5 +1,5 @@
 import { DomainError } from '@/common/errors/domain.error';
-import { normalizeSlug } from '@/common/utils';
+import { normalizeSlug, transformToArray } from '@/common/utils';
 import { PostAuthorEntity } from '@/core/entities/post-author.entity';
 import { PostHistoryEntity } from '@/core/entities/post-history.entity';
 import { PostStatisticEntity } from '@/core/entities/post-statistic.entity';
@@ -17,7 +17,7 @@ import {
 import { PostService } from '@/core/services';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Not, Raw, Repository } from 'typeorm';
+import { DataSource, In, Not, Raw, Repository } from 'typeorm';
 
 @Injectable()
 export class TypeormPostService implements PostService {
@@ -70,11 +70,9 @@ export class TypeormPostService implements PostService {
         await em.insert(PostTagEntity, postTags);
       }
 
-      const postStatisticEntity = new PostStatisticEntity();
-      postStatisticEntity.totalView = 0;
-      postStatisticEntity.id = postId;
-
-      await em.save(postStatisticEntity);
+      await em.insert(PostStatisticEntity, {
+        id: postId,
+      });
 
       return postId;
     });
@@ -82,7 +80,7 @@ export class TypeormPostService implements PostService {
 
   async update(values: PostUpdateDto): Promise<PostDto> {
     const entity = await this.dataSource.transaction(async (em) => {
-      const postId = values.id ?? 0;
+      const postId = values.id;
 
       const entity = await em.findOneBy(PostEntity, {
         id: postId,
@@ -100,8 +98,6 @@ export class TypeormPostService implements PostService {
           'Update conflict by another user. Please refresh.',
         );
       }
-
-      console.log(values);
 
       await em.update(PostEntity, postId, {
         title: values.title,
@@ -156,16 +152,16 @@ export class TypeormPostService implements PostService {
     return entity.toDto();
   }
 
-  async updateStatus(id: number, status: PostStatus): Promise<void> {
+  async updateStatus(id: string, status: PostStatus): Promise<void> {
     const exists = await this.postRepo.existsBy({ id: id });
     if (!exists) {
       throw new DomainError('Post not found');
     }
 
-    await this.postRepo.update({ id: id }, { status: status });
+    await this.postRepo.update(id, { status: status });
   }
 
-  async delete(id: number): Promise<void> {
+  async delete(id: string): Promise<void> {
     await this.dataSource.transaction(async (em) => {
       await em.delete(PostTagEntity, { postId: id });
       await em.delete(PostHistoryEntity, { postId: id });
@@ -175,14 +171,14 @@ export class TypeormPostService implements PostService {
     });
   }
 
-  async existsByIdAndAuthor(id: number, authorId: string): Promise<boolean> {
+  async existsByIdAndAuthor(id: string, authorId: string): Promise<boolean> {
     return await this.postAuthorRepo.existsBy({
       postId: id,
       authorId: authorId,
     });
   }
 
-  async findById(id: number): Promise<PostDto | null> {
+  async findById(id: string): Promise<PostDto | null> {
     const entity = await this.postRepo.findOne({
       relations: {
         tags: { tag: true },
@@ -215,6 +211,8 @@ export class TypeormPostService implements PostService {
   async find(query: PostQueryDto): Promise<PageDto<PostDto>> {
     const { limit, offset } = QueryDto.getPageable(query);
 
+    const tags = transformToArray(query.tag);
+
     const [list, count] = await this.postRepo.findAndCount({
       relations: {
         tags: { tag: true },
@@ -229,10 +227,8 @@ export class TypeormPostService implements PostService {
               title: `%${query.q}%`,
             })
           : undefined,
-        authors: query.authorId
-          ? { author: { id: query.authorId } }
-          : undefined,
-        tags: query.tagId ? { tag: { id: query.tagId } } : undefined,
+        authors: query.author ? { authorId: query.author } : undefined,
+        tags: tags ? { tagId: In(tags.filter((v) => !isNaN(v))) } : undefined,
       },
       order: {
         createdAt: 'DESC',

@@ -35,3 +35,15 @@ export function generateRandomCode(length: number) {
 
   return result;
 }
+
+export function transformToArray<T>(value: T | T[] | undefined) {
+  if (!value) {
+    return undefined;
+  }
+
+  if (value instanceof Array) {
+    return value;
+  }
+
+  return [value];
+}

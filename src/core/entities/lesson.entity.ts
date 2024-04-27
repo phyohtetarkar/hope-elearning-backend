@@ -6,7 +6,7 @@ import { LessonDto } from '../models';
 @Entity({ name: 'lesson' })
 export class LessonEntity extends AuditingEntity {
   @PrimaryGeneratedColumn({ type: 'bigint' })
-  id: number;
+  id: string;
 
   @Column({ length: 2000 })
   title: string;
@@ -14,8 +14,14 @@ export class LessonEntity extends AuditingEntity {
   @Column({ length: 2000, unique: true })
   slug: string;
 
-  @Column({ type: 'text' })
-  lexical: string;
+  @Column({ default: false })
+  trial: boolean;
+
+  @Column({ type: 'text', nullable: true })
+  lexical?: string | null;
+
+  @Column({ name: 'sort_order' })
+  sortOrder: number;
 
   @ManyToOne(() => ChapterEntity, (type) => type.lessons)
   chapter: ChapterEntity;
@@ -25,7 +31,7 @@ export class LessonEntity extends AuditingEntity {
       id: this.id,
       title: this.title,
       slug: this.slug,
-      lexical: this.lexical,
+      lexical: this.lexical ?? undefined,
       chapter: this.chapter.toDto(),
       audit: this.toAudit(),
     });

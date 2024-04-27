@@ -1,9 +1,12 @@
-import { IsInt, IsNotEmpty } from 'class-validator';
+import { IsNotEmpty } from 'class-validator';
 
 export class ChapterUpdateDto {
-  @IsInt()
+  @IsNotEmpty()
   id: number;
 
   @IsNotEmpty()
-  name: string;
+  title: string;
+
+  @IsNotEmpty()
+  slug: string;
 }

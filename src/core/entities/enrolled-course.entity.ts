@@ -8,7 +8,7 @@ export class EnrolledCourseEntity extends AuditingEntity {
   userId: string;
 
   @PrimaryColumn({ name: 'course_id', type: 'bigint' })
-  courseId: number;
+  courseId: string;
 
   @ManyToOne(() => UserEntity)
   @JoinColumn({ name: 'user_id' })

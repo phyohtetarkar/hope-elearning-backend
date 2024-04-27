@@ -5,10 +5,10 @@ import { PostStatisticDto } from '@/core/models/post-statistic.dto';
 @Entity({ name: 'post_statistic' })
 export class PostStatisticEntity {
   @PrimaryColumn({ type: 'bigint' })
-  id: number;
+  id: string;
 
   @Column({ name: 'total_view', type: 'bigint', default: 0 })
-  totalView: number;
+  totalView: string;
 
   @OneToOne(() => PostEntity, (type) => type.statistic)
   @JoinColumn({ name: 'id' })

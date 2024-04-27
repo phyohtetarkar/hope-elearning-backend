@@ -10,12 +10,12 @@ import { CategoryEntity } from './category.entity';
 import { ChapterEntity } from './chapter.entity';
 import { CourseAuthorEntity } from './course-author.entity';
 import { CourseSkillEntity } from './course-skill.entity';
-import { CourseDto } from '../models';
+import { CourseDto, CourseLevel, CourseStatus } from '../models';
 
 @Entity({ name: 'course' })
 export class CourseEntity extends AuditingEntity {
   @PrimaryGeneratedColumn({ type: 'bigint' })
-  id: number;
+  id: string;
 
   @Column({ length: 2000 })
   title: string;
@@ -26,8 +26,19 @@ export class CourseEntity extends AuditingEntity {
   @Column({ type: 'text' })
   description: string;
 
-  @Column({ type: 'text' })
-  level: string;
+  @Column({
+    type: 'enum',
+    enum: CourseLevel,
+    default: CourseLevel.BEGINNER,
+  })
+  level: CourseLevel;
+
+  @Column({
+    type: 'enum',
+    enum: CourseStatus,
+    default: CourseStatus.DRAFT,
+  })
+  status: CourseStatus;
 
   @Column({
     name: 'published_at',
@@ -39,6 +50,9 @@ export class CourseEntity extends AuditingEntity {
   @Column({ name: 'published_by', nullable: true })
   publishedBy?: string;
 
+  @ManyToOne(() => CategoryEntity)
+  category: CategoryEntity;
+
   @OneToMany(() => CourseAuthorEntity, (type) => type.course)
   authors: CourseAuthorEntity[];
 
@@ -48,9 +62,6 @@ export class CourseEntity extends AuditingEntity {
   @OneToMany(() => ChapterEntity, (type) => type.course)
   chapters?: ChapterEntity[];
 
-  @ManyToOne(() => CategoryEntity)
-  category: CategoryEntity;
-
   toDto() {
     return new CourseDto({
       id: this.id,
@@ -58,7 +69,8 @@ export class CourseEntity extends AuditingEntity {
       slug: this.slug,
       description: this.description,
       level: this.level,
-      publishedAt: this.publishedAt?.getTime(),
+      status: this.status,
+      publishedAt: this.publishedAt?.toISOString(),
       authors: this.authors.map((e) => e.author.toDto()),
       skills: this.skills.map((e) => e.skill.toDto()),
       chapters: this.chapters?.map((e) => e.toDto()),

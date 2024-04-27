@@ -13,13 +13,16 @@ import { ChapterDto } from '../models';
 @Entity({ name: 'chapter' })
 export class ChapterEntity extends AuditingEntity {
   @PrimaryGeneratedColumn({ type: 'bigint' })
-  id: number;
+  id: string;
 
   @Column({ length: 2000 })
   title: string;
 
   @Column({ length: 2000, unique: true })
   slug: string;
+
+  @Column({ name: 'sort_order' })
+  sortOrder: number;
 
   @ManyToOne(() => CourseEntity, (type) => type.chapters)
   course: CourseEntity;

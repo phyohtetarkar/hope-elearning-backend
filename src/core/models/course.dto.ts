@@ -4,17 +4,35 @@ import { ChapterDto } from './chapter.dto';
 import { SkillDto } from './skill.dto';
 import { UserDto } from './user.dto';
 
+export enum CourseStatus {
+  DRAFT = 'draft',
+  PUBLISHED = 'published',
+  DISABLED = 'disabled',
+}
+
+export enum CourseLevel {
+  BEGINNER = 'beginner',
+  INTERMEDIATE = 'intermediate',
+  ADVANCED = 'advanced',
+}
+
+export enum CourseAccess {
+  FREE = 'free',
+  PREMIUM = 'premium',
+}
+
 export class CourseDto {
-  id: number;
+  id: string;
   title: string;
   slug: string;
   description: string;
-  level: string | null;
-  publishedAt?: number;
+  level: CourseLevel;
+  status: CourseStatus;
+  publishedAt?: string;
+  category: CategoryDto;
   authors: UserDto[];
   skills: SkillDto[];
   chapters?: ChapterDto[];
-  category: CategoryDto;
   audit?: AuditingDto;
 
   constructor(partial: Partial<CourseDto> = {}) {

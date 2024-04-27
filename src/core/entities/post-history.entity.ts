@@ -6,7 +6,7 @@ import { PostStatus } from '../models/post.dto';
 @Entity({ name: 'post_history' })
 export class PostHistoryEntity {
   @PrimaryColumn({ name: 'post_id', type: 'bigint' })
-  postId: number;
+  postId: string;
 
   @PrimaryColumn({ name: 'author_id' })
   authorId: string;

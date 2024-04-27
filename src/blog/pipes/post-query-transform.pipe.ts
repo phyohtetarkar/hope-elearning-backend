@@ -14,7 +14,7 @@ export class PostQueryTransformPipe
       return value;
     }
 
-    value.authorId = user.id;
+    value.author = user.id;
     return value;
   }
 }
