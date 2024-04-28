@@ -17,7 +17,7 @@ import {
 import { PostService } from '@/core/services';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, In, Not, Raw, Repository } from 'typeorm';
+import { DataSource, Not, Repository } from 'typeorm';
 
 @Injectable()
 export class TypeormPostService implements PostService {
@@ -179,29 +179,29 @@ export class TypeormPostService implements PostService {
   }
 
   async findById(id: string): Promise<PostDto | null> {
-    const entity = await this.postRepo.findOne({
-      relations: {
-        tags: { tag: true },
-        authors: { author: true },
-      },
-      where: {
-        id: id,
-      },
-    });
+    const entity = await this.postRepo
+      .createQueryBuilder('post')
+      .leftJoinAndSelect('post.authors', 'post_author')
+      .leftJoinAndSelect('post.tags', 'post_tag')
+      .leftJoinAndSelect('post_author.author', 'author')
+      .leftJoinAndSelect('post_tag.tag', 'tag')
+      .where('post.id = :id', { id })
+      .getOne();
+
     return entity?.toDto() ?? null;
   }
 
   async findBySlug(slug: string): Promise<PostDto | null> {
-    const entity = await this.postRepo.findOne({
-      relations: {
-        statistic: true,
-        tags: { tag: true },
-        authors: { author: true },
-      },
-      where: {
-        slug: slug,
-      },
-    });
+    const entity = await this.postRepo
+      .createQueryBuilder('post')
+      .leftJoinAndSelect('post.statistic', 'statistic')
+      .leftJoinAndSelect('post.authors', 'post_author')
+      .leftJoinAndSelect('post.tags', 'post_tag')
+      .leftJoinAndSelect('post_author.author', 'author')
+      .leftJoinAndSelect('post_tag.tag', 'tag')
+      .where('post.slug = :slug', { slug })
+      .getOne();
+
     if (entity) {
       this.postStatisticRepo.increment({ id: entity.id }, 'totalView', 1);
     }
@@ -213,29 +213,52 @@ export class TypeormPostService implements PostService {
 
     const tags = transformToArray(query.tag);
 
-    const [list, count] = await this.postRepo.findAndCount({
-      relations: {
-        tags: { tag: true },
-        authors: { author: true },
-      },
-      where: {
-        status: query.status,
+    const postQuery = this.postRepo
+      .createQueryBuilder('post')
+      .leftJoinAndSelect('post.authors', 'post_author')
+      .leftJoinAndSelect('post.tags', 'post_tag')
+      .leftJoinAndSelect('post_author.author', 'author')
+      .leftJoinAndSelect('post_tag.tag', 'tag');
+
+    if (query.status) {
+      postQuery.andWhere('post.status = :status', { status: query.status });
+    }
+
+    if (query.visibility) {
+      postQuery.andWhere('post.visibility = :visibility', {
         visibility: query.visibility,
-        featured: query.featured,
-        title: query.q
-          ? Raw((alias) => `LOWER(${alias}) LIKE LOWER(:title)`, {
-              title: `%${query.q}%`,
-            })
-          : undefined,
-        authors: query.author ? { authorId: query.author } : undefined,
-        tags: tags ? { tagId: In(tags.filter((v) => !isNaN(v))) } : undefined,
-      },
-      order: {
-        createdAt: 'DESC',
-      },
-      skip: offset,
-      take: limit,
-    });
+      });
+    }
+
+    if (query.featured) {
+      postQuery.andWhere('post.featured = :featured', {
+        visibility: query.featured,
+      });
+    }
+
+    if (query.q) {
+      postQuery.andWhere('LOWER(post.title) LIKE LOWER(:title)', {
+        title: `%${query.q}%`,
+      });
+    }
+
+    if (query.author) {
+      postQuery.andWhere('post_author.authorId = :authorId', {
+        authorId: query.author,
+      });
+    }
+
+    if (tags) {
+      postQuery.andWhere('post_tag.tagId IN(:...tags)', {
+        tags: tags.filter((v) => !isNaN(v)),
+      });
+    }
+
+    const [list, count] = await postQuery
+      .orderBy('post.createdAt', 'DESC')
+      .offset(offset)
+      .limit(limit)
+      .getManyAndCount();
 
     return PageDto.from({
       list: list.map((e) => e.toDto()),

@@ -1,3 +1,4 @@
+import { Expose } from 'class-transformer';
 import { AuditingDto } from './auditing.dto';
 import { CategoryDto } from './category.dto';
 import { ChapterDto } from './chapter.dto';
@@ -25,7 +26,10 @@ export class CourseDto {
   id: string;
   title: string;
   slug: string;
-  description: string;
+
+  @Expose({ groups: ['detail'] })
+  description?: string;
+
   level: CourseLevel;
   status: CourseStatus;
   publishedAt?: string;

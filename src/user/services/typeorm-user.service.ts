@@ -11,7 +11,7 @@ import {
 import { UserService } from '@/core/services';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Not, Raw, Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 
 @Injectable()
 export class TypeormUserService implements UserService {
@@ -52,22 +52,29 @@ export class TypeormUserService implements UserService {
   async find(query: UserQueryDto): Promise<PageDto<UserDto>> {
     const { limit, offset } = QueryDto.getPageable(query);
 
-    const [list, count] = await this.userRepo.findAndCount({
-      where: {
-        role: query.staffOnly ? Not(UserRole.USER) : query.role,
-        email: query.email,
-        nickname: query.name
-          ? Raw((alias) => `LOWER(${alias}) LIKE LOWER(:name)`, {
-              name: `${query.name}%`,
-            })
-          : undefined,
-      },
-      order: {
-        createdAt: 'DESC',
-      },
-      skip: offset,
-      take: limit,
-    });
+    const userQuery = this.userRepo.createQueryBuilder('user');
+
+    if (query.staffOnly) {
+      userQuery.andWhere('user.role != :role', { role: UserRole.USER });
+    } else if (query.role) {
+      userQuery.andWhere('user.role = :role', { role: query.role });
+    }
+
+    if (query.email) {
+      userQuery.andWhere('user.email = :email', { email: query.email });
+    }
+
+    if (query.name) {
+      userQuery.andWhere('LOWER(user.nickname) LIKE LOWER(:name)', {
+        name: query.name,
+      });
+    }
+
+    const [list, count] = await userQuery
+      .orderBy('user.createdAt', 'DESC')
+      .offset(offset)
+      .limit(limit)
+      .getManyAndCount();
 
     return PageDto.from({
       list: list.map((e) => e.toDto()),

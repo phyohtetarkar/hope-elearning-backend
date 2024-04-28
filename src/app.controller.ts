@@ -17,6 +17,7 @@ export class AppController {
 
     const dest = `${file.destination}/${file.originalname}`;
 
+    // wx flag to fail on file exists
     closeSync(openSync(dest, 'wx'));
 
     rename(file.path, dest, (err) => {
