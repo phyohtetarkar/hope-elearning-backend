@@ -22,7 +22,7 @@ export class PostController {
   async find(@Query() query: PostQueryDto) {
     return await this.postService.find({
       ...query,
-      // status: PostStatus.PUBLISHED,
+      status: PostStatus.PUBLISHED,
     });
   }
 
