@@ -1,10 +1,4 @@
-import {
-  ArrayMinSize,
-  IsArray,
-  IsInt,
-  IsNotEmpty,
-  IsOptional,
-} from 'class-validator';
+import { ArrayMinSize, IsArray, IsInt, IsNotEmpty } from 'class-validator';
 import { CourseLevel } from './course.dto';
 
 export class CourseCreateDto {
@@ -25,8 +19,4 @@ export class CourseCreateDto {
   @IsArray()
   @ArrayMinSize(1)
   authors: string[];
-
-  @IsArray()
-  @IsOptional()
-  skills?: number[];
 }

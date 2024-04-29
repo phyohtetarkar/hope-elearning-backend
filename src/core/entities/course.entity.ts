@@ -5,12 +5,11 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { CourseDto, CourseLevel, CourseStatus } from '../models';
 import { AuditingEntity } from './auditing.entity';
 import { CategoryEntity } from './category.entity';
 import { ChapterEntity } from './chapter.entity';
 import { CourseAuthorEntity } from './course-author.entity';
-import { CourseSkillEntity } from './course-skill.entity';
-import { CourseDto, CourseLevel, CourseStatus } from '../models';
 
 @Entity({ name: 'course' })
 export class CourseEntity extends AuditingEntity {
@@ -56,9 +55,6 @@ export class CourseEntity extends AuditingEntity {
   @OneToMany(() => CourseAuthorEntity, (type) => type.course)
   authors: CourseAuthorEntity[];
 
-  @OneToMany(() => CourseSkillEntity, (type) => type.course)
-  skills: CourseSkillEntity[];
-
   @OneToMany(() => ChapterEntity, (type) => type.course)
   chapters?: ChapterEntity[];
 
@@ -72,7 +68,6 @@ export class CourseEntity extends AuditingEntity {
       status: this.status,
       publishedAt: this.publishedAt?.toISOString(),
       authors: this.authors.map((e) => e.author.toDto()),
-      skills: this.skills.map((e) => e.skill.toDto()),
       chapters: this.chapters?.map((e) => e.toDto()),
       category: this.category.toDto(),
       audit: this.toAudit(),

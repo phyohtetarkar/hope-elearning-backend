@@ -2,7 +2,6 @@ import { Expose } from 'class-transformer';
 import { AuditingDto } from './auditing.dto';
 import { CategoryDto } from './category.dto';
 import { ChapterDto } from './chapter.dto';
-import { SkillDto } from './skill.dto';
 import { UserDto } from './user.dto';
 
 export enum CourseStatus {
@@ -35,7 +34,6 @@ export class CourseDto {
   publishedAt?: string;
   category: CategoryDto;
   authors: UserDto[];
-  skills: SkillDto[];
   chapters?: ChapterDto[];
   audit?: AuditingDto;
 

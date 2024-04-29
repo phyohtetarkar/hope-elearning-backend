@@ -4,7 +4,6 @@ import {
   IsEnum,
   IsInt,
   IsNotEmpty,
-  IsOptional,
 } from 'class-validator';
 import { CourseLevel } from './course.dto';
 
@@ -29,8 +28,4 @@ export class CourseUpdateDto {
   @IsArray()
   @ArrayMinSize(1)
   authors: string[];
-
-  @IsArray()
-  @IsOptional()
-  skills?: number[];
 }

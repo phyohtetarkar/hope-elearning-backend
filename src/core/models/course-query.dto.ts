@@ -16,9 +16,6 @@ export class CourseQueryDto extends QueryDto {
   category?: number;
   author?: string;
 
-  @IsOptional()
-  skill?: number | number[];
-
   constructor(partial: Partial<CourseQueryDto> = {}) {
     super();
     Object.assign(this, partial);
