@@ -13,7 +13,7 @@ import {
 import { TagService } from '@/core/services';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Not, Raw, Repository } from 'typeorm';
+import { DataSource, Not, Repository } from 'typeorm';
 
 @Injectable()
 export class TypeormTagService implements TagService {
@@ -71,20 +71,19 @@ export class TypeormTagService implements TagService {
   async find(query: TagQueryDto): Promise<PageDto<TagDto>> {
     const { limit, offset } = QueryDto.getPageable(query);
 
-    const [list, count] = await this.tagRepo.findAndCount({
-      where: {
-        name: query.name
-          ? Raw((alias) => `LOWER(${alias}) LIKE LOWER(:name)`, {
-              name: `${query.name}%`,
-            })
-          : undefined,
-      },
-      order: {
-        createdAt: 'DESC',
-      },
-      skip: offset,
-      take: limit,
-    });
+    const tagQuery = this.tagRepo.createQueryBuilder('tag');
+
+    if (query.name) {
+      tagQuery.where('LOWER(tag.name) LIKE LOWER(:name)', {
+        name: `%${query.name}`,
+      });
+    }
+
+    const [list, count] = await tagQuery
+      .orderBy('tag.createdAt', 'DESC')
+      .offset(offset)
+      .limit(limit)
+      .getManyAndCount();
 
     return PageDto.from({
       list: list.map((e) => e.toDto()),

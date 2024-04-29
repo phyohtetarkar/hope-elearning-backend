@@ -12,7 +12,7 @@ import {
 import { CategorySerive } from '@/core/services';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Not, Raw, Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 
 @Injectable()
 export class TypeormCategoryService implements CategorySerive {
@@ -66,20 +66,19 @@ export class TypeormCategoryService implements CategorySerive {
   async find(query: CategoryQueryDto): Promise<PageDto<CategoryDto>> {
     const { limit, offset } = QueryDto.getPageable(query);
 
-    const [list, count] = await this.categoryRepo.findAndCount({
-      where: {
-        name: query.name
-          ? Raw((alias) => `LOWER(${alias}) LIKE LOWER(:name)`, {
-              name: `${query.name}%`,
-            })
-          : undefined,
-      },
-      order: {
-        createdAt: 'DESC',
-      },
-      skip: offset,
-      take: limit,
-    });
+    const categoryQuery = this.categoryRepo.createQueryBuilder('category');
+
+    if (query.name) {
+      categoryQuery.where('LOWER(category.name) LIKE LOWER(:name)', {
+        name: `%${query.name}`,
+      });
+    }
+
+    const [list, count] = await categoryQuery
+      .orderBy('category.createdAt', 'DESC')
+      .offset(offset)
+      .limit(limit)
+      .getManyAndCount();
 
     return PageDto.from({
       list: list.map((e) => e.toDto()),
