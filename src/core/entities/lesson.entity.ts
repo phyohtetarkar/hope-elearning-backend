@@ -1,7 +1,8 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { LessonDto } from '../models';
 import { AuditingEntity } from './auditing.entity';
 import { ChapterEntity } from './chapter.entity';
-import { LessonDto } from '../models';
+import { CourseEntity } from './course.entity';
 
 @Entity({ name: 'lesson' })
 export class LessonEntity extends AuditingEntity {
@@ -24,15 +25,21 @@ export class LessonEntity extends AuditingEntity {
   sortOrder: number;
 
   @ManyToOne(() => ChapterEntity, (type) => type.lessons)
-  chapter: ChapterEntity;
+  chapter?: ChapterEntity;
+
+  @ManyToOne(() => CourseEntity)
+  course?: CourseEntity;
 
   toDto() {
     return new LessonDto({
       id: this.id,
       title: this.title,
       slug: this.slug,
+      trial: this.trial,
       lexical: this.lexical ?? undefined,
-      chapter: this.chapter.toDto(),
+      sortOrder: this.sortOrder,
+      chapter: this.chapter?.toDto(),
+      course: this.course?.toDto(),
       audit: this.toAudit(),
     });
   }

@@ -3,13 +3,15 @@ import {
   Entity,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { CourseDto, CourseLevel, CourseStatus } from '../models';
+import { CourseAccess, CourseDto, CourseLevel, CourseStatus } from '../models';
 import { AuditingEntity } from './auditing.entity';
 import { CategoryEntity } from './category.entity';
 import { ChapterEntity } from './chapter.entity';
 import { CourseAuthorEntity } from './course-author.entity';
+import { CourseMetaEntity } from './course-meta.entity';
 
 @Entity({ name: 'course' })
 export class CourseEntity extends AuditingEntity {
@@ -22,8 +24,17 @@ export class CourseEntity extends AuditingEntity {
   @Column({ length: 2000, unique: true })
   slug: string;
 
-  @Column({ type: 'text' })
-  description: string;
+  @Column({ type: 'text', nullable: true })
+  excerpt?: string | null;
+
+  @Column({ type: 'text', nullable: true })
+  description?: string | null;
+
+  @Column({ type: 'varchar', length: 2000, nullable: true })
+  cover?: string | null;
+
+  @Column({ default: false })
+  featured: boolean;
 
   @Column({
     type: 'enum',
@@ -31,6 +42,13 @@ export class CourseEntity extends AuditingEntity {
     default: CourseLevel.BEGINNER,
   })
   level: CourseLevel;
+
+  @Column({
+    type: 'enum',
+    enum: CourseAccess,
+    default: CourseAccess.FREE,
+  })
+  access: CourseAccess;
 
   @Column({
     type: 'enum',
@@ -46,14 +64,17 @@ export class CourseEntity extends AuditingEntity {
   })
   publishedAt?: Date | null;
 
-  @Column({ name: 'published_by', nullable: true })
-  publishedBy?: string;
+  @Column({ name: 'published_by', type: 'varchar', nullable: true })
+  publishedBy?: string | null;
 
   @ManyToOne(() => CategoryEntity)
   category: CategoryEntity;
 
+  @OneToOne(() => CourseMetaEntity, (type) => type.course)
+  meta?: CourseMetaEntity;
+
   @OneToMany(() => CourseAuthorEntity, (type) => type.course)
-  authors: CourseAuthorEntity[];
+  authors?: CourseAuthorEntity[];
 
   @OneToMany(() => ChapterEntity, (type) => type.course)
   chapters?: ChapterEntity[];
@@ -63,13 +84,22 @@ export class CourseEntity extends AuditingEntity {
       id: this.id,
       title: this.title,
       slug: this.slug,
-      description: this.description,
+      cover: this.cover ?? undefined,
+      excerpt: this.excerpt ?? undefined,
+      description: this.description ?? undefined,
+      featured: this.featured,
       level: this.level,
+      access: this.access,
       status: this.status,
       publishedAt: this.publishedAt?.toISOString(),
-      authors: this.authors.map((e) => e.author.toDto()),
-      chapters: this.chapters?.map((e) => e.toDto()),
       category: this.category.toDto(),
+      authors: this.authors
+        ?.sort((a, b) => a.sortOrder - b.sortOrder)
+        .map((e) => e.author.toDto()),
+      chapters: this.chapters
+        ?.sort((a, b) => a.sortOrder - b.sortOrder)
+        .map((e) => e.toDto()),
+      meta: this.meta?.toDto(),
       audit: this.toAudit(),
     });
   }

@@ -10,7 +10,7 @@ export class PostTagEntity {
   @PrimaryColumn({ name: 'tag_id' })
   tagId: number;
 
-  @Column({ name: 'sort_order' })
+  @Column({ name: 'sort_order', default: 0 })
   sortOrder: number;
 
   @ManyToOne(() => PostEntity, (type) => type.tags)

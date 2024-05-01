@@ -12,7 +12,9 @@ export interface PostService {
 
   update(values: PostUpdateDto): Promise<PostDto>;
 
-  updateStatus(id: string, status: PostStatus): Promise<void>;
+  publish(userId: string, postId: string): Promise<void>;
+
+  unpublish(postId: string): Promise<void>;
 
   delete(id: string): Promise<void>;
 

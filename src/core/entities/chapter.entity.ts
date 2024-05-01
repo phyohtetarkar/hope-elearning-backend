@@ -25,7 +25,7 @@ export class ChapterEntity extends AuditingEntity {
   sortOrder: number;
 
   @ManyToOne(() => CourseEntity, (type) => type.chapters)
-  course: CourseEntity;
+  course?: CourseEntity;
 
   @OneToMany(() => LessonEntity, (type) => type.chapter)
   lessons?: LessonEntity[];
@@ -35,8 +35,11 @@ export class ChapterEntity extends AuditingEntity {
       id: this.id,
       title: this.title,
       slug: this.slug,
-      course: this.course.toDto(),
-      lessons: this.lessons?.map((e) => e.chapter.toDto()),
+      sortOrder: this.sortOrder,
+      course: this.course?.toDto(),
+      lessons: this.lessons
+        ?.sort((a, b) => a.sortOrder - b.sortOrder)
+        .map((e) => e.toDto()),
       audit: this.toAudit(),
     });
   }

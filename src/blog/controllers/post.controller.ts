@@ -9,6 +9,7 @@ import {
   Param,
   Query,
   Res,
+  SerializeOptions,
   UseInterceptors,
 } from '@nestjs/common';
 import { Response } from 'express';
@@ -26,6 +27,9 @@ export class PostController {
     });
   }
 
+  @SerializeOptions({
+    groups: ['detail'],
+  })
   @Get(':slug')
   async getPost(
     @Param('slug') slug: string,

@@ -47,10 +47,5 @@ export class SecurityModule implements NestModule {
       .apply(AuthenticationMiddleware)
       .exclude({ path: '/content/:path*', method: RequestMethod.GET })
       .forRoutes('*');
-    // .apply((req: Request, res: Response, next: NextFunction) => {
-    //   const store: SecurityContext = {};
-    //   this.als.run(store, () => next());
-    // })
-    // .forRoutes('*');
   }
 }

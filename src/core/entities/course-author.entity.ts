@@ -10,12 +10,12 @@ export class CourseAuthorEntity {
   @PrimaryColumn({ name: 'author_id' })
   authorId: string;
 
-  @Column({ name: 'sort_order' })
+  @Column({ name: 'sort_order', default: 0 })
   sortOrder: number;
 
   @ManyToOne(() => CourseEntity, (type) => type.authors)
   @JoinColumn({ name: 'course_id' })
-  course: CourseEntity;
+  course?: CourseEntity;
 
   @ManyToOne(() => UserEntity)
   @JoinColumn({ name: 'author_id' })

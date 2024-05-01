@@ -10,7 +10,7 @@ export class PostAuthorEntity {
   @PrimaryColumn({ name: 'author_id' })
   authorId: string;
 
-  @Column({ name: 'sort_order' })
+  @Column({ name: 'sort_order', default: 0 })
   sortOrder: number;
 
   @ManyToOne(() => PostEntity, (type) => type.authors)

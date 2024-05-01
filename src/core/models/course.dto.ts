@@ -3,11 +3,11 @@ import { AuditingDto } from './auditing.dto';
 import { CategoryDto } from './category.dto';
 import { ChapterDto } from './chapter.dto';
 import { UserDto } from './user.dto';
+import { CourseMetaDto } from './course-meta.dto';
 
 export enum CourseStatus {
   DRAFT = 'draft',
   PUBLISHED = 'published',
-  DISABLED = 'disabled',
 }
 
 export enum CourseLevel {
@@ -25,16 +25,21 @@ export class CourseDto {
   id: string;
   title: string;
   slug: string;
+  cover?: string;
+  excerpt?: string;
+  featured: boolean;
 
   @Expose({ groups: ['detail'] })
   description?: string;
 
   level: CourseLevel;
+  access: CourseAccess;
   status: CourseStatus;
   publishedAt?: string;
   category: CategoryDto;
   authors: UserDto[];
   chapters?: ChapterDto[];
+  meta?: CourseMetaDto;
   audit?: AuditingDto;
 
   constructor(partial: Partial<CourseDto> = {}) {

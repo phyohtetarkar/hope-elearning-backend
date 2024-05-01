@@ -20,12 +20,12 @@ export class UserEntity extends AuditingEntity {
   })
   role: UserRole;
 
-  @Column({ type: 'varchar', nullable: true })
-  email?: string | null;
+  @Column()
+  email: string;
 
   @Column({
     type: 'varchar',
-    length: 1000,
+    length: 2000,
     nullable: true,
   })
   headline?: string | null;
@@ -49,7 +49,7 @@ export class UserEntity extends AuditingEntity {
       nickname: this.nickname,
       username: this.username,
       role: this.role,
-      email: this.email ?? undefined,
+      email: this.email,
       headline: this.headline ?? undefined,
       image: this.image ?? undefined,
       bio: this.bio ?? undefined,

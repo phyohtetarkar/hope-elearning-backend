@@ -6,7 +6,8 @@ export class ChapterDto {
   id: string;
   title: string;
   slug: string;
-  course: CourseDto;
+  sortOrder: number;
+  course?: CourseDto;
   lessons?: LessonDto[];
   audit?: AuditingDto;
 

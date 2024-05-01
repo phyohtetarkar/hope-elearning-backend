@@ -1,3 +1,4 @@
+import { Expose } from 'class-transformer';
 import { AuditingDto } from './auditing.dto';
 
 export enum UserRole {
@@ -13,10 +14,13 @@ export class UserDto {
   nickname: string;
   username: string;
   role: UserRole;
-  email?: string;
+  email: string;
   headline?: string;
   image?: string;
+
+  @Expose({ groups: ['detail'] })
   bio?: string;
+
   audit?: AuditingDto;
 
   constructor(partial: Partial<UserDto> = {}) {

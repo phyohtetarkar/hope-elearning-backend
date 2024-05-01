@@ -3,8 +3,8 @@ import { PostEntity } from './post.entity';
 import { UserEntity } from './user.entity';
 import { PostStatus } from '../models/post.dto';
 
-@Entity({ name: 'post_history' })
-export class PostHistoryEntity {
+@Entity({ name: 'post_revision' })
+export class PostRevisionEntity {
   @PrimaryColumn({ name: 'post_id', type: 'bigint' })
   postId: string;
 
@@ -35,7 +35,7 @@ export class PostHistoryEntity {
 
   @ManyToOne(() => PostEntity)
   @JoinColumn({ name: 'post_id' })
-  post: PostEntity;
+  post?: PostEntity;
 
   @ManyToOne(() => UserEntity)
   @JoinColumn({ name: 'author_id' })

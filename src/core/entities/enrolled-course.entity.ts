@@ -1,8 +1,17 @@
-import { JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
+import {
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryColumn,
+} from 'typeorm';
+import { AuditingEntity } from './auditing.entity';
+import { CompletedLessonEntity } from './completed-lesson.entity';
 import { CourseEntity } from './course.entity';
 import { UserEntity } from './user.entity';
-import { AuditingEntity } from './auditing.entity';
+import { EnrolledCourseDto } from '../models';
 
+@Entity({ name: 'enrolled_course' })
 export class EnrolledCourseEntity extends AuditingEntity {
   @PrimaryColumn({ name: 'user_id' })
   userId: string;
@@ -17,4 +26,14 @@ export class EnrolledCourseEntity extends AuditingEntity {
   @ManyToOne(() => CourseEntity)
   @JoinColumn({ name: 'course_id' })
   course: CourseEntity;
+
+  @OneToMany(() => CompletedLessonEntity, (type) => type.course)
+  completedLessons: CompletedLessonEntity[];
+
+  toDto() {
+    return new EnrolledCourseDto({
+      course: this.course.toDto(),
+      completedLessons: this.completedLessons.map((l) => l.lessonId),
+    });
+  }
 }

@@ -7,7 +7,7 @@ import {
 } from 'typeorm';
 import { AuditingEntity } from './auditing.entity';
 import { PostAuthorEntity } from './post-author.entity';
-import { PostStatisticEntity } from './post-statistic.entity';
+import { PostMetaEntity } from './post-meta.entity';
 import { PostTagEntity } from './post-tag.entity';
 import { PostVisibility, PostDto, PostStatus } from '../models';
 
@@ -55,8 +55,8 @@ export class PostEntity extends AuditingEntity {
   })
   publishedAt?: Date | null;
 
-  @Column({ name: 'published_by', nullable: true })
-  publishedBy?: string;
+  @Column({ name: 'published_by', type: 'varchar', nullable: true })
+  publishedBy?: string | null;
 
   @OneToMany(() => PostAuthorEntity, (type) => type.post)
   authors: PostAuthorEntity[];
@@ -64,8 +64,8 @@ export class PostEntity extends AuditingEntity {
   @OneToMany(() => PostTagEntity, (type) => type.post)
   tags?: PostTagEntity[];
 
-  @OneToOne(() => PostStatisticEntity, (type) => type.post)
-  statistic?: PostStatisticEntity;
+  @OneToOne(() => PostMetaEntity, (type) => type.post)
+  meta?: PostMetaEntity;
 
   toDto() {
     return new PostDto({
@@ -85,6 +85,7 @@ export class PostEntity extends AuditingEntity {
       tags: this.tags
         ?.sort((a, b) => a.sortOrder - b.sortOrder)
         .map((e) => e.tag.toDto()),
+      meta: this.meta?.toDto(),
       audit: this.toAudit(),
     });
   }

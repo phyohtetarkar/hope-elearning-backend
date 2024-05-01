@@ -1,6 +1,7 @@
 import { Expose } from 'class-transformer';
 import { AuditingDto } from './auditing.dto';
 import { ChapterDto } from './chapter.dto';
+import { CourseDto } from './course.dto';
 
 export class LessonDto {
   id: string;
@@ -11,7 +12,10 @@ export class LessonDto {
   @Expose({ groups: ['detail'] })
   lexical?: string;
 
-  chapter: ChapterDto;
+  sortOrder: number;
+
+  chapter?: ChapterDto;
+  course?: CourseDto;
   audit?: AuditingDto;
 
   constructor(partial: Partial<LessonDto> = {}) {

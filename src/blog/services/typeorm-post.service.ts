@@ -1,8 +1,8 @@
 import { DomainError } from '@/common/errors/domain.error';
 import { normalizeSlug, transformToArray } from '@/common/utils';
 import { PostAuthorEntity } from '@/core/entities/post-author.entity';
-import { PostHistoryEntity } from '@/core/entities/post-history.entity';
-import { PostStatisticEntity } from '@/core/entities/post-statistic.entity';
+import { PostMetaEntity } from '@/core/entities/post-meta.entity';
+import { PostRevisionEntity } from '@/core/entities/post-revision.entity';
 import { PostTagEntity } from '@/core/entities/post-tag.entity';
 import { PostEntity } from '@/core/entities/post.entity';
 import {
@@ -25,8 +25,8 @@ export class TypeormPostService implements PostService {
     private dataSource: DataSource,
     @InjectRepository(PostEntity)
     private postRepo: Repository<PostEntity>,
-    @InjectRepository(PostStatisticEntity)
-    private postStatisticRepo: Repository<PostStatisticEntity>,
+    @InjectRepository(PostMetaEntity)
+    private postMetaRepo: Repository<PostMetaEntity>,
     @InjectRepository(PostAuthorEntity)
     private postAuthorRepo: Repository<PostAuthorEntity>,
   ) {}
@@ -70,7 +70,7 @@ export class TypeormPostService implements PostService {
         await em.insert(PostTagEntity, postTags);
       }
 
-      await em.insert(PostStatisticEntity, {
+      await em.insert(PostMetaEntity, {
         id: postId,
       });
 
@@ -152,21 +152,37 @@ export class TypeormPostService implements PostService {
     return entity.toDto();
   }
 
-  async updateStatus(id: string, status: PostStatus): Promise<void> {
-    const exists = await this.postRepo.existsBy({ id: id });
+  async publish(userId: string, postId: string): Promise<void> {
+    const exists = await this.postRepo.existsBy({ id: postId });
     if (!exists) {
       throw new DomainError('Post not found');
     }
 
-    await this.postRepo.update(id, { status: status });
+    await this.postRepo.update(postId, {
+      status: PostStatus.PUBLISHED,
+      publishedBy: userId,
+      publishedAt: new Date(),
+    });
+  }
+
+  async unpublish(postId: string): Promise<void> {
+    const exists = await this.postRepo.existsBy({ id: postId });
+    if (!exists) {
+      throw new DomainError('Post not found');
+    }
+
+    await this.postRepo.update(postId, {
+      status: PostStatus.DRAFT,
+      publishedBy: null,
+    });
   }
 
   async delete(id: string): Promise<void> {
     await this.dataSource.transaction(async (em) => {
       await em.delete(PostTagEntity, { postId: id });
-      await em.delete(PostHistoryEntity, { postId: id });
+      await em.delete(PostRevisionEntity, { postId: id });
       await em.delete(PostAuthorEntity, { postId: id });
-      await em.delete(PostStatisticEntity, id);
+      await em.delete(PostMetaEntity, id);
       await em.delete(PostEntity, id);
     });
   }
@@ -194,7 +210,7 @@ export class TypeormPostService implements PostService {
   async findBySlug(slug: string): Promise<PostDto | null> {
     const entity = await this.postRepo
       .createQueryBuilder('post')
-      .leftJoinAndSelect('post.statistic', 'statistic')
+      .leftJoinAndSelect('post.meta', 'meta')
       .leftJoinAndSelect('post.authors', 'post_author')
       .leftJoinAndSelect('post.tags', 'post_tag')
       .leftJoinAndSelect('post_author.author', 'author')
@@ -203,7 +219,7 @@ export class TypeormPostService implements PostService {
       .getOne();
 
     if (entity) {
-      this.postStatisticRepo.increment({ id: entity.id }, 'totalView', 1);
+      this.postMetaRepo.increment({ id: entity.id }, 'totalView', 1);
     }
     return entity?.toDto() ?? null;
   }

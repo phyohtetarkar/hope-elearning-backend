@@ -1,8 +1,18 @@
+import { Staff } from '@/common/decorators';
 import { UserQueryDto } from '@/core/models';
 import { USER_SERVICE, UserService } from '@/core/services';
-import { Controller, Get, Inject, Query } from '@nestjs/common';
+import {
+  ClassSerializerInterceptor,
+  Controller,
+  Get,
+  Inject,
+  Query,
+  UseInterceptors,
+} from '@nestjs/common';
 
+@UseInterceptors(ClassSerializerInterceptor)
 @Controller('/admin/users')
+@Staff()
 export class UserController {
   constructor(@Inject(USER_SERVICE) private userService: UserService) {}
 

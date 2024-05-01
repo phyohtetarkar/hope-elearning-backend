@@ -5,7 +5,7 @@ import {
   IsInt,
   IsNotEmpty,
 } from 'class-validator';
-import { CourseLevel } from './course.dto';
+import { CourseAccess, CourseLevel } from './course.dto';
 
 export class CourseUpdateDto {
   @IsNotEmpty()
@@ -17,15 +17,22 @@ export class CourseUpdateDto {
   @IsNotEmpty()
   slug: string;
 
+  cover?: string;
+
+  excerpt?: string;
+
   description?: string;
 
   @IsEnum(CourseLevel)
   level: CourseLevel;
 
+  @IsEnum(CourseAccess)
+  access: CourseAccess;
+
   @IsInt()
   categoryId: number;
 
   @IsArray()
-  @ArrayMinSize(1)
+  @ArrayMinSize(1, { message: 'Required at least one author' })
   authors: string[];
 }
