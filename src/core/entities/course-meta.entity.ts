@@ -16,12 +16,6 @@ export class CourseMetaEntity {
   @Column({ name: 'enrolled_count', type: 'bigint', default: 0 })
   enrolledCount: string;
 
-  @Column({ name: 'chapter_count', default: 0 })
-  chapterCount: number;
-
-  @Column({ name: 'lesson_count', default: 0 })
-  lessonCount: number;
-
   @OneToOne(() => CourseEntity, (type) => type.meta)
   @JoinColumn({ name: 'id' })
   course?: CourseEntity;
@@ -31,8 +25,6 @@ export class CourseMetaEntity {
       rating: this.rating,
       ratingCount: this.ratingCount,
       enrolledCount: this.enrolledCount,
-      chapterCount: this.chapterCount,
-      lessonCount: this.lessonCount,
     });
   }
 }

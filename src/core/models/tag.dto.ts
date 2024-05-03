@@ -4,6 +4,7 @@ export class TagDto {
   id: number;
   slug: string;
   name: string;
+  postCount?: string;
   audit?: AuditingDto;
 
   constructor(partial: Partial<TagDto> = {}) {

@@ -24,6 +24,7 @@ export class PostController {
     return await this.postService.find({
       ...query,
       status: PostStatus.PUBLISHED,
+      orderBy: 'publishedAt',
     });
   }
 

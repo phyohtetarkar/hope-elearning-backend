@@ -1,9 +1,11 @@
 import {
   ArrayMinSize,
   IsArray,
+  IsDateString,
   IsEnum,
   IsInt,
   IsNotEmpty,
+  MaxLength,
 } from 'class-validator';
 import { CourseAccess, CourseLevel } from './course.dto';
 
@@ -12,9 +14,11 @@ export class CourseUpdateDto {
   id: string;
 
   @IsNotEmpty()
+  @MaxLength(2000)
   title: string;
 
   @IsNotEmpty()
+  @MaxLength(2000)
   slug: string;
 
   cover?: string;
@@ -35,4 +39,7 @@ export class CourseUpdateDto {
   @IsArray()
   @ArrayMinSize(1, { message: 'Required at least one author' })
   authors: string[];
+
+  @IsDateString()
+  updatedAt: string;
 }

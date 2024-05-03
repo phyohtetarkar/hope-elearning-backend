@@ -38,7 +38,10 @@ export class CourseDto {
   publishedAt?: string;
   category: CategoryDto;
   authors: UserDto[];
+
+  @Expose({ groups: ['detail'] })
   chapters?: ChapterDto[];
+
   meta?: CourseMetaDto;
   audit?: AuditingDto;
 

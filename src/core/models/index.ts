@@ -40,3 +40,7 @@ export * from './chapter.dto';
 export * from './lesson-create.dto';
 export * from './lesson-update.dto';
 export * from './lesson.dto';
+
+export * from './sort-update.dto';
+export * from './resume-lesson-update.dto';
+export * from './completed-lesson-update.dto';

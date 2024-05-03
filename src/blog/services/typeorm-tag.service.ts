@@ -58,14 +58,14 @@ export class TypeormTagService implements TagService {
     });
   }
 
-  async findById(id: number): Promise<TagDto | null> {
+  async findById(id: number): Promise<TagDto | undefined> {
     const entity = await this.tagRepo.findOneBy({ id: id });
-    return entity?.toDto() ?? null;
+    return entity?.toDto();
   }
 
-  async findBySlug(slug: string): Promise<TagDto | null> {
+  async findBySlug(slug: string): Promise<TagDto | undefined> {
     const entity = await this.tagRepo.findOneBy({ slug: slug });
-    return entity?.toDto() ?? null;
+    return entity?.toDto();
   }
 
   async find(query: TagQueryDto): Promise<PageDto<TagDto>> {
@@ -73,20 +73,35 @@ export class TypeormTagService implements TagService {
 
     const tagQuery = this.tagRepo.createQueryBuilder('tag');
 
+    const count = await tagQuery.getCount();
+
+    if (query.includePostCount) {
+      tagQuery
+        .addSelect('COUNT(post_tag.tagId) AS tag_post_count')
+        .leftJoin(PostTagEntity, 'post_tag', 'tag.id = post_tag.tagId')
+        .groupBy('tag.id')
+        .addGroupBy('tag.name')
+        .addGroupBy('tag.slug');
+    }
+
     if (query.name) {
       tagQuery.where('LOWER(tag.name) LIKE LOWER(:name)', {
         name: `%${query.name}`,
       });
     }
 
-    const [list, count] = await tagQuery
-      .orderBy('tag.createdAt', 'DESC')
-      .offset(offset)
-      .limit(limit)
-      .getManyAndCount();
+    tagQuery.orderBy('tag.createdAt', 'DESC').offset(offset).limit(limit);
+
+    const { entities, raw } = await tagQuery.getRawAndEntities();
 
     return PageDto.from({
-      list: list.map((e) => e.toDto()),
+      list: entities.map((e, i) => {
+        const dto = e.toDto();
+        if (query.includePostCount) {
+          dto.postCount = raw[i]['tag_post_count'];
+        }
+        return dto;
+      }),
       count: count,
       offset: offset,
       limit: limit,

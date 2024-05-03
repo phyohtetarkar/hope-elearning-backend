@@ -10,9 +10,15 @@ import { PostController } from './controllers/post.controller';
 import { PostAdminController } from './controllers/post-admin.controller';
 import { TagController } from './controllers/tag.controller';
 import { TagAdminController } from './controllers/tag-admin.controller';
-import { POST_SERVICE, TAG_SERVICE } from '@/core/services';
+import {
+  POST_REVISION_SERVICE,
+  POST_SERVICE,
+  TAG_SERVICE,
+} from '@/core/services';
 import { PostAuthorEntity } from '@/core/entities/post-author.entity';
 import { PostMetaEntity } from '@/core/entities/post-meta.entity';
+import { PostRevisionEntity } from '@/core/entities/post-revision.entity';
+import { TypeormPostRevisionService } from './services/typeorm-post-revision.service';
 
 @Module({
   imports: [
@@ -23,6 +29,7 @@ import { PostMetaEntity } from '@/core/entities/post-meta.entity';
       PostTagEntity,
       PostAuthorEntity,
       PostMetaEntity,
+      PostRevisionEntity,
     ]),
   ],
   providers: [
@@ -33,6 +40,10 @@ import { PostMetaEntity } from '@/core/entities/post-meta.entity';
     {
       provide: POST_SERVICE,
       useClass: TypeormPostService,
+    },
+    {
+      provide: POST_REVISION_SERVICE,
+      useClass: TypeormPostRevisionService,
     },
   ],
   controllers: [

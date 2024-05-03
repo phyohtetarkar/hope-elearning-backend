@@ -17,6 +17,8 @@ export class PostQueryDto extends QueryDto {
 
   featured?: boolean;
 
+  orderBy?: string;
+
   constructor(partial: Partial<PostQueryDto> = {}) {
     super();
     Object.assign(this, partial);

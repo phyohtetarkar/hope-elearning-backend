@@ -1,6 +1,7 @@
 import {
   Column,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -21,16 +22,28 @@ export class ChapterEntity extends AuditingEntity {
   @Column({ length: 2000, unique: true })
   slug: string;
 
-  @Column({ name: 'sort_order' })
+  @Column({ name: 'sort_order', default: 0 })
   sortOrder: number;
 
   @ManyToOne(() => CourseEntity, (type) => type.chapters)
+  @JoinColumn({ name: 'course_id' })
   course?: CourseEntity;
 
   @OneToMany(() => LessonEntity, (type) => type.chapter)
   lessons?: LessonEntity[];
 
-  toDto() {
+  toDto(compact?: boolean) {
+    if (compact) {
+      return new ChapterDto({
+        id: this.id,
+        title: this.title,
+        slug: this.slug,
+        sortOrder: this.sortOrder,
+        lessons: this.lessons
+          ?.sort((a, b) => a.sortOrder - b.sortOrder)
+          .map((e) => e.toDto()),
+      });
+    }
     return new ChapterDto({
       id: this.id,
       title: this.title,
@@ -39,7 +52,7 @@ export class ChapterEntity extends AuditingEntity {
       course: this.course?.toDto(),
       lessons: this.lessons
         ?.sort((a, b) => a.sortOrder - b.sortOrder)
-        .map((e) => e.toDto()),
+        .map((e) => e.toDto(true)),
       audit: this.toAudit(),
     });
   }

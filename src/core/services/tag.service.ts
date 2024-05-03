@@ -13,9 +13,9 @@ export interface TagService {
 
   delete(id: number): Promise<void>;
 
-  findById(id: number): Promise<TagDto | null>;
+  findById(id: number): Promise<TagDto | undefined>;
 
-  findBySlug(slug: string): Promise<TagDto | null>;
+  findBySlug(slug: string): Promise<TagDto | undefined>;
 
   find(query: TagQueryDto): Promise<PageDto<TagDto>>;
 }

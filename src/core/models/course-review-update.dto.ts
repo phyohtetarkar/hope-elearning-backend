@@ -1,4 +1,4 @@
-import { IsNotEmpty, Max, Min } from 'class-validator';
+import { IsNotEmpty, IsOptional, Max, MaxLength, Min } from 'class-validator';
 
 export class CourseReviewUpdateDto {
   userId: string;
@@ -10,5 +10,7 @@ export class CourseReviewUpdateDto {
   @Max(5)
   rating: number;
 
+  @IsOptional()
+  @MaxLength(5000)
   message?: string;
 }

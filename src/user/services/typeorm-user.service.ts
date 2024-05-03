@@ -39,14 +39,14 @@ export class TypeormUserService implements UserService {
     return user.toDto();
   }
 
-  async findById(id: string): Promise<UserDto | null> {
+  async findById(id: string): Promise<UserDto | undefined> {
     const entity = await this.userRepo.findOneBy({ id: id });
-    return entity?.toDto() ?? null;
+    return entity?.toDto();
   }
 
-  async findByUsername(username: string): Promise<UserDto | null> {
+  async findByUsername(username: string): Promise<UserDto | undefined> {
     const entity = await this.userRepo.findOneBy({ username: username });
-    return entity?.toDto() ?? null;
+    return entity?.toDto();
   }
 
   async find(query: UserQueryDto): Promise<PageDto<UserDto>> {

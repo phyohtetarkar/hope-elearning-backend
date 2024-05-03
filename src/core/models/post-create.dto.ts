@@ -1,11 +1,20 @@
-import { ArrayMinSize, IsArray, IsNotEmpty, IsOptional } from 'class-validator';
+import {
+  ArrayMinSize,
+  IsArray,
+  IsNotEmpty,
+  IsOptional,
+  MaxLength,
+} from 'class-validator';
 
 export class PostCreateDto {
   cover?: string;
 
+  @IsOptional()
+  @MaxLength(2000)
   title?: string;
 
   @IsNotEmpty()
+  @MaxLength(2000)
   slug: string;
 
   excerpt?: string;

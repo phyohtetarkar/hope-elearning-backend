@@ -1,15 +1,17 @@
 import {
+  Column,
   Entity,
   JoinColumn,
   ManyToOne,
   OneToMany,
   PrimaryColumn,
 } from 'typeorm';
+import { EnrolledCourseDto } from '../models';
 import { AuditingEntity } from './auditing.entity';
 import { CompletedLessonEntity } from './completed-lesson.entity';
 import { CourseEntity } from './course.entity';
+import { LessonEntity } from './lesson.entity';
 import { UserEntity } from './user.entity';
-import { EnrolledCourseDto } from '../models';
 
 @Entity({ name: 'enrolled_course' })
 export class EnrolledCourseEntity extends AuditingEntity {
@@ -19,6 +21,9 @@ export class EnrolledCourseEntity extends AuditingEntity {
   @PrimaryColumn({ name: 'course_id', type: 'bigint' })
   courseId: string;
 
+  @Column({ type: 'smallint', default: 0 })
+  progress: number;
+
   @ManyToOne(() => UserEntity)
   @JoinColumn({ name: 'user_id' })
   user: UserEntity;
@@ -27,13 +32,26 @@ export class EnrolledCourseEntity extends AuditingEntity {
   @JoinColumn({ name: 'course_id' })
   course: CourseEntity;
 
+  @ManyToOne(() => LessonEntity, { nullable: true })
+  @JoinColumn({ name: 'resume_lesson_id' })
+  resumeLesson?: LessonEntity | null;
+
   @OneToMany(() => CompletedLessonEntity, (type) => type.course)
   completedLessons: CompletedLessonEntity[];
 
-  toDto() {
+  toDto(compact?: boolean) {
+    if (compact) {
+      return new EnrolledCourseDto({
+        course: this.course.toDto(true),
+        resumeLesson: this.resumeLesson?.toDto(true),
+        progress: this.progress,
+      });
+    }
     return new EnrolledCourseDto({
       course: this.course.toDto(),
       completedLessons: this.completedLessons.map((l) => l.lessonId),
+      resumeLesson: this.resumeLesson?.toDto(true),
+      progress: this.progress,
     });
   }
 }

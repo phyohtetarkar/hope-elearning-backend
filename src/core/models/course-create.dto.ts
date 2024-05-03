@@ -4,14 +4,17 @@ import {
   IsEnum,
   IsInt,
   IsNotEmpty,
+  MaxLength,
 } from 'class-validator';
 import { CourseAccess, CourseLevel } from './course.dto';
 
 export class CourseCreateDto {
   @IsNotEmpty()
+  @MaxLength(2000)
   title: string;
 
   @IsNotEmpty()
+  @MaxLength(2000)
   slug: string;
 
   description?: string;

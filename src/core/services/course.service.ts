@@ -7,15 +7,19 @@ import {
 } from '../models';
 
 export interface CourseService {
-  create(values: CourseCreateDto): Promise<number>;
+  create(values: CourseCreateDto): Promise<string>;
 
-  update(values: CourseUpdateDto): Promise<number>;
+  update(values: CourseUpdateDto): Promise<CourseDto>;
+
+  publish(userId: string, courseId: string): Promise<void>;
+
+  unpublish(courseId: string): Promise<void>;
 
   delete(id: string): Promise<void>;
 
-  findById(id: string): Promise<CourseDto | null>;
+  findById(id: string): Promise<CourseDto | undefined>;
 
-  findBySlug(slug: string): Promise<CourseDto | null>;
+  findBySlug(slug: string): Promise<CourseDto | undefined>;
 
   find(query: CourseQueryDto): Promise<PageDto<CourseDto>>;
 }

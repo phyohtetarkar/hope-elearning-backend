@@ -3,7 +3,6 @@ import {
   PostCreateDto,
   PostDto,
   PostQueryDto,
-  PostStatus,
   PostUpdateDto,
 } from '../models';
 
@@ -20,9 +19,9 @@ export interface PostService {
 
   existsByIdAndAuthor(id: string, authorId: string): Promise<boolean>;
 
-  findById(id: string): Promise<PostDto | null>;
+  findById(id: string): Promise<PostDto | undefined>;
 
-  findBySlug(slug: string): Promise<PostDto | null>;
+  findBySlug(slug: string): Promise<PostDto | undefined>;
 
   find(query: PostQueryDto): Promise<PageDto<PostDto>>;
 }

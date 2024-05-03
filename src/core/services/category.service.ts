@@ -13,9 +13,9 @@ export interface CategorySerive {
 
   delete(id: number): Promise<void>;
 
-  findById(id: number): Promise<CategoryDto | null>;
+  findById(id: number): Promise<CategoryDto | undefined>;
 
-  findBySlug(slug: string): Promise<CategoryDto | null>;
+  findBySlug(slug: string): Promise<CategoryDto | undefined>;
 
   find(query: CategoryQueryDto): Promise<PageDto<CategoryDto>>;
 }

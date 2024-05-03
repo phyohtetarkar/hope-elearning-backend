@@ -1,6 +1,15 @@
 import { TagQueryDto } from '@/core/models';
 import { TAG_SERVICE, TagService } from '@/core/services';
-import { Controller, Get, Inject, Param, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  HttpStatus,
+  Inject,
+  Param,
+  Query,
+  Res,
+} from '@nestjs/common';
+import { Response } from 'express';
 
 @Controller('/content/tags')
 export class TagController {
@@ -12,7 +21,14 @@ export class TagController {
   }
 
   @Get(':slug')
-  async getPostBySlug(@Param('slug') slug: string) {
-    return await this.tagService.findBySlug(slug);
+  async getPostBySlug(
+    @Param('slug') slug: string,
+    @Res({ passthrough: true }) resp: Response,
+  ) {
+    const result = await this.tagService.findBySlug(slug);
+    if (!result) {
+      resp.status(HttpStatus.NO_CONTENT);
+    }
+    return result;
   }
 }

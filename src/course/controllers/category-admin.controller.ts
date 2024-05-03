@@ -11,13 +11,16 @@ import {
   Controller,
   Delete,
   Get,
+  HttpStatus,
   Inject,
   Param,
   ParseIntPipe,
   Post,
   Put,
   Query,
+  Res,
 } from '@nestjs/common';
+import { Response } from 'express';
 
 @Controller('/admin/categories')
 @Roles(UserRole.OWNER, UserRole.ADMIN)
@@ -42,8 +45,16 @@ export class CategoryAdminController {
   }
 
   @Get(':id')
-  async getCategory(@Param('id', ParseIntPipe) id: number) {
-    return await this.categoryService.findById(id);
+  async getCategory(
+    @Param('id', ParseIntPipe) id: number,
+    @Res({ passthrough: true }) resp: Response,
+  ) {
+    const result = await this.categoryService.findById(id);
+    if (!result) {
+      resp.status(HttpStatus.NO_CONTENT);
+    }
+
+    return result;
   }
 
   @Delete(':id')

@@ -1,6 +1,7 @@
 import { DomainError } from '@/common/errors';
 import { normalizeSlug } from '@/common/utils';
 import { CategoryEntity } from '@/core/entities/category.entity';
+import { CourseEntity } from '@/core/entities/course.entity';
 import {
   CategoryCreateDto,
   CategoryDto,
@@ -53,14 +54,14 @@ export class TypeormCategoryService implements CategorySerive {
     await this.categoryRepo.delete({ id: id });
   }
 
-  async findById(id: number): Promise<CategoryDto | null> {
+  async findById(id: number): Promise<CategoryDto | undefined> {
     const entity = await this.categoryRepo.findOneBy({ id: id });
-    return entity?.toDto() ?? null;
+    return entity?.toDto();
   }
 
-  async findBySlug(slug: string): Promise<CategoryDto | null> {
+  async findBySlug(slug: string): Promise<CategoryDto | undefined> {
     const entity = await this.categoryRepo.findOneBy({ slug: slug });
-    return entity?.toDto() ?? null;
+    return entity?.toDto();
   }
 
   async find(query: CategoryQueryDto): Promise<PageDto<CategoryDto>> {
@@ -68,20 +69,38 @@ export class TypeormCategoryService implements CategorySerive {
 
     const categoryQuery = this.categoryRepo.createQueryBuilder('category');
 
+    const count = await categoryQuery.getCount();
+
+    if (query.includeCourseCount) {
+      categoryQuery
+        .addSelect('COUNT(course.category_id) AS category_course_count')
+        .leftJoin(CourseEntity, 'course', 'category.id = course.category_id')
+        .groupBy('category.id')
+        .addGroupBy('category.name')
+        .addGroupBy('category.slug');
+    }
+
     if (query.name) {
       categoryQuery.where('LOWER(category.name) LIKE LOWER(:name)', {
         name: `%${query.name}`,
       });
     }
 
-    const [list, count] = await categoryQuery
+    categoryQuery
       .orderBy('category.createdAt', 'DESC')
       .offset(offset)
-      .limit(limit)
-      .getManyAndCount();
+      .limit(limit);
+
+    const { entities, raw } = await categoryQuery.getRawAndEntities();
 
     return PageDto.from({
-      list: list.map((e) => e.toDto()),
+      list: entities.map((e, i) => {
+        const dto = e.toDto();
+        if (query.includeCourseCount) {
+          dto.courseCount = raw[i]['category_course_count'];
+        }
+        return dto;
+      }),
       count: count,
       offset: offset,
       limit: limit,

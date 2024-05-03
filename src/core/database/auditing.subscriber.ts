@@ -28,7 +28,7 @@ export class AuditingSubscriber
     // console.log('beforeInsert', event.entity);
     if (userId) {
       event.entity.createdBy = userId;
-      // event.entity.updatedBy = user.id;
+      event.entity.updatedBy = userId;
     }
     // const date = new Date();
     // event.entity.createdAt = date;

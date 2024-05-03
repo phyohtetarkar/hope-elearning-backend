@@ -1,11 +1,18 @@
-import { IsNotEmpty } from 'class-validator';
+import { IsInt, IsNotEmpty, MaxLength } from 'class-validator';
 
 export class LessonCreateDto {
   @IsNotEmpty()
-  title: string;
+  chapterId: string;
 
   @IsNotEmpty()
-  slug: string;
+  courseId: string;
+
+  @IsNotEmpty()
+  @MaxLength(2000)
+  title: string;
 
   lexical?: string;
+
+  @IsInt()
+  sortOrder: number;
 }

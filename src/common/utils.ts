@@ -18,7 +18,7 @@ export async function normalizeSlug(
       result = slug + '-' + i;
       i += 1;
     } else {
-      result = slug + '-' + generateRandomCode(6);
+      result = slug + '-' + generateRandomCode(5);
     }
   }
 
@@ -26,7 +26,8 @@ export async function normalizeSlug(
 }
 
 export function generateRandomCode(length: number) {
-  const randomChars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  const randomChars =
+    '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
   const charLength = randomChars.length;
   let result = '';
   for (let i = 0; i < length; i++) {

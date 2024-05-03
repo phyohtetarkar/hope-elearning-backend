@@ -14,10 +14,14 @@ import {
   PostUpdateDto,
   QueryDto,
 } from '@/core/models';
-import { PostService } from '@/core/services';
-import { Injectable } from '@nestjs/common';
+import {
+  POST_REVISION_SERVICE,
+  PostRevisionService,
+  PostService,
+} from '@/core/services';
+import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Not, Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 
 @Injectable()
 export class TypeormPostService implements PostService {
@@ -29,6 +33,8 @@ export class TypeormPostService implements PostService {
     private postMetaRepo: Repository<PostMetaEntity>,
     @InjectRepository(PostAuthorEntity)
     private postAuthorRepo: Repository<PostAuthorEntity>,
+    @Inject(POST_REVISION_SERVICE)
+    private postRevisionService: PostRevisionService,
   ) {}
 
   async create(values: PostCreateDto): Promise<number> {
@@ -79,36 +85,32 @@ export class TypeormPostService implements PostService {
   }
 
   async update(values: PostUpdateDto): Promise<PostDto> {
-    const entity = await this.dataSource.transaction(async (em) => {
-      const postId = values.id;
+    const postId = values.id;
+    const entity = await this.postRepo.findOneBy({ id: postId });
 
-      const entity = await em.findOneBy(PostEntity, {
-        id: postId,
-      });
+    if (!entity) {
+      throw new DomainError('Post not found');
+    }
 
-      if (!entity) {
-        throw new DomainError('Post not found');
-      }
+    const dbUpdatedAt = new Date(entity.updatedAt).getTime();
+    const userUpdatedAt = new Date(values.updatedAt).getTime();
 
-      const dbUpdatedAt = new Date(entity.updatedAt).getTime();
-      const userUpdatedAt = new Date(values.updatedAt).getTime();
+    if (dbUpdatedAt > userUpdatedAt) {
+      throw new DomainError('Update conflict by another user. Please refresh.');
+    }
 
-      if (dbUpdatedAt > userUpdatedAt) {
-        throw new DomainError(
-          'Update conflict by another user. Please refresh.',
-        );
-      }
-
+    const post = await this.dataSource.transaction(async (em) => {
       await em.update(PostEntity, postId, {
         title: values.title,
         cover: values.cover ?? null,
         excerpt: values.excerpt ?? null,
         lexical: values.lexical ?? null,
         visibility: values.visibility,
+        publishedAt: values.publishedAt ? new Date(values.publishedAt) : null,
         slug:
           entity.slug !== values.slug
             ? await normalizeSlug(values.slug, (v) => {
-                return em.existsBy(PostEntity, { id: Not(postId), slug: v });
+                return em.existsBy(PostEntity, { slug: v });
               })
             : undefined,
       });
@@ -138,30 +140,42 @@ export class TypeormPostService implements PostService {
         await em.insert(PostTagEntity, postTags);
       }
 
-      return em.findOneOrFail(PostEntity, {
-        relations: {
-          tags: { tag: true },
-          authors: { author: true },
-        },
-        where: {
-          id: postId,
-        },
-      });
+      return em
+        .createQueryBuilder(PostEntity, 'post')
+        .leftJoinAndSelect('post.authors', 'post_author')
+        .leftJoinAndSelect('post.tags', 'post_tag')
+        .leftJoinAndSelect('post_author.author', 'author')
+        .leftJoinAndSelect('post_tag.tag', 'tag')
+        .where('post.id = :id', { id: postId })
+        .getOneOrFail();
     });
 
-    return entity.toDto();
+    const newPost = post.toDto();
+
+    this.postRevisionService.save(entity.toDto(), newPost);
+
+    return newPost;
   }
 
   async publish(userId: string, postId: string): Promise<void> {
-    const exists = await this.postRepo.existsBy({ id: postId });
-    if (!exists) {
+    const entity = await this.postRepo.findOneBy({ id: postId });
+    if (!entity) {
       throw new DomainError('Post not found');
     }
+
+    const now = new Date();
+    now.setMilliseconds(0);
 
     await this.postRepo.update(postId, {
       status: PostStatus.PUBLISHED,
       publishedBy: userId,
-      publishedAt: new Date(),
+      publishedAt: entity.publishedAt ?? now,
+    });
+
+    const post = entity.toDto();
+    this.postRevisionService.save(post, {
+      ...post,
+      status: PostStatus.PUBLISHED,
     });
   }
 
@@ -173,7 +187,6 @@ export class TypeormPostService implements PostService {
 
     await this.postRepo.update(postId, {
       status: PostStatus.DRAFT,
-      publishedBy: null,
     });
   }
 
@@ -194,7 +207,7 @@ export class TypeormPostService implements PostService {
     });
   }
 
-  async findById(id: string): Promise<PostDto | null> {
+  async findById(id: string): Promise<PostDto | undefined> {
     const entity = await this.postRepo
       .createQueryBuilder('post')
       .leftJoinAndSelect('post.authors', 'post_author')
@@ -204,10 +217,10 @@ export class TypeormPostService implements PostService {
       .where('post.id = :id', { id })
       .getOne();
 
-    return entity?.toDto() ?? null;
+    return entity?.toDto();
   }
 
-  async findBySlug(slug: string): Promise<PostDto | null> {
+  async findBySlug(slug: string): Promise<PostDto | undefined> {
     const entity = await this.postRepo
       .createQueryBuilder('post')
       .leftJoinAndSelect('post.meta', 'meta')
@@ -221,7 +234,7 @@ export class TypeormPostService implements PostService {
     if (entity) {
       this.postMetaRepo.increment({ id: entity.id }, 'totalView', 1);
     }
-    return entity?.toDto() ?? null;
+    return entity?.toDto();
   }
 
   async find(query: PostQueryDto): Promise<PageDto<PostDto>> {
@@ -271,7 +284,7 @@ export class TypeormPostService implements PostService {
     }
 
     const [list, count] = await postQuery
-      .orderBy('post.createdAt', 'DESC')
+      .orderBy(`post.${query.orderBy ?? 'createdAt'}`, 'DESC')
       .offset(offset)
       .limit(limit)
       .getManyAndCount();

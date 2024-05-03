@@ -5,10 +5,6 @@ export class CourseMetaDto {
 
   enrolledCount: string;
 
-  chapterCount: number;
-
-  lessonCount: number;
-
   constructor(partial: Partial<CourseMetaDto> = {}) {
     Object.assign(this, partial);
   }

@@ -5,6 +5,7 @@ import {
   IsEnum,
   IsNotEmpty,
   IsOptional,
+  MaxLength,
 } from 'class-validator';
 import { PostVisibility } from './post.dto';
 
@@ -14,9 +15,12 @@ export class PostUpdateDto {
 
   cover?: string;
 
+  @IsOptional()
+  @MaxLength(2000)
   title?: string;
 
   @IsNotEmpty()
+  @MaxLength(2000)
   slug: string;
 
   excerpt?: string;
@@ -35,6 +39,10 @@ export class PostUpdateDto {
   @IsOptional()
   @IsArray()
   tags?: number[];
+
+  @IsOptional()
+  @IsDateString()
+  publishedAt?: string;
 
   @IsDateString()
   updatedAt: string;
