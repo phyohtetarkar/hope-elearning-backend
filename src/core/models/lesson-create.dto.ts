@@ -11,6 +11,10 @@ export class LessonCreateDto {
   @MaxLength(2000)
   title: string;
 
+  @IsNotEmpty()
+  @MaxLength(2000)
+  slug: string;
+
   lexical?: string;
 
   @IsInt()

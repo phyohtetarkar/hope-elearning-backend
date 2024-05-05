@@ -7,7 +7,7 @@ import {
 } from '../models';
 
 export interface PostService {
-  create(values: PostCreateDto): Promise<number>;
+  create(values: PostCreateDto): Promise<string>;
 
   update(values: PostUpdateDto): Promise<PostDto>;
 
@@ -16,8 +16,6 @@ export interface PostService {
   unpublish(postId: string): Promise<void>;
 
   delete(id: string): Promise<void>;
-
-  existsByIdAndAuthor(id: string, authorId: string): Promise<boolean>;
 
   findById(id: string): Promise<PostDto | undefined>;
 

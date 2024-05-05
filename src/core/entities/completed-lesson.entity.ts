@@ -14,9 +14,6 @@ export class CompletedLessonEntity {
   @PrimaryColumn({ name: 'lesson_id', type: 'bigint' })
   lessonId: string;
 
-  @Column({ name: 'chapter_id', type: 'bigint' })
-  chapterId: string;
-
   @ManyToOne(() => LessonEntity)
   @JoinColumn({ name: 'lesson_id' })
   lesson?: LessonEntity;

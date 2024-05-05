@@ -1,9 +1,13 @@
 import { Staff } from '@/common/decorators';
-import { PostCreateDto, PostQueryDto, PostUpdateDto } from '@/core/models';
+import {
+  PostCreateDto,
+  PostQueryDto,
+  PostStatus,
+  PostUpdateDto,
+} from '@/core/models';
 import { POST_SERVICE, PostService } from '@/core/services';
 import {
   Body,
-  ClassSerializerInterceptor,
   Controller,
   Delete,
   Get,
@@ -16,7 +20,6 @@ import {
   Res,
   SerializeOptions,
   UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { PostOwnerGuard } from '../guards/post-owner.guard';
@@ -24,7 +27,6 @@ import { PostCreateTransformPipe } from '../pipes/post-create-transform.pipe';
 import { PostQueryTransformPipe } from '../pipes/post-query-transform.pipe';
 import { PostUpdateTransformPipe } from '../pipes/post-update-transform.pipe';
 
-@UseInterceptors(ClassSerializerInterceptor)
 @Controller('/admin/posts')
 @Staff()
 export class PostAdminController {
@@ -38,6 +40,7 @@ export class PostAdminController {
   @SerializeOptions({
     groups: ['detail'],
   })
+  @UseGuards(PostOwnerGuard)
   @Put()
   async update(@Body(PostUpdateTransformPipe) values: PostUpdateDto) {
     return await this.postService.update(values);

@@ -6,10 +6,10 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { ChapterDto } from '../models';
 import { AuditingEntity } from './auditing.entity';
 import { CourseEntity } from './course.entity';
 import { LessonEntity } from './lesson.entity';
-import { ChapterDto } from '../models';
 
 @Entity({ name: 'chapter' })
 export class ChapterEntity extends AuditingEntity {
@@ -42,6 +42,7 @@ export class ChapterEntity extends AuditingEntity {
         lessons: this.lessons
           ?.sort((a, b) => a.sortOrder - b.sortOrder)
           .map((e) => e.toDto()),
+        audit: this.toAudit(),
       });
     }
     return new ChapterDto({

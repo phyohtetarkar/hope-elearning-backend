@@ -36,7 +36,7 @@ export class CourseDto {
   access: CourseAccess;
   status: CourseStatus;
   publishedAt?: string;
-  category: CategoryDto;
+  category?: CategoryDto;
   authors: UserDto[];
 
   @Expose({ groups: ['detail'] })

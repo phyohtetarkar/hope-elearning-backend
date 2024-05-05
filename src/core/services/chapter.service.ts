@@ -10,7 +10,7 @@ export interface ChapterService {
 
   update(values: ChapterUpdateDto): Promise<void>;
 
-  updateSort(values: [SortUpdateDto]): Promise<void>;
+  updateSort(values: SortUpdateDto[]): Promise<void>;
 
   delete(id: string): Promise<void>;
 

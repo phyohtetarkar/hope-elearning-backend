@@ -37,6 +37,9 @@ export class LessonEntity extends AuditingEntity {
   @Column({ name: 'sort_order', default: 0 })
   sortOrder: number;
 
+  @Column({ name: 'course_id', type: 'bigint' })
+  courseId: string;
+
   @Column({ name: 'chapter_id', type: 'bigint' })
   chapterId: string;
 
@@ -57,6 +60,7 @@ export class LessonEntity extends AuditingEntity {
         trial: this.trial,
         sortOrder: this.sortOrder,
         status: this.status,
+        courseId: this.courseId,
         chapterId: this.chapterId,
         audit: this.toAudit(),
       });
@@ -70,6 +74,7 @@ export class LessonEntity extends AuditingEntity {
       status: this.status,
       lexical: this.lexical ?? undefined,
       sortOrder: this.sortOrder,
+      courseId: this.courseId,
       chapterId: this.chapterId,
       chapter: this.chapter?.toDto(true),
       course: this.course?.toDto(true),

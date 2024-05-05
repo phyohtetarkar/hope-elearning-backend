@@ -8,9 +8,9 @@ import {
 export interface LessonService {
   create(values: LessonCreateDto): Promise<string>;
 
-  update(values: LessonUpdateDto): Promise<LessonDto>;
+  update(values: LessonUpdateDto): Promise<void>;
 
-  updateSort(values: [SortUpdateDto]): Promise<void>;
+  updateSort(values: SortUpdateDto[]): Promise<void>;
 
   delete(id: string): Promise<void>;
 

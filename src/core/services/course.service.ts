@@ -9,7 +9,7 @@ import {
 export interface CourseService {
   create(values: CourseCreateDto): Promise<string>;
 
-  update(values: CourseUpdateDto): Promise<CourseDto>;
+  update(values: CourseUpdateDto): Promise<void>;
 
   publish(userId: string, courseId: string): Promise<void>;
 

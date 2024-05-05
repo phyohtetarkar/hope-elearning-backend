@@ -8,6 +8,10 @@ export class ChapterCreateDto {
   @MaxLength(2000)
   title: string;
 
+  @IsNotEmpty()
+  @MaxLength(2000)
+  slug: string;
+
   @IsInt()
   sortOrder: number;
 }

@@ -6,7 +6,7 @@ import {
   IsNotEmpty,
   MaxLength,
 } from 'class-validator';
-import { CourseAccess, CourseLevel } from './course.dto';
+import { CourseLevel } from './course.dto';
 
 export class CourseCreateDto {
   @IsNotEmpty()
@@ -21,9 +21,6 @@ export class CourseCreateDto {
 
   @IsEnum(CourseLevel)
   level: CourseLevel;
-
-  @IsEnum(CourseAccess)
-  access: CourseAccess;
 
   @IsInt()
   categoryId: number;

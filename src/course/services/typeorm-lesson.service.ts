@@ -3,6 +3,7 @@ import { normalizeSlug } from '@/common/utils';
 import { ChapterEntity } from '@/core/entities/chapter.entity';
 import { CompletedLessonEntity } from '@/core/entities/completed-lesson.entity';
 import { CourseEntity } from '@/core/entities/course.entity';
+import { EnrolledCourseEntity } from '@/core/entities/enrolled-course.entity';
 import { LessonRevisionEntity } from '@/core/entities/lesson-revision.entity';
 import { LessonEntity } from '@/core/entities/lesson.entity';
 import {
@@ -18,7 +19,7 @@ import {
 } from '@/core/services';
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, DeepPartial, Repository } from 'typeorm';
 
 @Injectable()
 export class TypeormLessonService implements LessonService {
@@ -50,7 +51,7 @@ export class TypeormLessonService implements LessonService {
       course: { id: values.courseId },
       chapterId: values.chapterId,
       slug: await normalizeSlug(
-        values.title,
+        values.slug,
         (v) => {
           return this.chapterRepo.existsBy({ slug: v });
         },
@@ -61,7 +62,7 @@ export class TypeormLessonService implements LessonService {
     return result.identifiers[0].id;
   }
 
-  async update(values: LessonUpdateDto): Promise<LessonDto> {
+  async update(values: LessonUpdateDto): Promise<void> {
     const entity = await this.lessonRepo.findOneBy({ id: values.id });
 
     if (!entity) {
@@ -92,23 +93,35 @@ export class TypeormLessonService implements LessonService {
 
     const lesson = await this.lessonRepo.findOneByOrFail({ id: values.id });
 
-    return lesson.toDto();
+    this.lessonRevisionService.save(entity.toDto(), lesson.toDto());
+
+    // return lesson.toDto();
   }
 
-  async updateSort(values: [SortUpdateDto]): Promise<void> {
-    await this.dataSource.transaction(async (em) => {
-      for (const v of values) {
-        await em.update(LessonEntity, v.id, {
+  async updateSort(values: SortUpdateDto[]): Promise<void> {
+    if (values.length === 0) return;
+    await this.lessonRepo.save(
+      values.map((v) => {
+        return {
+          id: v.id,
           sortOrder: v.sortOrder,
-        });
-      }
-    });
+        } as DeepPartial<LessonEntity>;
+      }),
+      { listeners: false },
+    );
   }
 
   async delete(id: string): Promise<void> {
     await this.dataSource.transaction(async (em) => {
       await em.delete(CompletedLessonEntity, { lessonId: id });
       await em.delete(LessonRevisionEntity, { lessonId: id });
+      await em.update(
+        EnrolledCourseEntity,
+        { resumeLesson: { id } },
+        {
+          resumeLesson: null,
+        },
+      );
       await em.delete(LessonEntity, id);
     });
   }

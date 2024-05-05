@@ -1,7 +1,6 @@
 import { PostQueryDto, PostStatus } from '@/core/models';
 import { POST_SERVICE, PostService } from '@/core/services';
 import {
-  ClassSerializerInterceptor,
   Controller,
   Get,
   HttpStatus,
@@ -10,11 +9,9 @@ import {
   Query,
   Res,
   SerializeOptions,
-  UseInterceptors,
 } from '@nestjs/common';
 import { Response } from 'express';
 
-@UseInterceptors(ClassSerializerInterceptor)
 @Controller('/content/posts')
 export class PostController {
   constructor(@Inject(POST_SERVICE) private postService: PostService) {}
@@ -37,8 +34,9 @@ export class PostController {
     @Res({ passthrough: true }) resp: Response,
   ) {
     const result = await this.postService.findBySlug(slug);
-    if (!result) {
+    if (!result || result.status !== PostStatus.PUBLISHED) {
       resp.status(HttpStatus.NO_CONTENT);
+      return undefined;
     }
     return result;
   }

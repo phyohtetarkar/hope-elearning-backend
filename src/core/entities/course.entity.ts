@@ -70,7 +70,7 @@ export class CourseEntity extends AuditingEntity {
 
   @ManyToOne(() => CategoryEntity)
   @JoinColumn({ name: 'category_id' })
-  category: CategoryEntity;
+  category?: CategoryEntity;
 
   @OneToOne(() => CourseMetaEntity, (type) => type.course)
   meta?: CourseMetaEntity;
@@ -91,7 +91,7 @@ export class CourseEntity extends AuditingEntity {
         level: this.level,
         access: this.access,
         status: this.status,
-        category: this.category.toDto(),
+        category: this.category?.toDto(),
         audit: this.toAudit(),
       });
     }
@@ -107,7 +107,7 @@ export class CourseEntity extends AuditingEntity {
       access: this.access,
       status: this.status,
       publishedAt: this.publishedAt?.toISOString(),
-      category: this.category.toDto(),
+      category: this.category?.toDto(),
       authors: this.authors
         ?.sort((a, b) => a.sortOrder - b.sortOrder)
         .map((e) => e.author.toDto()),

@@ -5,6 +5,7 @@ import {
   IsEnum,
   IsInt,
   IsNotEmpty,
+  IsOptional,
   MaxLength,
 } from 'class-validator';
 import { CourseAccess, CourseLevel } from './course.dto';
@@ -30,15 +31,17 @@ export class CourseUpdateDto {
   @IsEnum(CourseLevel)
   level: CourseLevel;
 
+  @IsOptional()
   @IsEnum(CourseAccess)
-  access: CourseAccess;
+  access?: CourseAccess;
 
   @IsInt()
   categoryId: number;
 
+  @IsOptional()
   @IsArray()
   @ArrayMinSize(1, { message: 'Required at least one author' })
-  authors: string[];
+  authors?: string[];
 
   @IsDateString()
   updatedAt: string;

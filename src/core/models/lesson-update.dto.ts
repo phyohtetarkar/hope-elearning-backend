@@ -1,11 +1,9 @@
 import {
   IsDateString,
-  IsEnum,
   IsNotEmpty,
   IsOptional,
   MaxLength,
 } from 'class-validator';
-import { LessonStatus } from './lesson.dto';
 
 export class LessonUpdateDto {
   @IsNotEmpty()
@@ -20,10 +18,6 @@ export class LessonUpdateDto {
   slug: string;
 
   lexical?: string;
-
-  @IsOptional()
-  @IsEnum(LessonStatus)
-  status?: LessonStatus;
 
   @IsDateString()
   updatedAt: string;

@@ -1,5 +1,5 @@
 import { SecurityContextService } from '@/core/security/security-context.service';
-import { POST_AUTHOR_SERVICE, PostAuthorService } from '@/core/services';
+import { COURSE_AUTHOR_SERVICE, CourseAuthorService } from '@/core/services';
 import {
   CanActivate,
   ExecutionContext,
@@ -9,11 +9,11 @@ import {
 import { Request } from 'express';
 
 @Injectable()
-export class PostOwnerGuard implements CanActivate {
+export class CourseOwnerGuard implements CanActivate {
   constructor(
     private security: SecurityContextService,
-    @Inject(POST_AUTHOR_SERVICE)
-    private postAuthorService: PostAuthorService,
+    @Inject(COURSE_AUTHOR_SERVICE)
+    private courseAuthorService: CourseAuthorService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -27,7 +27,7 @@ export class PostOwnerGuard implements CanActivate {
     const id = request.params['id'] || request.body['id'];
 
     if (id) {
-      return await this.postAuthorService.existByPostAndAuthor(id, user.id);
+      return await this.courseAuthorService.existByCourseAndAuthor(id, user.id);
     }
 
     return true;

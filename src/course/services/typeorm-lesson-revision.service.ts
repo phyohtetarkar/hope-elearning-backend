@@ -37,7 +37,8 @@ export class TypeormLessonRevisionService implements LessonRevisionService {
     await this.lessonRevisionRepo.insert({
       lessonId: oldLesson.id,
       authorId: oldLesson.audit?.updatedBy,
-      chapterId: oldLesson.chapterId,
+      chapter: { id: oldLesson.chapterId },
+      course: { id: oldLesson.courseId },
       createdAt: new Date(),
       title: oldLesson.title,
       lexical: oldLesson.lexical,

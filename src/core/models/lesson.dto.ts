@@ -13,14 +13,15 @@ export class LessonDto {
   title: string;
   slug: string;
   trial: boolean;
-
-  @Exclude()
   status: LessonStatus;
 
   @Expose({ groups: ['lesson-detail'] })
   lexical?: string;
 
   sortOrder: number;
+
+  @Exclude()
+  courseId: string;
 
   @Exclude()
   chapterId: string;

@@ -31,18 +31,16 @@ export class TypeormPostService implements PostService {
     private postRepo: Repository<PostEntity>,
     @InjectRepository(PostMetaEntity)
     private postMetaRepo: Repository<PostMetaEntity>,
-    @InjectRepository(PostAuthorEntity)
-    private postAuthorRepo: Repository<PostAuthorEntity>,
     @Inject(POST_REVISION_SERVICE)
     private postRevisionService: PostRevisionService,
   ) {}
 
-  async create(values: PostCreateDto): Promise<number> {
-    return await this.dataSource.transaction(async (em) => {
-      if (values.authors.length === 0) {
-        throw new DomainError('Required at least one author');
-      }
+  async create(values: PostCreateDto): Promise<string> {
+    if (values.authors.length === 0) {
+      throw new DomainError('Required at least one author');
+    }
 
+    return await this.dataSource.transaction(async (em) => {
       const result = await em.insert(PostEntity, {
         cover: values.cover,
         title: values.title,
@@ -172,11 +170,11 @@ export class TypeormPostService implements PostService {
       publishedAt: entity.publishedAt ?? now,
     });
 
-    const post = entity.toDto();
-    this.postRevisionService.save(post, {
-      ...post,
-      status: PostStatus.PUBLISHED,
-    });
+    // const post = entity.toDto();
+    // this.postRevisionService.save(post, {
+    //   ...post,
+    //   status: PostStatus.PUBLISHED,
+    // });
   }
 
   async unpublish(postId: string): Promise<void> {
@@ -197,13 +195,6 @@ export class TypeormPostService implements PostService {
       await em.delete(PostAuthorEntity, { postId: id });
       await em.delete(PostMetaEntity, id);
       await em.delete(PostEntity, id);
-    });
-  }
-
-  async existsByIdAndAuthor(id: string, authorId: string): Promise<boolean> {
-    return await this.postAuthorRepo.existsBy({
-      postId: id,
-      authorId: authorId,
     });
   }
 
@@ -261,13 +252,7 @@ export class TypeormPostService implements PostService {
 
     if (query.featured) {
       postQuery.andWhere('post.featured = :featured', {
-        visibility: query.featured,
-      });
-    }
-
-    if (query.q) {
-      postQuery.andWhere('LOWER(post.title) LIKE LOWER(:title)', {
-        title: `%${query.q}%`,
+        featured: query.featured,
       });
     }
 
@@ -280,6 +265,12 @@ export class TypeormPostService implements PostService {
     if (tags) {
       postQuery.andWhere('post_tag.tagId IN(:...tags)', {
         tags: tags.filter((v) => !isNaN(v)),
+      });
+    }
+
+    if (query.q) {
+      postQuery.andWhere('LOWER(post.title) LIKE LOWER(:title)', {
+        title: `%${query.q}%`,
       });
     }
 

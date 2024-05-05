@@ -14,7 +14,7 @@ import {
 import { ChapterService } from '@/core/services';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Not, Repository } from 'typeorm';
+import { DataSource, DeepPartial, Repository } from 'typeorm';
 
 @Injectable()
 export class TypeormChapterService implements ChapterService {
@@ -36,7 +36,7 @@ export class TypeormChapterService implements ChapterService {
       sortOrder: values.sortOrder,
       course: { id: values.courseId },
       slug: await normalizeSlug(
-        values.title,
+        values.slug,
         (v) => {
           return this.chapterRepo.existsBy({ slug: v });
         },
@@ -76,20 +76,31 @@ export class TypeormChapterService implements ChapterService {
     });
   }
 
-  async updateSort(values: [SortUpdateDto]): Promise<void> {
-    await this.dataSource.transaction(async (em) => {
-      for (const v of values) {
-        await em.update(ChapterEntity, v.id, {
+  async updateSort(values: SortUpdateDto[]): Promise<void> {
+    if (values.length === 0) return;
+    // await this.dataSource.transaction(async (em) => {
+    //   for (const v of values) {
+    //     await em.update(ChapterEntity, v.id, {
+    //       sortOrder: v.sortOrder,
+    //     });
+    //   }
+    // });
+
+    await this.chapterRepo.save(
+      values.map((v) => {
+        return {
+          id: v.id,
           sortOrder: v.sortOrder,
-        });
-      }
-    });
+        } as DeepPartial<ChapterEntity>;
+      }),
+      { listeners: false },
+    );
   }
 
   async delete(id: string): Promise<void> {
     await this.dataSource.transaction(async (em) => {
-      await em.delete(CompletedLessonEntity, { chapterId: id });
-      await em.delete(LessonRevisionEntity, { chapterId: id });
+      await em.delete(CompletedLessonEntity, { chapter: { id } });
+      await em.delete(LessonRevisionEntity, { chapter: { id } });
       await em.delete(LessonEntity, { chapterId: id });
       await em.delete(ChapterEntity, id);
     });
