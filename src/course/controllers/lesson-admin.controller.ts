@@ -31,12 +31,12 @@ export class LessonAdminController {
 
   @Put('lessons')
   async update(@Body() values: LessonUpdateDto) {
-    return await this.lessonService.update(values);
+    await this.lessonService.update(values);
   }
 
   @Put('sort-lessons')
   async sort(@Body() values: [SortUpdateDto]) {
-    return await this.lessonService.updateSort(values);
+    await this.lessonService.updateSort(values);
   }
 
   @Delete('lessons/:lessonId')

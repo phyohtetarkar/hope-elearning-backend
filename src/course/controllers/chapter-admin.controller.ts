@@ -32,12 +32,12 @@ export class ChapterAdminController {
 
   @Put('chapters')
   async update(@Body() values: ChapterUpdateDto) {
-    return await this.chapterService.update(values);
+    await this.chapterService.update(values);
   }
 
   @Put('sort-chapters')
   async sort(@Body() values: [SortUpdateDto]) {
-    return await this.chapterService.updateSort(values);
+    await this.chapterService.updateSort(values);
   }
 
   @Delete('chapters/:chapterId')

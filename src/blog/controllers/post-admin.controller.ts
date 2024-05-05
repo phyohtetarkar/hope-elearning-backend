@@ -1,10 +1,6 @@
 import { Staff } from '@/common/decorators';
-import {
-  PostCreateDto,
-  PostQueryDto,
-  PostStatus,
-  PostUpdateDto,
-} from '@/core/models';
+import { PostCreateDto, PostQueryDto, PostUpdateDto } from '@/core/models';
+import { SecurityContextService } from '@/core/security/security-context.service';
 import { POST_SERVICE, PostService } from '@/core/services';
 import {
   Body,
@@ -30,7 +26,10 @@ import { PostUpdateTransformPipe } from '../pipes/post-update-transform.pipe';
 @Controller('/admin/posts')
 @Staff()
 export class PostAdminController {
-  constructor(@Inject(POST_SERVICE) private postService: PostService) {}
+  constructor(
+    private security: SecurityContextService,
+    @Inject(POST_SERVICE) private postService: PostService,
+  ) {}
 
   @Post()
   async create(@Body(PostCreateTransformPipe) values: PostCreateDto) {
@@ -43,12 +42,25 @@ export class PostAdminController {
   @UseGuards(PostOwnerGuard)
   @Put()
   async update(@Body(PostUpdateTransformPipe) values: PostUpdateDto) {
-    return await this.postService.update(values);
+    await this.postService.update(values);
   }
 
   @Get()
   async find(@Query(PostQueryTransformPipe) query: PostQueryDto) {
     return await this.postService.find(query);
+  }
+
+  @UseGuards(PostOwnerGuard)
+  @Put(':id/publish')
+  async publishPost(@Param('id') id: string) {
+    const user = this.security.getAuthenticatedUser();
+    await this.postService.publish(user.id, id);
+  }
+
+  @UseGuards(PostOwnerGuard)
+  @Put(':id/unpublish')
+  async unpublishPost(@Param('id') id: string) {
+    await this.postService.unpublish(id);
   }
 
   @SerializeOptions({

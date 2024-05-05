@@ -38,7 +38,7 @@ export class SecurityModule implements NestModule {
     consumer
       .apply(
         cors({
-          origin: [],
+          origin: ['http://localhost:3000'],
           allowedHeaders: '*',
           credentials: true,
         }),

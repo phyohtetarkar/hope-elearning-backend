@@ -19,7 +19,7 @@ import {
 } from '@/core/services';
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, DeepPartial, Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 
 @Injectable()
 export class TypeormLessonService implements LessonService {
@@ -100,15 +100,24 @@ export class TypeormLessonService implements LessonService {
 
   async updateSort(values: SortUpdateDto[]): Promise<void> {
     if (values.length === 0) return;
-    await this.lessonRepo.save(
-      values.map((v) => {
-        return {
-          id: v.id,
+
+    await this.dataSource.transaction(async (em) => {
+      for (const v of values) {
+        await em.update(LessonEntity, v.id, {
           sortOrder: v.sortOrder,
-        } as DeepPartial<LessonEntity>;
-      }),
-      { listeners: false },
-    );
+        });
+      }
+    });
+
+    // await this.lessonRepo.save(
+    //   values.map((v) => {
+    //     return {
+    //       id: v.id,
+    //       sortOrder: v.sortOrder,
+    //     } as DeepPartial<LessonEntity>;
+    //   }),
+    //   { listeners: false },
+    // );
   }
 
   async delete(id: string): Promise<void> {

@@ -82,7 +82,7 @@ export class TypeormPostService implements PostService {
     });
   }
 
-  async update(values: PostUpdateDto): Promise<PostDto> {
+  async update(values: PostUpdateDto): Promise<void> {
     const postId = values.id;
     const entity = await this.postRepo.findOneBy({ id: postId });
 
@@ -138,21 +138,12 @@ export class TypeormPostService implements PostService {
         await em.insert(PostTagEntity, postTags);
       }
 
-      return em
-        .createQueryBuilder(PostEntity, 'post')
-        .leftJoinAndSelect('post.authors', 'post_author')
-        .leftJoinAndSelect('post.tags', 'post_tag')
-        .leftJoinAndSelect('post_author.author', 'author')
-        .leftJoinAndSelect('post_tag.tag', 'tag')
-        .where('post.id = :id', { id: postId })
-        .getOneOrFail();
+      return em.findOneByOrFail(PostEntity, { id: postId });
     });
 
     const newPost = post.toDto();
 
     this.postRevisionService.save(entity.toDto(), newPost);
-
-    return newPost;
   }
 
   async publish(userId: string, postId: string): Promise<void> {
