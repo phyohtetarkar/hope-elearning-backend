@@ -44,3 +44,4 @@ export * from './lesson.dto';
 export * from './sort-update.dto';
 export * from './resume-lesson-update.dto';
 export * from './completed-lesson-update.dto';
+export * from './dashboard.dto';

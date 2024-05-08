@@ -9,6 +9,9 @@ export class LessonUpdateDto {
   @IsNotEmpty()
   id: string;
 
+  @IsNotEmpty()
+  courseId: string;
+
   @IsOptional()
   @MaxLength(2000)
   title?: string;
@@ -18,6 +21,8 @@ export class LessonUpdateDto {
   slug: string;
 
   lexical?: string;
+
+  trial?: boolean;
 
   @IsDateString()
   updatedAt: string;

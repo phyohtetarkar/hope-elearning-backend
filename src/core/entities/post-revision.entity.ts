@@ -23,6 +23,9 @@ export class PostRevisionEntity {
   @Column({ type: 'text', nullable: true })
   lexical?: string | null;
 
+  @Column({ name: 'word_count', default: 0 })
+  wordCount: number;
+
   @Column({ type: 'varchar', length: 2000, nullable: true })
   cover?: string | null;
 

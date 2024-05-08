@@ -5,6 +5,11 @@ export interface BookmarkCourseService {
 
   remove(userId: string, courseId: string): Promise<void>;
 
+  findByUserIdAndCourseId(
+    userId: string,
+    courseId: string,
+  ): Promise<CourseDto | undefined>;
+
   findByUserId(userId: string, query: QueryDto): Promise<PageDto<CourseDto>>;
 }
 

@@ -1,9 +1,5 @@
 import { Staff } from '@/common/decorators';
-import {
-  ChapterCreateDto,
-  ChapterUpdateDto,
-  SortUpdateDto,
-} from '@/core/models';
+import { ChapterCreateDto, ChapterUpdateDto } from '@/core/models';
 import { CHAPTER_SERVICE, ChapterService } from '@/core/services';
 import {
   Body,
@@ -17,31 +13,27 @@ import {
 } from '@nestjs/common';
 import { CourseOwnerGuard } from '../guards/course-owner.guard';
 
-@Controller('/admin/courses/:id')
-@UseGuards(CourseOwnerGuard)
+@Controller('/admin/chapters')
 @Staff()
 export class ChapterAdminController {
   constructor(
     @Inject(CHAPTER_SERVICE) private chapterService: ChapterService,
   ) {}
 
-  @Post('chapters')
+  @UseGuards(CourseOwnerGuard)
+  @Post()
   async create(@Body() values: ChapterCreateDto) {
     return await this.chapterService.create(values);
   }
 
-  @Put('chapters')
+  @UseGuards(CourseOwnerGuard)
+  @Put()
   async update(@Body() values: ChapterUpdateDto) {
     await this.chapterService.update(values);
   }
 
-  @Put('sort-chapters')
-  async sort(@Body() values: [SortUpdateDto]) {
-    await this.chapterService.updateSort(values);
-  }
-
-  @Delete('chapters/:chapterId')
-  async deleteCourse(@Param('chapterId') id: string) {
+  @Delete(':id')
+  async deleteCourse(@Param('id') id: string) {
     await this.chapterService.delete(id);
   }
 }

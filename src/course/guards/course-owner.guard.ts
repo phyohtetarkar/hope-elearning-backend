@@ -24,7 +24,8 @@ export class CourseOwnerGuard implements CanActivate {
       return true;
     }
 
-    const id = request.params['id'] || request.body['id'];
+    const id =
+      request.params['id'] || request.body['courseId'] || request.body['id'];
 
     if (id) {
       return await this.courseAuthorService.existByCourseAndAuthor(id, user.id);

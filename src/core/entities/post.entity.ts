@@ -5,11 +5,11 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { PostDto, PostStatus, PostVisibility } from '../models';
 import { AuditingEntity } from './auditing.entity';
 import { PostAuthorEntity } from './post-author.entity';
 import { PostMetaEntity } from './post-meta.entity';
 import { PostTagEntity } from './post-tag.entity';
-import { PostVisibility, PostDto, PostStatus } from '../models';
 
 @Entity({ name: 'post' })
 export class PostEntity extends AuditingEntity {
@@ -30,6 +30,9 @@ export class PostEntity extends AuditingEntity {
 
   @Column({ type: 'text', nullable: true })
   lexical?: string | null;
+
+  @Column({ name: 'word_count', default: 0 })
+  wordCount: number;
 
   @Column({
     type: 'enum',
@@ -75,6 +78,7 @@ export class PostEntity extends AuditingEntity {
       slug: this.slug,
       excerpt: this.excerpt ?? undefined,
       lexical: this.lexical ?? undefined,
+      wordCount: this.wordCount,
       status: this.status,
       visibility: this.visibility,
       featured: this.featured,

@@ -48,6 +48,7 @@ export class TypeormLessonService implements LessonService {
       title: values.title,
       sortOrder: values.sortOrder,
       lexical: values.lexical,
+      trial: values.trial,
       course: { id: values.courseId },
       chapterId: values.chapterId,
       slug: await normalizeSlug(
@@ -63,7 +64,11 @@ export class TypeormLessonService implements LessonService {
   }
 
   async update(values: LessonUpdateDto): Promise<void> {
-    const entity = await this.lessonRepo.findOneBy({ id: values.id });
+    const entity = await this.lessonRepo
+      .createQueryBuilder('lesson')
+      .where('lesson.id = :id', { id: values.id })
+      .andWhere('lesson.course_id = :courseId', { courseId: values.courseId })
+      .getOne();
 
     if (!entity) {
       throw new DomainError('Lesson not found');
@@ -79,6 +84,7 @@ export class TypeormLessonService implements LessonService {
     await this.lessonRepo.update(values.id, {
       title: values.title,
       lexical: values.lexical,
+      trial: values.trial,
       slug:
         entity.slug !== values.slug
           ? await normalizeSlug(

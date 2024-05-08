@@ -18,7 +18,7 @@ import { diskStorage } from 'multer';
               const date = new Date();
               const month = date.getMonth() + 1;
               const fm = month < 10 ? `0${month}` : month;
-              const path = `./content/${date.getFullYear()}/${fm}`;
+              const path = `./content/images/${date.getFullYear()}/${fm}`;
               mkdirSync(path, { recursive: true });
               cb(null, path);
             },

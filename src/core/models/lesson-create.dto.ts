@@ -17,6 +17,8 @@ export class LessonCreateDto {
 
   lexical?: string;
 
+  trial?: boolean;
+
   @IsInt()
   sortOrder: number;
 }

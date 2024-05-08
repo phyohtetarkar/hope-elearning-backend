@@ -1,10 +1,10 @@
+import { UserEntity } from '@/core/entities/user.entity';
+import { PROFILE_SERVICE, USER_SERVICE } from '@/core/services';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserController } from './user.controller';
-import { UserEntity } from '@/core/entities/user.entity';
-import { TypeormUserService } from './services/typeorm-user.service';
 import { TypeormProfileService } from './services/typeorm-profile.service';
-import { PROFILE_SERVICE, USER_SERVICE } from '@/core/services';
+import { TypeormUserService } from './services/typeorm-user.service';
+import { UserAdminController } from './user-admin.controller';
 import { UserProfileController } from './user-profile.controller';
 
 @Module({
@@ -19,7 +19,7 @@ import { UserProfileController } from './user-profile.controller';
       useClass: TypeormProfileService,
     },
   ],
-  controllers: [UserController, UserProfileController],
+  controllers: [UserAdminController, UserProfileController],
   exports: [USER_SERVICE],
 })
 export class UserModule {}

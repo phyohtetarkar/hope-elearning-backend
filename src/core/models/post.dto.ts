@@ -30,6 +30,7 @@ export class PostDto {
 
   visibility: PostVisibility;
 
+  wordCount: number;
   featured: boolean;
   publishedAt?: string;
   authors: UserDto[];

@@ -8,12 +8,18 @@ export enum LessonStatus {
   PUBLISHED = 'published',
 }
 
+export enum LessonType {
+  TEXT = 'text',
+  VIDEO = 'video',
+}
+
 export class LessonDto {
   id: string;
   title: string;
   slug: string;
   trial: boolean;
   status: LessonStatus;
+  type: LessonType;
 
   @Expose({ groups: ['lesson-detail'] })
   lexical?: string;

@@ -27,6 +27,8 @@ export class PostUpdateDto {
 
   lexical?: string;
 
+  wordCount?: number;
+
   @IsOptional()
   @IsEnum(PostVisibility)
   visibility?: PostVisibility;

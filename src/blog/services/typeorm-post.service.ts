@@ -104,6 +104,7 @@ export class TypeormPostService implements PostService {
         excerpt: values.excerpt ?? null,
         lexical: values.lexical ?? null,
         visibility: values.visibility,
+        wordCount: values.wordCount,
         publishedAt: values.publishedAt ? new Date(values.publishedAt) : null,
         slug:
           entity.slug !== values.slug

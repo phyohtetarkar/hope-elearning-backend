@@ -21,9 +21,6 @@ export class EnrolledCourseEntity extends AuditingEntity {
   @PrimaryColumn({ name: 'course_id', type: 'bigint' })
   courseId: string;
 
-  @Column({ type: 'smallint', default: 0 })
-  progress: number;
-
   @ManyToOne(() => UserEntity)
   @JoinColumn({ name: 'user_id' })
   user: UserEntity;
@@ -37,21 +34,19 @@ export class EnrolledCourseEntity extends AuditingEntity {
   resumeLesson?: LessonEntity | null;
 
   @OneToMany(() => CompletedLessonEntity, (type) => type.course)
-  completedLessons: CompletedLessonEntity[];
+  completedLessons?: CompletedLessonEntity[];
 
   toDto(compact?: boolean) {
     if (compact) {
       return new EnrolledCourseDto({
         course: this.course.toDto(true),
         resumeLesson: this.resumeLesson?.toDto(true),
-        progress: this.progress,
       });
     }
     return new EnrolledCourseDto({
       course: this.course.toDto(),
-      completedLessons: this.completedLessons.map((l) => l.lessonId),
+      completedLessons: this.completedLessons?.map((l) => l.lessonId),
       resumeLesson: this.resumeLesson?.toDto(true),
-      progress: this.progress,
     });
   }
 }

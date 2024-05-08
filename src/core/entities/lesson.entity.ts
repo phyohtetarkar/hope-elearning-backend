@@ -5,7 +5,7 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { LessonDto, LessonStatus } from '../models';
+import { LessonDto, LessonStatus, LessonType } from '../models';
 import { AuditingEntity } from './auditing.entity';
 import { ChapterEntity } from './chapter.entity';
 import { CourseEntity } from './course.entity';
@@ -30,6 +30,13 @@ export class LessonEntity extends AuditingEntity {
     default: LessonStatus.DRAFT,
   })
   status: LessonStatus;
+
+  @Column({
+    type: 'enum',
+    enum: LessonType,
+    default: LessonType.TEXT,
+  })
+  type: LessonType;
 
   @Column({ type: 'text', nullable: true })
   lexical?: string | null;
@@ -60,6 +67,7 @@ export class LessonEntity extends AuditingEntity {
         trial: this.trial,
         sortOrder: this.sortOrder,
         status: this.status,
+        type: this.type,
         courseId: this.courseId,
         chapterId: this.chapterId,
         audit: this.toAudit(),
@@ -72,6 +80,7 @@ export class LessonEntity extends AuditingEntity {
       slug: this.slug,
       trial: this.trial,
       status: this.status,
+      type: this.type,
       lexical: this.lexical ?? undefined,
       sortOrder: this.sortOrder,
       courseId: this.courseId,

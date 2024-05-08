@@ -5,6 +5,9 @@ export class ChapterUpdateDto {
   id: string;
 
   @IsNotEmpty()
+  courseId: string;
+
+  @IsNotEmpty()
   @MaxLength(2000)
   title: string;
 

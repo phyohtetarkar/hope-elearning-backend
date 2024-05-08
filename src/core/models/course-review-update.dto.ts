@@ -1,6 +1,8 @@
+import { Exclude } from 'class-transformer';
 import { IsNotEmpty, IsOptional, Max, MaxLength, Min } from 'class-validator';
 
 export class CourseReviewUpdateDto {
+  @Exclude()
   userId: string;
 
   @IsNotEmpty()

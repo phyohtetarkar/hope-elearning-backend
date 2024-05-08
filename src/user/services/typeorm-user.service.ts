@@ -1,3 +1,4 @@
+import { DomainError } from '@/common/errors';
 import { normalizeSlug } from '@/common/utils';
 import { UserEntity } from '@/core/entities/user.entity';
 import {
@@ -37,6 +38,17 @@ export class TypeormUserService implements UserService {
     const user = await this.userRepo.findOneByOrFail({ id: userId });
 
     return user.toDto();
+  }
+
+  async updateRole(userId: string, role: UserRole): Promise<void> {
+    const exists = await this.userRepo.existsBy({ id: userId });
+    if (!exists) {
+      throw new DomainError('User not found');
+    }
+
+    await this.userRepo.update(userId, {
+      role: role,
+    });
   }
 
   async findById(id: string): Promise<UserDto | undefined> {

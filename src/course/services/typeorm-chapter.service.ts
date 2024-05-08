@@ -48,7 +48,11 @@ export class TypeormChapterService implements ChapterService {
   }
 
   async update(values: ChapterUpdateDto): Promise<void> {
-    const entity = await this.chapterRepo.findOneBy({ id: values.id });
+    const entity = await this.chapterRepo
+      .createQueryBuilder('chapter')
+      .where('chapter.id = :id', { id: values.id })
+      .andWhere('chapter.course_id = :courseId', { courseId: values.courseId })
+      .getOne();
 
     if (!entity) {
       throw new DomainError('Chapter not found');

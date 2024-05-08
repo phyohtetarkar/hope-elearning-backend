@@ -3,9 +3,17 @@ import {
   CourseCreateDto,
   CourseQueryDto,
   CourseUpdateDto,
+  SortUpdateDto,
 } from '@/core/models';
 import { SecurityContextService } from '@/core/security/security-context.service';
-import { COURSE_SERVICE, CourseService } from '@/core/services';
+import {
+  CHAPTER_SERVICE,
+  COURSE_SERVICE,
+  ChapterService,
+  CourseService,
+  LESSON_SERVICE,
+  LessonService,
+} from '@/core/services';
 import {
   Body,
   Controller,
@@ -33,6 +41,8 @@ export class CourseAdminController {
   constructor(
     private security: SecurityContextService,
     @Inject(COURSE_SERVICE) private courseService: CourseService,
+    @Inject(CHAPTER_SERVICE) private chapterService: ChapterService,
+    @Inject(LESSON_SERVICE) private lessonService: LessonService,
   ) {}
 
   @Post()
@@ -62,6 +72,16 @@ export class CourseAdminController {
   @Put(':id/unpublish')
   async unpublishCourse(@Param('id') id: string) {
     await this.courseService.unpublish(id);
+  }
+
+  @Put(':id/sort-chapters')
+  async sortChapter(@Body() values: [SortUpdateDto]) {
+    await this.chapterService.updateSort(values);
+  }
+
+  @Put(':id/sort-lessons')
+  async sortLessons(@Body() values: [SortUpdateDto]) {
+    await this.lessonService.updateSort(values);
   }
 
   @SerializeOptions({

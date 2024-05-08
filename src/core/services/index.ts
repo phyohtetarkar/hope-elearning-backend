@@ -16,4 +16,6 @@ export * from './lesson-revision.service';
 export * from './lesson.service';
 
 export * from './bookmark-course.service';
-export * from './enrolled-course.service';
+export * from './enroll-course.service';
+
+export * from './dashboard.service';
