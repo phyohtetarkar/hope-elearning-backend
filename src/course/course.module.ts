@@ -30,6 +30,7 @@ import { TypeormCourseAuthorService } from './services/typeorm-course-author.ser
 import { TypeormCourseService } from './services/typeorm-course.service';
 import { TypeormLessonRevisionService } from './services/typeorm-lesson-revision.service';
 import { TypeormLessonService } from './services/typeorm-lesson.service';
+import { CategoryController } from './controllers/category.controller';
 
 @Module({
   imports: [
@@ -75,6 +76,7 @@ import { TypeormLessonService } from './services/typeorm-lesson.service';
   ],
   controllers: [
     CategoryAdminController,
+    CategoryController,
     CourseAdminController,
     CourseController,
     ChapterAdminController,
