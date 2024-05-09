@@ -7,7 +7,7 @@ export class PostMetaEntity {
   @PrimaryColumn({ type: 'bigint' })
   id: string;
 
-  @Column({ name: 'viewCount', type: 'bigint', default: 0 })
+  @Column({ name: 'view_count', type: 'bigint', default: 0 })
   viewCount: string;
 
   @OneToOne(() => PostEntity, (type) => type.meta)

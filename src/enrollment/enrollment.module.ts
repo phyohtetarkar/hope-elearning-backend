@@ -1,6 +1,6 @@
-import { ENROLL_COURSE_SERVICE } from '@/core/services';
+import { COURSE_ENROLLMENT_SERVICE } from '@/core/services';
 import { Module } from '@nestjs/common';
-import { TypeormEnrollCourseService } from './services/typeorm-enroll-course.service';
+import { TypeormCourseEnrollmentService } from './services/typeorm-course-enrollment.service';
 import { EnrollmentController } from './controllers/enrollment.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CourseEntity } from '@/core/entities/course.entity';
@@ -19,8 +19,8 @@ import { CompletedLessonEntity } from '@/core/entities/completed-lesson.entity';
   ],
   providers: [
     {
-      provide: ENROLL_COURSE_SERVICE,
-      useClass: TypeormEnrollCourseService,
+      provide: COURSE_ENROLLMENT_SERVICE,
+      useClass: TypeormCourseEnrollmentService,
     },
   ],
   controllers: [EnrollmentController],

@@ -12,7 +12,7 @@ export interface LessonService {
 
   updateSort(values: SortUpdateDto[]): Promise<void>;
 
-  delete(id: string): Promise<void>;
+  delete(courseId: string, lessonId: string): Promise<void>;
 
   findById(id: string): Promise<LessonDto | undefined>;
 

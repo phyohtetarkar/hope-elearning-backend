@@ -1,13 +1,14 @@
 import { Exclude } from 'class-transformer';
-import { IsNotEmpty, IsOptional, Max, MaxLength, Min } from 'class-validator';
+import { IsInt, IsOptional, Max, MaxLength, Min } from 'class-validator';
 
 export class CourseReviewUpdateDto {
   @Exclude()
   userId: string;
 
-  @IsNotEmpty()
+  @Exclude()
   courseId: string;
 
+  @IsInt()
   @Min(1)
   @Max(5)
   rating: number;

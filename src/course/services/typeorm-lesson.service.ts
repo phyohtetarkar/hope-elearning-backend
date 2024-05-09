@@ -126,18 +126,35 @@ export class TypeormLessonService implements LessonService {
     // );
   }
 
-  async delete(id: string): Promise<void> {
+  async delete(courseId: string, lessonId: string): Promise<void> {
     await this.dataSource.transaction(async (em) => {
-      await em.delete(CompletedLessonEntity, { lessonId: id });
-      await em.delete(LessonRevisionEntity, { lessonId: id });
+      await em.delete(CompletedLessonEntity, {
+        courseId: courseId,
+        lessonId: lessonId,
+      });
+
+      await em.delete(LessonRevisionEntity, {
+        lessonId: lessonId,
+        course: { id: courseId },
+      });
+
+      const firstLesson = await em
+        .createQueryBuilder(LessonEntity, 'lesson')
+        .leftJoin('lesson.chapter', 'chapter')
+        .where('lesson.courseId = :courseId', { courseId: courseId })
+        .orderBy('chapter.sortOrder', 'ASC')
+        .addOrderBy('lesson.sortOrder', 'ASC')
+        .limit(1)
+        .getOne();
+
       await em.update(
         EnrolledCourseEntity,
-        { resumeLesson: { id } },
+        { courseId: courseId, resumeLesson: { id: lessonId } },
         {
-          resumeLesson: null,
+          resumeLesson: firstLesson ? { id: firstLesson.id } : null,
         },
       );
-      await em.delete(LessonEntity, id);
+      await em.delete(LessonEntity, { id: lessonId, courseId: courseId });
     });
   }
 

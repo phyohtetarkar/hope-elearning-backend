@@ -24,10 +24,10 @@ export class PostOwnerGuard implements CanActivate {
       return true;
     }
 
-    const id = request.params['id'] || request.body['id'];
+    const postId = request.params['id'] || request.body['id'];
 
-    if (id) {
-      return await this.postAuthorService.existByPostAndAuthor(id, user.id);
+    if (postId) {
+      return await this.postAuthorService.existByPostAndAuthor(postId, user.id);
     }
 
     return true;

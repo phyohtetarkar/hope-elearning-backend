@@ -18,37 +18,52 @@ import {
 import { Response } from 'express';
 import { CourseOwnerGuard } from '../guards/course-owner.guard';
 
-@Controller('/admin/lessons')
+@Controller('/admin/courses/:courseId/lessons')
+@UseGuards(CourseOwnerGuard)
 @Staff()
 export class LessonAdminController {
   constructor(@Inject(LESSON_SERVICE) private lessonService: LessonService) {}
 
-  @UseGuards(CourseOwnerGuard)
   @Post()
-  async create(@Body() values: LessonCreateDto) {
-    return await this.lessonService.create(values);
+  async create(
+    @Param('courseId') courseId: string,
+    @Body() values: LessonCreateDto,
+  ) {
+    return await this.lessonService.create({
+      ...values,
+      courseId: courseId,
+    });
   }
 
-  @UseGuards(CourseOwnerGuard)
   @Put()
-  async update(@Body() values: LessonUpdateDto) {
-    await this.lessonService.update(values);
+  async update(
+    @Param('courseId') courseId: string,
+    @Body() values: LessonUpdateDto,
+  ) {
+    await this.lessonService.update({
+      ...values,
+      courseId: courseId,
+    });
   }
 
-  @Delete(':id')
-  async deleteCourse(@Param('lessonId') id: string) {
-    await this.lessonService.delete(id);
+  @Delete(':lessonId')
+  async delete(
+    @Param('courseId') courseId: string,
+    @Param('lessonId') lessonId: string,
+  ) {
+    await this.lessonService.delete(courseId, lessonId);
   }
 
   @SerializeOptions({
     groups: ['lesson-detail'],
   })
-  @Get(':id')
+  @Get(':lessonId')
   async getCourse(
-    @Param('id') id: string,
+    @Param('courseId') courseId: string,
+    @Param('lessonId') lessonId: string,
     @Res({ passthrough: true }) resp: Response,
   ) {
-    const result = await this.lessonService.findById(id);
+    const result = await this.lessonService.findById(lessonId);
     if (!result) {
       resp.status(HttpStatus.NO_CONTENT);
     }

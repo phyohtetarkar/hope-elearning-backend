@@ -12,7 +12,7 @@ export interface ChapterService {
 
   updateSort(values: SortUpdateDto[]): Promise<void>;
 
-  delete(id: string): Promise<void>;
+  delete(courseId: string, chapterId: string): Promise<void>;
 
   findById(id: string): Promise<ChapterDto | undefined>;
 }

@@ -26,7 +26,6 @@ export class LessonDto {
 
   sortOrder: number;
 
-  @Exclude()
   courseId: string;
 
   @Exclude()
@@ -37,6 +36,9 @@ export class LessonDto {
 
   @Expose({ groups: ['lesson-detail'] })
   course?: CourseDto;
+
+  @Expose({ groups: ['lesson-detail'] })
+  completed?: boolean;
 
   audit?: AuditingDto;
 

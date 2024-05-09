@@ -24,11 +24,14 @@ export class CourseOwnerGuard implements CanActivate {
       return true;
     }
 
-    const id =
-      request.params['id'] || request.body['courseId'] || request.body['id'];
+    const courseId =
+      request.params['id'] || request.params['courseId'] || request.body['id'];
 
-    if (id) {
-      return await this.courseAuthorService.existByCourseAndAuthor(id, user.id);
+    if (courseId) {
+      return await this.courseAuthorService.existByCourseAndAuthor(
+        courseId,
+        user.id,
+      );
     }
 
     return true;

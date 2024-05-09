@@ -1,6 +1,9 @@
 import { QueryDto } from '@/core/models';
 import { SecurityContextService } from '@/core/security/security-context.service';
-import { ENROLL_COURSE_SERVICE, EnrollCourseService } from '@/core/services';
+import {
+  COURSE_ENROLLMENT_SERVICE,
+  CourseEnrollmentService,
+} from '@/core/services';
 import {
   Controller,
   Delete,
@@ -12,6 +15,7 @@ import {
   Put,
   Query,
   Res,
+  SerializeOptions,
 } from '@nestjs/common';
 import { Response } from 'express';
 
@@ -19,14 +23,14 @@ import { Response } from 'express';
 export class EnrollmentController {
   constructor(
     private security: SecurityContextService,
-    @Inject(ENROLL_COURSE_SERVICE)
-    private enrollCourseService: EnrollCourseService,
+    @Inject(COURSE_ENROLLMENT_SERVICE)
+    private courseEnrollmentService: CourseEnrollmentService,
   ) {}
 
   @Get()
   async find(@Query() query: QueryDto) {
     const user = this.security.getAuthenticatedUser();
-    return await this.enrollCourseService.findByUserId(user.id, query);
+    return await this.courseEnrollmentService.findByUserId(user.id, query);
   }
 
   @Post(':courseId/completed/:lessonId')
@@ -35,7 +39,7 @@ export class EnrollmentController {
     @Param('lessonId') lessonId: string,
   ) {
     const user = this.security.getAuthenticatedUser();
-    await this.enrollCourseService.insertCompletedLesson({
+    await this.courseEnrollmentService.insertCompletedLesson({
       userId: user.id,
       courseId: courseId,
       lessonId: lessonId,
@@ -48,7 +52,7 @@ export class EnrollmentController {
     @Param('lessonId') lessonId: string,
   ) {
     const user = this.security.getAuthenticatedUser();
-    await this.enrollCourseService.updateResumeLesson({
+    await this.courseEnrollmentService.updateResumeLesson({
       userId: user.id,
       courseId: courseId,
       lessonId: lessonId,
@@ -58,13 +62,36 @@ export class EnrollmentController {
   @Post(':courseId')
   async enroll(@Param('courseId') courseId: string) {
     const user = this.security.getAuthenticatedUser();
-    await this.enrollCourseService.enroll(user.id, courseId);
+    await this.courseEnrollmentService.enroll(user.id, courseId);
   }
 
   @Delete(':courseId')
   async remove(@Param('courseId') courseId: string) {
     const user = this.security.getAuthenticatedUser();
-    await this.enrollCourseService.remove(user.id, courseId);
+    await this.courseEnrollmentService.remove(user.id, courseId);
+  }
+
+  @SerializeOptions({
+    groups: ['lesson-detail'],
+  })
+  @Get(':courseSlug/lessons/:lessonSlug')
+  async getEnrolledCourseLesson(
+    @Param('courseSlug') courseSlug: string,
+    @Param('lessonSlug') lessonSlug: string,
+    @Res({ passthrough: true }) resp: Response,
+  ) {
+    const user = this.security.getAuthenticatedUser();
+    const result = await this.courseEnrollmentService.findEnrolledCourseLesson(
+      user.id,
+      courseSlug,
+      lessonSlug,
+    );
+
+    if (!result) {
+      resp.status(HttpStatus.NO_CONTENT);
+    }
+
+    return result;
   }
 
   @Get(':courseId')
@@ -73,7 +100,7 @@ export class EnrollmentController {
     @Res({ passthrough: true }) resp: Response,
   ) {
     const user = this.security.getAuthenticatedUser();
-    const result = await this.enrollCourseService.findByUserIdAndCourseId(
+    const result = await this.courseEnrollmentService.findByUserIdAndCourseId(
       user.id,
       courseId,
     );

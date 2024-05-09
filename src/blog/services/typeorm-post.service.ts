@@ -215,7 +215,7 @@ export class TypeormPostService implements PostService {
       .getOne();
 
     if (entity) {
-      this.postMetaRepo.increment({ id: entity.id }, 'totalView', 1);
+      this.postMetaRepo.increment({ id: entity.id }, 'viewCount', 1);
     }
     return entity?.toDto();
   }

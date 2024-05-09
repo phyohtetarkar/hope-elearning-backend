@@ -1,3 +1,4 @@
+import { Exclude } from 'class-transformer';
 import {
   IsDateString,
   IsNotEmpty,
@@ -9,7 +10,7 @@ export class LessonUpdateDto {
   @IsNotEmpty()
   id: string;
 
-  @IsNotEmpty()
+  @Exclude()
   courseId: string;
 
   @IsOptional()

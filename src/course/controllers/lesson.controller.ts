@@ -18,7 +18,7 @@ export class LessonController {
   @SerializeOptions({
     groups: ['lesson-detail'],
   })
-  @Get(':slug')
+  @Get(':slug/trial')
   async getLesson(
     @Param('slug') slug: string,
     @Res({ passthrough: true }) resp: Response,

@@ -3,6 +3,7 @@ import { normalizeSlug } from '@/common/utils';
 import { ChapterEntity } from '@/core/entities/chapter.entity';
 import { CompletedLessonEntity } from '@/core/entities/completed-lesson.entity';
 import { CourseEntity } from '@/core/entities/course.entity';
+import { EnrolledCourseEntity } from '@/core/entities/enrolled-course.entity';
 import { LessonRevisionEntity } from '@/core/entities/lesson-revision.entity';
 import { LessonEntity } from '@/core/entities/lesson.entity';
 import {
@@ -101,12 +102,43 @@ export class TypeormChapterService implements ChapterService {
     // );
   }
 
-  async delete(id: string): Promise<void> {
+  async delete(courseId: string, chapterId: string): Promise<void> {
     await this.dataSource.transaction(async (em) => {
-      await em.delete(CompletedLessonEntity, { chapter: { id } });
-      await em.delete(LessonRevisionEntity, { chapter: { id } });
-      await em.delete(LessonEntity, { chapterId: id });
-      await em.delete(ChapterEntity, id);
+      await em.delete(CompletedLessonEntity, {
+        courseId: courseId,
+        chapter: { chapterId },
+      });
+
+      await em.delete(LessonRevisionEntity, {
+        course: { id: courseId },
+        chapter: { id: chapterId },
+      });
+
+      const firstLesson = await em
+        .createQueryBuilder(LessonEntity, 'lesson')
+        .leftJoin('lesson.chapter', 'chapter')
+        .where('lesson.courseId = :courseId', { courseId: courseId })
+        .orderBy('chapter.sortOrder', 'ASC')
+        .addOrderBy('lesson.sortOrder', 'ASC')
+        .limit(1)
+        .getOne();
+
+      await em.update(
+        EnrolledCourseEntity,
+        { courseId: courseId, resumeLesson: { chapterId: chapterId } },
+        {
+          resumeLesson: firstLesson ? { id: firstLesson.id } : null,
+        },
+      );
+
+      await em.delete(LessonEntity, {
+        courseId: courseId,
+        chapterId: chapterId,
+      });
+      await em.delete(ChapterEntity, {
+        id: chapterId,
+        course: { id: courseId },
+      });
     });
   }
 

@@ -1,12 +1,13 @@
 import {
   CompletedLessonUpdateDto,
   EnrolledCourseDto,
+  LessonDto,
   PageDto,
   QueryDto,
   ResumeLessonUpdateDto,
 } from '../models';
 
-export interface EnrollCourseService {
+export interface CourseEnrollmentService {
   enroll(userId: string, courseId: string): Promise<void>;
 
   remove(userId: string, courseId: string): Promise<void>;
@@ -20,10 +21,16 @@ export interface EnrollCourseService {
     courseId: string,
   ): Promise<EnrolledCourseDto | undefined>;
 
+  findEnrolledCourseLesson(
+    userId: string,
+    courseSlug: string,
+    lessonSlug: string,
+  ): Promise<LessonDto | undefined>;
+
   findByUserId(
     userId: string,
     query: QueryDto,
   ): Promise<PageDto<EnrolledCourseDto>>;
 }
 
-export const ENROLL_COURSE_SERVICE = 'EnrollCourseService';
+export const COURSE_ENROLLMENT_SERVICE = 'CourseEnrollmentService';

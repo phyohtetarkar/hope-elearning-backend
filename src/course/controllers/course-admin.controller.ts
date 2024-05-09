@@ -74,11 +74,13 @@ export class CourseAdminController {
     await this.courseService.unpublish(id);
   }
 
+  @UseGuards(CourseOwnerGuard)
   @Put(':id/sort-chapters')
   async sortChapter(@Body() values: [SortUpdateDto]) {
     await this.chapterService.updateSort(values);
   }
 
+  @UseGuards(CourseOwnerGuard)
   @Put(':id/sort-lessons')
   async sortLessons(@Body() values: [SortUpdateDto]) {
     await this.lessonService.updateSort(values);
@@ -103,7 +105,7 @@ export class CourseAdminController {
 
   @UseGuards(CourseOwnerGuard)
   @Delete(':id')
-  async deleteCourse(@Param('id') id: string) {
+  async delete(@Param('id') id: string) {
     await this.courseService.delete(id);
   }
 }

@@ -1,5 +1,6 @@
 import { DomainError } from '@/common/errors';
 import { CompletedLessonEntity } from '@/core/entities/completed-lesson.entity';
+import { CourseMetaEntity } from '@/core/entities/course-meta.entity';
 import { CourseEntity } from '@/core/entities/course.entity';
 import { EnrolledCourseEntity } from '@/core/entities/enrolled-course.entity';
 import { LessonEntity } from '@/core/entities/lesson.entity';
@@ -7,17 +8,18 @@ import {
   CompletedLessonUpdateDto,
   CourseStatus,
   EnrolledCourseDto,
+  LessonDto,
   PageDto,
   QueryDto,
   ResumeLessonUpdateDto,
 } from '@/core/models';
-import { EnrollCourseService } from '@/core/services';
+import { CourseEnrollmentService } from '@/core/services';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 
 @Injectable()
-export class TypeormEnrollCourseService implements EnrollCourseService {
+export class TypeormCourseEnrollmentService implements CourseEnrollmentService {
   constructor(
     private dataSource: DataSource,
     @InjectRepository(CourseEntity)
@@ -27,7 +29,7 @@ export class TypeormEnrollCourseService implements EnrollCourseService {
     @InjectRepository(EnrolledCourseEntity)
     private enrolledCourseRepo: Repository<EnrolledCourseEntity>,
     @InjectRepository(CompletedLessonEntity)
-    private completeLessonRepo: Repository<CompletedLessonEntity>,
+    private completedLessonRepo: Repository<CompletedLessonEntity>,
   ) {}
 
   async enroll(userId: string, courseId: string): Promise<void> {
@@ -49,9 +51,32 @@ export class TypeormEnrollCourseService implements EnrollCourseService {
       throw new DomainError('Course already enrolled');
     }
 
-    await this.enrolledCourseRepo.insert({
-      userId: userId,
-      courseId: courseId,
+    const firstLesson = await this.lessonRepo
+      .createQueryBuilder('lesson')
+      .leftJoin('lesson.chapter', 'chapter')
+      .where('lesson.courseId = :courseId', { courseId: courseId })
+      .orderBy('chapter.sortOrder', 'ASC')
+      .addOrderBy('lesson.sortOrder', 'ASC')
+      .limit(1)
+      .getOne();
+
+    if (!firstLesson) {
+      throw new DomainError('No lessons found');
+    }
+
+    await this.dataSource.transaction(async (em) => {
+      await em.insert(EnrolledCourseEntity, {
+        userId: userId,
+        courseId: courseId,
+        resumeLesson: { id: firstLesson.id },
+      });
+
+      await em.increment(
+        CourseMetaEntity,
+        { id: courseId },
+        'enrolledCount',
+        1,
+      );
     });
   }
 
@@ -65,6 +90,13 @@ export class TypeormEnrollCourseService implements EnrollCourseService {
         userId: userId,
         courseId: courseId,
       });
+
+      await em.decrement(
+        CourseMetaEntity,
+        { id: courseId },
+        'enrolledCount',
+        1,
+      );
     });
   }
 
@@ -109,7 +141,7 @@ export class TypeormEnrollCourseService implements EnrollCourseService {
       throw new DomainError('Lesson not found');
     }
 
-    await this.completeLessonRepo.save({
+    await this.completedLessonRepo.save({
       userId: values.userId,
       courseId: values.courseId,
       lessonId: values.lessonId,
@@ -144,6 +176,31 @@ export class TypeormEnrollCourseService implements EnrollCourseService {
     return dto;
   }
 
+  async findEnrolledCourseLesson(
+    userId: string,
+    courseSlug: string,
+    lessonSlug: string,
+  ): Promise<LessonDto | undefined> {
+    const entity = await this.lessonRepo
+      .createQueryBuilder('lesson')
+      .innerJoin(EnrolledCourseEntity, 'ec', 'lesson.courseId = ec.courseId')
+      .leftJoin('lesson.course', 'course')
+      .leftJoinAndSelect('lesson.chapter', 'chapter')
+      .where('lesson.slug = :lessonSlug', { lessonSlug })
+      .andWhere('ec.userId = :userId', { userId })
+      .andWhere('course.slug = :courseSlug', { courseSlug })
+      .andWhere('course.status = :status', { status: CourseStatus.PUBLISHED })
+      .getOne();
+
+    const dto = entity?.toDto();
+    if (dto) {
+      dto.completed = await this.completedLessonRepo.existsBy({
+        lessonId: entity?.id,
+      });
+    }
+    return dto;
+  }
+
   async findByUserId(
     userId: string,
     query: QueryDto,
@@ -153,13 +210,14 @@ export class TypeormEnrollCourseService implements EnrollCourseService {
     const { entities, raw } = await this.enrolledCourseRepo
       .createQueryBuilder('ec')
       .addSelect('COUNT(lesson.id) AS course_lesson_count')
-      .addSelect('COUNT(completedLesson.lessonId) AS completed_lesson_count')
       .leftJoinAndSelect('ec.course', 'course')
       .leftJoinAndSelect('ec.resumeLesson', 'resumeLesson')
-      .leftJoin('ec.completedLessons', 'completedLesson')
-      .leftJoin(LessonEntity, 'lesson', 'course.id = lesson.courseId')
+      .leftJoinAndSelect('ec.completedLessons', 'completedLesson')
+      .leftJoin(LessonEntity, 'lesson', 'ec.courseId = lesson.courseId')
       .where('ec.userId = :userId', { userId })
       .andWhere('course.status = :status', { status: CourseStatus.PUBLISHED })
+      .groupBy('ec.courseId')
+      .addGroupBy('ec.userId')
       .orderBy('ec.createdAt', 'DESC')
       .offset(offset)
       .limit(limit)
@@ -171,7 +229,7 @@ export class TypeormEnrollCourseService implements EnrollCourseService {
       list: entities.map((e, i) => {
         const dto = e.toDto(true);
         const lessonCount = raw[i]['course_lesson_count'] ?? 0;
-        const completedCount = raw[i]['completed_lesson_count'] ?? 0;
+        const completedCount = e.completedLessons?.length ?? 0;
 
         const progress = (completedCount / lessonCount) * 100;
         dto.progress = isNaN(progress) ? 0 : progress;

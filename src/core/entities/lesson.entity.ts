@@ -58,7 +58,7 @@ export class LessonEntity extends AuditingEntity {
   @JoinColumn({ name: 'course_id' })
   course?: CourseEntity;
 
-  toDto(compact?: boolean) {
+  toDto(compact?: boolean): LessonDto {
     if (compact) {
       return new LessonDto({
         id: this.id,
