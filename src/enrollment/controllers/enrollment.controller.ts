@@ -46,6 +46,19 @@ export class EnrollmentController {
     });
   }
 
+  @Delete(':courseId/completed/:lessonId')
+  async removeCompletedLesson(
+    @Param('courseId') courseId: string,
+    @Param('lessonId') lessonId: string,
+  ) {
+    const user = this.security.getAuthenticatedUser();
+    await this.courseEnrollmentService.deleteCompletedLesson({
+      userId: user.id,
+      courseId: courseId,
+      lessonId: lessonId,
+    });
+  }
+
   @Put(':courseId/resume/:lessonId')
   async updateResumeLesson(
     @Param('courseId') courseId: string,

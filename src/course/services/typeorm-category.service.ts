@@ -7,6 +7,7 @@ import {
   CategoryDto,
   CategoryQueryDto,
   CategoryUpdateDto,
+  CourseStatus,
   PageDto,
   QueryDto,
 } from '@/core/models';
@@ -72,16 +73,35 @@ export class TypeormCategoryService implements CategorySerive {
     const count = await categoryQuery.getCount();
 
     if (query.includeCourseCount) {
+      categoryQuery.addSelect(
+        'COUNT(course.category_id) AS category_course_count',
+      );
+
+      if (query.published) {
+        categoryQuery.leftJoin(
+          CourseEntity,
+          'course',
+          'category.id = course.category_id AND course.status = :status',
+          {
+            status: CourseStatus.PUBLISHED,
+          },
+        );
+      } else {
+        categoryQuery.leftJoin(
+          CourseEntity,
+          'course',
+          'category.id = course.category_id',
+        );
+      }
+
       categoryQuery
-        .addSelect('COUNT(course.category_id) AS category_course_count')
-        .leftJoin(CourseEntity, 'course', 'category.id = course.category_id')
         .groupBy('category.id')
         .addGroupBy('category.name')
         .addGroupBy('category.slug');
     }
 
     if (query.name) {
-      categoryQuery.where('LOWER(category.name) LIKE LOWER(:name)', {
+      categoryQuery.andWhere('LOWER(category.name) LIKE LOWER(:name)', {
         name: `%${query.name}`,
       });
     }

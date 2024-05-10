@@ -5,6 +5,8 @@ export class CategoryQueryDto extends QueryDto {
 
   includeCourseCount?: boolean;
 
+  published?: boolean;
+
   constructor(partial: Partial<CategoryQueryDto> = {}) {
     super();
     Object.assign(this, partial);

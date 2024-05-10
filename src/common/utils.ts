@@ -48,3 +48,18 @@ export function transformToArray<T>(value: T | T[] | undefined) {
 
   return [value];
 }
+
+export function splitFileExtension(value: string) {
+  const dotIndex = value.lastIndexOf('.');
+  if (dotIndex > 0) {
+    return {
+      name: value.substring(0, dotIndex),
+      extension: value.substring(dotIndex),
+    };
+  }
+
+  return {
+    name: value,
+    extension: undefined,
+  };
+}

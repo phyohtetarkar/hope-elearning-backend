@@ -57,9 +57,9 @@ export class TypeormDashboardService implements DashboardService {
       subscriberCount: 0,
       monthlyEnrollments: {},
       enrolledByLevel: {
-        beginner: enrolledByLevel['beginner'] ?? 4,
-        intermediate: enrolledByLevel['intermediate'] ?? 10,
-        advanced: enrolledByLevel['advanced'] ?? 2,
+        beginner: enrolledByLevel['beginner'] ?? 0,
+        intermediate: enrolledByLevel['intermediate'] ?? 0,
+        advanced: enrolledByLevel['advanced'] ?? 0,
       },
     });
   }

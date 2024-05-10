@@ -1,7 +1,7 @@
+import { Exclude } from 'class-transformer';
 import { IsNotEmpty } from 'class-validator';
 
 export class UserUpdateDto {
-  @IsNotEmpty()
   id: string;
 
   @IsNotEmpty()

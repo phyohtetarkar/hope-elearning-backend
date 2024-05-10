@@ -3,6 +3,7 @@ export class PageDto<T> {
   currentPage: number;
   totalPage: number;
   pageSize: number;
+  totalElements: number;
 
   constructor(partial: Partial<PageDto<T>> = {}) {
     Object.assign(this, partial);
@@ -25,6 +26,7 @@ export class PageDto<T> {
         currentPage: count > 0 ? 1 : 0,
         totalPage: count > 0 ? 1 : 0,
         pageSize: count,
+        totalElements: count,
       });
     }
     const totalPage = Math.ceil(count / limit);
@@ -34,6 +36,7 @@ export class PageDto<T> {
       currentPage: count > 0 ? (offset / limit) + 1 : 0,
       totalPage: totalPage,
       pageSize: list.length,
+      totalElements: count,
     });
   }
 }

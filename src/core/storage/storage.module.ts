@@ -3,6 +3,8 @@ import { ConfigService } from '@nestjs/config';
 import { MulterModule } from '@nestjs/platform-express';
 import { mkdirSync } from 'fs';
 import { diskStorage } from 'multer';
+import { FILE_STORAGE_SERVICE } from './file-storage.service';
+import { LocalFileStorageService } from './local-file-storage.service';
 
 @Global()
 @Module({
@@ -28,6 +30,12 @@ import { diskStorage } from 'multer';
       inject: [ConfigService],
     }),
   ],
-  exports: [MulterModule],
+  providers: [
+    {
+      provide: FILE_STORAGE_SERVICE,
+      useClass: LocalFileStorageService,
+    },
+  ],
+  exports: [MulterModule, FILE_STORAGE_SERVICE],
 })
 export class StorageModule {}

@@ -149,6 +149,31 @@ export class TypeormCourseEnrollmentService implements CourseEnrollmentService {
     });
   }
 
+  async deleteCompletedLesson(values: CompletedLessonUpdateDto): Promise<void> {
+    const enrolled = await this.enrolledCourseRepo.existsBy({
+      userId: values.userId,
+      courseId: values.courseId,
+    });
+
+    if (!enrolled) {
+      throw new DomainError('Course not enrolled');
+    }
+
+    const lessonExists = await this.lessonRepo.existsBy({
+      id: values.lessonId,
+    });
+
+    if (!lessonExists) {
+      throw new DomainError('Lesson not found');
+    }
+
+    await this.completedLessonRepo.delete({
+      userId: values.userId,
+      courseId: values.courseId,
+      lessonId: values.lessonId,
+    });
+  }
+
   async findByUserIdAndCourseId(
     userId: string,
     courseId: string,

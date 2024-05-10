@@ -16,6 +16,8 @@ export interface CourseEnrollmentService {
 
   insertCompletedLesson(values: CompletedLessonUpdateDto): Promise<void>;
 
+  deleteCompletedLesson(values: CompletedLessonUpdateDto): Promise<void>;
+
   findByUserIdAndCourseId(
     userId: string,
     courseId: string,

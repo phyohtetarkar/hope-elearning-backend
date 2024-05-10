@@ -4,12 +4,17 @@ import {
   UserDto,
   UserQueryDto,
   UserRole,
+  UserUpdateDto,
 } from '../models';
 
 export interface UserService {
   create(values: UserCreateDto): Promise<UserDto>;
 
+  update(values: UserUpdateDto): Promise<void>;
+
   updateRole(userId: string, role: UserRole): Promise<void>;
+
+  updateImage(userId: string, image: string): Promise<void>;
 
   findById(id: string): Promise<UserDto | undefined>;
 

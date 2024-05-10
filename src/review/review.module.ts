@@ -22,5 +22,6 @@ import { TypeormCourseReviewService } from './services/typeorm-course-review.ser
     },
   ],
   controllers: [ReviewController],
+  exports: [COURSE_REVIEW_SERVICE],
 })
 export class ReviewModule {}

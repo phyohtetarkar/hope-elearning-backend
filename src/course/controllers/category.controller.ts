@@ -19,7 +19,10 @@ export class CategoryController {
 
   @Get()
   async find(@Query() query: CategoryQueryDto) {
-    return await this.categoryService.find(query);
+    return await this.categoryService.find({
+      ...query,
+      published: true,
+    });
   }
 
   @Get(':slug')

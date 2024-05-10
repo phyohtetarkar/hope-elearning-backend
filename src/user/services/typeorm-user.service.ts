@@ -8,11 +8,12 @@ import {
   UserDto,
   UserQueryDto,
   UserRole,
+  UserUpdateDto,
 } from '@/core/models';
 import { UserService } from '@/core/services';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, Not, Repository } from 'typeorm';
 
 @Injectable()
 export class TypeormUserService implements UserService {
@@ -40,6 +41,23 @@ export class TypeormUserService implements UserService {
     return user.toDto();
   }
 
+  async update(values: UserUpdateDto): Promise<void> {
+    const exists = this.userRepo.existsBy({ id: values.id });
+    if (!exists) {
+      throw new DomainError('User not found');
+    }
+
+    await this.userRepo.update(values.id, {
+      id: values.id,
+      nickname: values.nickname,
+      username: await normalizeSlug(values.nickname, (v) => {
+        return this.userRepo.existsBy({ id: Not(values.id), username: v });
+      }),
+      headline: values.headline ?? null,
+      bio: values.bio ?? null,
+    });
+  }
+
   async updateRole(userId: string, role: UserRole): Promise<void> {
     const exists = await this.userRepo.existsBy({ id: userId });
     if (!exists) {
@@ -48,6 +66,17 @@ export class TypeormUserService implements UserService {
 
     await this.userRepo.update(userId, {
       role: role,
+    });
+  }
+
+  async updateImage(userId: string, image: string): Promise<void> {
+    const exists = await this.userRepo.existsBy({ id: userId });
+    if (!exists) {
+      throw new DomainError('User not found');
+    }
+
+    await this.userRepo.update(userId, {
+      image: image,
     });
   }
 

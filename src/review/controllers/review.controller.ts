@@ -5,14 +5,11 @@ import {
   Body,
   Controller,
   Get,
-  HttpStatus,
   Inject,
   Param,
   Post,
   Query,
-  Res,
 } from '@nestjs/common';
-import { Response } from 'express';
 
 @Controller('/content/courses/:courseId/reviews')
 export class ReviewController {
@@ -41,23 +38,5 @@ export class ReviewController {
     @Query() query: QueryDto,
   ) {
     return await this.courseReviewService.findByCourseId(courseId, query);
-  }
-
-  @Get(':userId')
-  async getCourseReviewByUser(
-    @Param('courseId') courseId: string,
-    @Param('userId') userId: string,
-    @Res({ passthrough: true }) resp: Response,
-  ) {
-    const result = await this.courseReviewService.findByUserIdAndCourseId(
-      userId,
-      courseId,
-    );
-
-    if (!result) {
-      resp.status(HttpStatus.NO_CONTENT);
-    }
-
-    return result;
   }
 }
