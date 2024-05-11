@@ -106,8 +106,8 @@ export class TypeormCourseService implements CourseService {
       await em.update(CourseEntity, courseId, {
         title: values.title,
         cover: values.cover ?? null,
-        excerpt: values.excerpt ?? null,
-        description: values.description ?? null,
+        excerpt: values.excerpt,
+        description: values.description,
         access: values.access,
         level: values.level,
         category: { id: values.categoryId },
@@ -226,10 +226,29 @@ export class TypeormCourseService implements CourseService {
     return entity?.toDto();
   }
 
+  async findRelated(slug: string, limit: number): Promise<CourseDto[]> {
+    const entities = await this.courseRepo
+      .createQueryBuilder('course')
+      .leftJoinAndSelect(
+        'course.category',
+        'category',
+        'caegory.id = course.category_id',
+      )
+      .leftJoinAndSelect('course.meta', 'meta')
+      .leftJoinAndSelect('course.authors', 'course_author')
+      .leftJoinAndSelect('course_author.author', 'author')
+      .where('course.slug != :slug', { slug })
+      .andWhere('course.status = :status', { status: CourseStatus.PUBLISHED })
+      .limit(limit)
+      .getMany();
+
+    return entities.map((e) => e.toDto());
+  }
+
   async find(query: CourseQueryDto): Promise<PageDto<CourseDto>> {
     const { limit, offset } = QueryDto.getPageable(query);
 
-    const postQuery = this.courseRepo
+    const courseQuery = this.courseRepo
       .createQueryBuilder('course')
       .leftJoinAndSelect('course.category', 'category')
       .leftJoinAndSelect('course.meta', 'meta')
@@ -237,47 +256,54 @@ export class TypeormCourseService implements CourseService {
       .leftJoinAndSelect('course_author.author', 'author');
 
     if (query.status) {
-      postQuery.andWhere('course.status = :status', { status: query.status });
+      courseQuery.andWhere('course.status = :status', { status: query.status });
     }
 
     if (query.access) {
-      postQuery.andWhere('course.access = :access', {
+      courseQuery.andWhere('course.access = :access', {
         access: query.access,
       });
     }
 
     if (query.level) {
-      postQuery.andWhere('course.level = :level', {
+      courseQuery.andWhere('course.level = :level', {
         level: query.level,
       });
     }
 
     if (query.featured) {
-      postQuery.andWhere('course.featured = :featured', {
+      courseQuery.andWhere('course.featured = :featured', {
         featured: query.featured,
       });
     }
 
     if (query.category) {
-      postQuery.andWhere('course.category_id = :categoryId', {
+      courseQuery.andWhere('course.category_id = :categoryId', {
         categoryId: query.category,
       });
     }
 
     if (query.author) {
-      postQuery.andWhere('course_author.authorId = :authorId', {
+      courseQuery.andWhere('course_author.authorId = :authorId', {
         authorId: query.author,
       });
     }
 
     if (query.q) {
-      postQuery.andWhere('LOWER(course.title) LIKE LOWER(:title)', {
+      courseQuery.andWhere('LOWER(course.title) LIKE LOWER(:title)', {
         title: `%${query.q}%`,
       });
     }
 
-    const [list, count] = await postQuery
-      .orderBy(`course.createdAt`, 'DESC')
+    if (query.orderBy === 'enrollment') {
+      courseQuery.orderBy(`meta.enrolledCount`, 'DESC');
+    } else if (query.orderBy === 'publishedAt') {
+      courseQuery.orderBy(`course.publishedAt`, 'DESC');
+    } else {
+      courseQuery.orderBy(`course.createdAt`, 'DESC');
+    }
+
+    const [list, count] = await courseQuery
       .offset(offset)
       .limit(limit)
       .getManyAndCount();

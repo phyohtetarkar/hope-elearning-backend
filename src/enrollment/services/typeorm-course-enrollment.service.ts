@@ -234,15 +234,17 @@ export class TypeormCourseEnrollmentService implements CourseEnrollmentService {
 
     const { entities, raw } = await this.enrolledCourseRepo
       .createQueryBuilder('ec')
-      .addSelect('COUNT(lesson.id) AS course_lesson_count')
+      .addSelect((qb) => {
+        return qb
+          .select('COUNT(lesson.id)')
+          .from(LessonEntity, 'lesson')
+          .where('ec.courseId = lesson.courseId');
+      }, 'course_lesson_count')
       .leftJoinAndSelect('ec.course', 'course')
       .leftJoinAndSelect('ec.resumeLesson', 'resumeLesson')
       .leftJoinAndSelect('ec.completedLessons', 'completedLesson')
-      .leftJoin(LessonEntity, 'lesson', 'ec.courseId = lesson.courseId')
       .where('ec.userId = :userId', { userId })
       .andWhere('course.status = :status', { status: CourseStatus.PUBLISHED })
-      .groupBy('ec.courseId')
-      .addGroupBy('ec.userId')
       .orderBy('ec.createdAt', 'DESC')
       .offset(offset)
       .limit(limit)

@@ -101,8 +101,8 @@ export class TypeormPostService implements PostService {
       await em.update(PostEntity, postId, {
         title: values.title,
         cover: values.cover ?? null,
-        excerpt: values.excerpt ?? null,
-        lexical: values.lexical ?? null,
+        excerpt: values.excerpt,
+        lexical: values.lexical,
         visibility: values.visibility,
         wordCount: values.wordCount,
         publishedAt: values.publishedAt ? new Date(values.publishedAt) : null,
@@ -161,12 +161,6 @@ export class TypeormPostService implements PostService {
       publishedBy: userId,
       publishedAt: entity.publishedAt ?? now,
     });
-
-    // const post = entity.toDto();
-    // this.postRevisionService.save(post, {
-    //   ...post,
-    //   status: PostStatus.PUBLISHED,
-    // });
   }
 
   async unpublish(postId: string): Promise<void> {
@@ -266,8 +260,13 @@ export class TypeormPostService implements PostService {
       });
     }
 
+    if (query.orderBy === 'publishedAt') {
+      postQuery.orderBy(`post.publishedAt`, 'DESC');
+    } else {
+      postQuery.orderBy(`post.${query.orderBy ?? 'createdAt'}`, 'DESC');
+    }
+
     const [list, count] = await postQuery
-      .orderBy(`post.${query.orderBy ?? 'createdAt'}`, 'DESC')
       .offset(offset)
       .limit(limit)
       .getManyAndCount();

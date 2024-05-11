@@ -10,9 +10,11 @@ export class LocalFileStorageService implements FileStorageService {
 
   async writeFile(file: Express.Multer.File): Promise<FileStorageResult> {
     const fileName = await this.createUniqueFile(file);
+    const baseUrl = this.configService.get<string>('IMAGE_URL');
+    const dir = file.destination.split('images')[1];
     return {
       fileName: fileName,
-      url: `http://localhost/${file.destination}/${fileName}`,
+      url: `${baseUrl}${dir}/${fileName}`,
     };
   }
 
@@ -38,7 +40,7 @@ export class LocalFileStorageService implements FileStorageService {
 
         fileName = name;
       } catch (error) {
-        await new Promise((resolve) => setTimeout(() => resolve(true), 1000));
+        await new Promise((resolve) => setTimeout(() => resolve(true), 500));
         index += 1;
       }
     }

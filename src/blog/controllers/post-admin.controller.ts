@@ -3,6 +3,10 @@ import { PostCreateDto, PostQueryDto, PostUpdateDto } from '@/core/models';
 import { SecurityContextService } from '@/core/security/security-context.service';
 import { POST_SERVICE, PostService } from '@/core/services';
 import {
+  FILE_STORAGE_SERVICE,
+  FileStorageService,
+} from '@/core/storage/file-storage.service';
+import {
   Body,
   Controller,
   Delete,
@@ -15,8 +19,11 @@ import {
   Query,
   Res,
   SerializeOptions,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
 import { PostOwnerGuard } from '../guards/post-owner.guard';
 import { PostCreateTransformPipe } from '../pipes/post-create-transform.pipe';
@@ -28,7 +35,10 @@ import { PostUpdateTransformPipe } from '../pipes/post-update-transform.pipe';
 export class PostAdminController {
   constructor(
     private security: SecurityContextService,
-    @Inject(POST_SERVICE) private postService: PostService,
+    @Inject(POST_SERVICE)
+    private postService: PostService,
+    @Inject(FILE_STORAGE_SERVICE)
+    private fileStorageService: FileStorageService,
   ) {}
 
   @Post()
@@ -61,6 +71,18 @@ export class PostAdminController {
   @Put(':id/unpublish')
   async unpublishPost(@Param('id') id: string) {
     await this.postService.unpublish(id);
+  }
+
+  @UseGuards(PostOwnerGuard)
+  @Post(':id/image')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadImage(
+    @Param('id') id: string,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    const result = await this.fileStorageService.writeFile(file);
+
+    return result.url;
   }
 
   @SerializeOptions({

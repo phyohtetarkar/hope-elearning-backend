@@ -21,6 +21,8 @@ export interface CourseService {
 
   findBySlug(slug: string): Promise<CourseDto | undefined>;
 
+  findRelated(slug: string, limit: number): Promise<CourseDto[]>;
+
   find(query: CourseQueryDto): Promise<PageDto<CourseDto>>;
 }
 

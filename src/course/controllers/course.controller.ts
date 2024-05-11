@@ -21,14 +21,20 @@ export class CourseController {
     return await this.courseService.find({
       ...query,
       status: CourseStatus.PUBLISHED,
+      orderBy: query.orderBy ?? 'publishedAt',
     });
+  }
+
+  @Get(':slug/related')
+  async getRelatedCourses(@Param('slug') slug: string) {
+    return await this.courseService.findRelated(slug, 4);
   }
 
   @SerializeOptions({
     groups: ['detail'],
   })
   @Get(':slug')
-  async getPost(
+  async getCourse(
     @Param('slug') slug: string,
     @Res({ passthrough: true }) resp: Response,
   ) {

@@ -24,5 +24,6 @@ import { CompletedLessonEntity } from '@/core/entities/completed-lesson.entity';
     },
   ],
   controllers: [EnrollmentController],
+  exports: [COURSE_ENROLLMENT_SERVICE],
 })
 export class EnrollmentModule {}

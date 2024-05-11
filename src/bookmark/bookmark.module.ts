@@ -15,5 +15,6 @@ import { BookmarkController } from './controllers/bookmark.controller';
     },
   ],
   controllers: [BookmarkController],
+  exports: [COURSE_BOOKMARK_SERVICE],
 })
 export class BookmarkModule {}

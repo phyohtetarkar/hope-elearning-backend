@@ -22,6 +22,8 @@ export class CourseQueryDto extends QueryDto {
 
   featured?: boolean;
 
+  orderBy?: 'enrollment' | 'publishedAt';
+
   constructor(partial: Partial<CourseQueryDto> = {}) {
     super();
     Object.assign(this, partial);

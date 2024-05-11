@@ -15,6 +15,10 @@ import {
   LessonService,
 } from '@/core/services';
 import {
+  FILE_STORAGE_SERVICE,
+  FileStorageService,
+} from '@/core/storage/file-storage.service';
+import {
   Body,
   Controller,
   Delete,
@@ -27,8 +31,11 @@ import {
   Query,
   Res,
   SerializeOptions,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
 import { CourseOwnerGuard } from '../guards/course-owner.guard';
 import { CourseCreateTransformPipe } from '../pipes/course-create-transform.pipe';
@@ -40,9 +47,14 @@ import { CourseUpdateTransformPipe } from '../pipes/course-update-transform.pipe
 export class CourseAdminController {
   constructor(
     private security: SecurityContextService,
-    @Inject(COURSE_SERVICE) private courseService: CourseService,
-    @Inject(CHAPTER_SERVICE) private chapterService: ChapterService,
-    @Inject(LESSON_SERVICE) private lessonService: LessonService,
+    @Inject(COURSE_SERVICE)
+    private courseService: CourseService,
+    @Inject(CHAPTER_SERVICE)
+    private chapterService: ChapterService,
+    @Inject(LESSON_SERVICE)
+    private lessonService: LessonService,
+    @Inject(FILE_STORAGE_SERVICE)
+    private fileStorageService: FileStorageService,
   ) {}
 
   @Post()
@@ -72,6 +84,17 @@ export class CourseAdminController {
   @Put(':id/unpublish')
   async unpublishCourse(@Param('id') id: string) {
     await this.courseService.unpublish(id);
+  }
+
+  @UseGuards(CourseOwnerGuard)
+  @Post(':id/image')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadImage(
+    @Param('id') id: string,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    const result = await this.fileStorageService.writeFile(file);
+    return result.url;
   }
 
   @UseGuards(CourseOwnerGuard)

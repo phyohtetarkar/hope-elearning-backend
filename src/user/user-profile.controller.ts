@@ -1,7 +1,11 @@
-import { UserDto, UserUpdateDto } from '@/core/models';
+import { QueryDto, UserDto, UserUpdateDto } from '@/core/models';
 import { SecurityContextService } from '@/core/security/security-context.service';
 import {
+  COURSE_BOOKMARK_SERVICE,
+  COURSE_ENROLLMENT_SERVICE,
   COURSE_REVIEW_SERVICE,
+  CourseBookmarkService,
+  CourseEnrollmentService,
   CourseReviewService,
   USER_SERVICE,
   UserService,
@@ -18,6 +22,8 @@ import {
   Inject,
   Param,
   Post,
+  Put,
+  Query,
   Req,
   Res,
   SerializeOptions,
@@ -35,6 +41,10 @@ export class UserProfileController {
     private userService: UserService,
     @Inject(COURSE_REVIEW_SERVICE)
     private courseReviewService: CourseReviewService,
+    @Inject(COURSE_ENROLLMENT_SERVICE)
+    private courseEnrollmentService: CourseEnrollmentService,
+    @Inject(COURSE_BOOKMARK_SERVICE)
+    private courseBookmarkService: CourseBookmarkService,
     @Inject(FILE_STORAGE_SERVICE)
     private fileStorageService: FileStorageService,
   ) {}
@@ -56,13 +66,25 @@ export class UserProfileController {
     });
   }
 
-  @Post('image')
+  @Put('image')
   @UseInterceptors(FileInterceptor('file'))
   async updateImage(@UploadedFile() file: Express.Multer.File) {
     const user = this.security.getAuthenticatedUser();
     const result = await this.fileStorageService.writeFile(file);
 
     await this.userService.updateImage(user.id, result.url);
+  }
+
+  @Get('enrollments')
+  async getEnrollments(@Query() query: QueryDto) {
+    const user = this.security.getAuthenticatedUser();
+    return await this.courseEnrollmentService.findByUserId(user.id, query);
+  }
+
+  @Get('bookmarks')
+  async getBookmarks(@Query() query: QueryDto) {
+    const user = this.security.getAuthenticatedUser();
+    return await this.courseBookmarkService.findByUserId(user.id, query);
   }
 
   @Get('reviews/:courseId/me')

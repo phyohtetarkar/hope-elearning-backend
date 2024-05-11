@@ -45,7 +45,10 @@ export class SecurityModule implements NestModule {
       )
       .forRoutes('*')
       .apply(AuthenticationMiddleware)
-      .exclude({ path: '/content/:path*', method: RequestMethod.GET })
+      .exclude(
+        { path: '/content/:path*', method: RequestMethod.GET },
+        { path: '/test/:path*', method: RequestMethod.ALL },
+      )
       .forRoutes('*');
   }
 }
