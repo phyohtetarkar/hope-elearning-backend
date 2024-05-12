@@ -29,7 +29,7 @@ export class UserAdminController {
   @Put(':id/role')
   async updateRole(
     @Param('id') userId: string,
-    @Body('role', ParseEnumPipe<UserRole>) role: UserRole,
+    @Body('role', new ParseEnumPipe(UserRole)) role: UserRole,
   ) {
     if (role === UserRole.OWNER) {
       throw new BadRequestException('Owner role grant is forbidden');

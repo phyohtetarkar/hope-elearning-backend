@@ -1,14 +1,13 @@
+import { BookmarkModule } from '@/bookmark/bookmark.module';
 import { UserEntity } from '@/core/entities/user.entity';
-import { PROFILE_SERVICE, USER_SERVICE } from '@/core/services';
+import { USER_SERVICE } from '@/core/services';
+import { EnrollmentModule } from '@/enrollment/enrollment.module';
+import { ReviewModule } from '@/review/review.module';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { TypeormProfileService } from './services/typeorm-profile.service';
-import { TypeormUserService } from './services/typeorm-user.service';
 import { UserAdminController } from './controllers/user-admin.controller';
 import { UserProfileController } from './controllers/user-profile.controller';
-import { ReviewModule } from '@/review/review.module';
-import { BookmarkModule } from '@/bookmark/bookmark.module';
-import { EnrollmentModule } from '@/enrollment/enrollment.module';
+import { TypeormUserService } from './services/typeorm-user.service';
 
 @Module({
   imports: [
@@ -21,10 +20,6 @@ import { EnrollmentModule } from '@/enrollment/enrollment.module';
     {
       provide: USER_SERVICE,
       useClass: TypeormUserService,
-    },
-    {
-      provide: PROFILE_SERVICE,
-      useClass: TypeormProfileService,
     },
   ],
   controllers: [UserAdminController, UserProfileController],
