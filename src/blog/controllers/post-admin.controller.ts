@@ -7,6 +7,7 @@ import {
   FileStorageService,
 } from '@/core/storage/file-storage.service';
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -81,6 +82,10 @@ export class PostAdminController {
     @UploadedFile() file: Express.Multer.File,
   ) {
     const result = await this.fileStorageService.writeFile(file);
+
+    if (!result) {
+      throw new BadRequestException('Required upload file');
+    }
 
     return result.url;
   }

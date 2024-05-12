@@ -12,6 +12,7 @@ import {
   FILE_STORAGE_SERVICE,
   FileStorageService,
 } from './core/storage/file-storage.service';
+import { ApiBody, ApiConsumes } from '@nestjs/swagger';
 
 @Controller('test')
 export class AppController {
@@ -20,6 +21,18 @@ export class AppController {
     private fileStorageService: FileStorageService,
   ) {}
 
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'file',
+          format: 'binary',
+        },
+      },
+    },
+  })
   @Post()
   @UseInterceptors(FileInterceptor('file'))
   async getHello(@UploadedFile() file: Express.Multer.File) {

@@ -19,6 +19,7 @@ import {
   FileStorageService,
 } from '@/core/storage/file-storage.service';
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -36,6 +37,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiBody } from '@nestjs/swagger';
 import { Response } from 'express';
 import { CourseOwnerGuard } from '../guards/course-owner.guard';
 import { CourseCreateTransformPipe } from '../pipes/course-create-transform.pipe';
@@ -94,18 +96,31 @@ export class CourseAdminController {
     @UploadedFile() file: Express.Multer.File,
   ) {
     const result = await this.fileStorageService.writeFile(file);
+
+    if (!result) {
+      throw new BadRequestException('Required upload file');
+    }
+
     return result.url;
   }
 
+  @ApiBody({
+    type: SortUpdateDto,
+    isArray: true,
+  })
   @UseGuards(CourseOwnerGuard)
   @Put(':id/sort-chapters')
-  async sortChapter(@Body() values: [SortUpdateDto]) {
+  async sortChapter(@Body() values: SortUpdateDto[]) {
     await this.chapterService.updateSort(values);
   }
 
+  @ApiBody({
+    type: SortUpdateDto,
+    isArray: true,
+  })
   @UseGuards(CourseOwnerGuard)
   @Put(':id/sort-lessons')
-  async sortLessons(@Body() values: [SortUpdateDto]) {
+  async sortLessons(@Body() values: SortUpdateDto[]) {
     await this.lessonService.updateSort(values);
   }
 

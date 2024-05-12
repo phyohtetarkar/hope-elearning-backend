@@ -1,8 +1,15 @@
+import { ApiProperty } from '@nestjs/swagger';
+
 export class PageDto<T> {
+  @ApiProperty()
   contents: T[];
+  @ApiProperty()
   currentPage: number;
+  @ApiProperty()
   totalPage: number;
+  @ApiProperty()
   pageSize: number;
+  @ApiProperty()
   totalElements: number;
 
   constructor(partial: Partial<PageDto<T>> = {}) {

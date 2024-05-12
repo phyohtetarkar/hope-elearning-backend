@@ -8,7 +8,13 @@ import { FileStorageResult, FileStorageService } from './file-storage.service';
 export class LocalFileStorageService implements FileStorageService {
   constructor(private configService: ConfigService) {}
 
-  async writeFile(file: Express.Multer.File): Promise<FileStorageResult> {
+  async writeFile(
+    file: Express.Multer.File,
+  ): Promise<FileStorageResult | undefined> {
+    if (file.size <= 0) {
+      return undefined;
+    }
+
     const fileName = await this.createUniqueFile(file);
     const baseUrl = this.configService.get<string>('IMAGE_URL');
     const dir = file.destination.split('images')[1];

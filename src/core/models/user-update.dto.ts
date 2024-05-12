@@ -1,7 +1,8 @@
-import { Exclude } from 'class-transformer';
+import { ApiHideProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
 
 export class UserUpdateDto {
+  @ApiHideProperty()
   id: string;
 
   @IsNotEmpty()
