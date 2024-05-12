@@ -1,7 +1,17 @@
 import { ApiOkResponsePaginated, Roles } from '@/common/decorators';
 import { UserDto, UserQueryDto, UserRole } from '@/core/models';
 import { USER_SERVICE, UserService } from '@/core/services';
-import { Controller, Get, Inject, Query } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Get,
+  Inject,
+  Param,
+  ParseEnumPipe,
+  Put,
+  Query,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Admin')
@@ -14,5 +24,16 @@ export class UserAdminController {
   @Get()
   async find(@Query() query: UserQueryDto) {
     return await this.userService.find(query);
+  }
+
+  @Put(':id/role')
+  async updateRole(
+    @Param('id') userId: string,
+    @Body('role', ParseEnumPipe<UserRole>) role: UserRole,
+  ) {
+    if (role === UserRole.OWNER) {
+      throw new BadRequestException('Owner role grant is forbidden');
+    }
+    await this.userService.updateRole(userId, role);
   }
 }

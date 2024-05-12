@@ -18,6 +18,8 @@ export interface CourseEnrollmentService {
 
   deleteCompletedLesson(values: CompletedLessonUpdateDto): Promise<void>;
 
+  countByUser(userId: string): Promise<number>;
+
   findByUserIdAndCourseId(
     userId: string,
     courseId: string,

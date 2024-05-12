@@ -58,6 +58,10 @@ export class TypeormCourseBookmarkService implements CourseBookmarkService {
     });
   }
 
+  async countByUser(userId: string): Promise<number> {
+    return await this.bookmarkedCourseRepo.countBy({ userId: userId });
+  }
+
   async findByUserId(
     userId: string,
     query: QueryDto,

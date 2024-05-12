@@ -7,6 +7,8 @@ export interface CourseBookmarkService {
 
   existsByUserIdAndCourseId(userId: string, courseId: string): Promise<boolean>;
 
+  countByUser(userId: string): Promise<number>;
+
   findByUserId(userId: string, query: QueryDto): Promise<PageDto<CourseDto>>;
 }
 

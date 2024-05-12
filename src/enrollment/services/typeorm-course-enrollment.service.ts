@@ -174,6 +174,10 @@ export class TypeormCourseEnrollmentService implements CourseEnrollmentService {
     });
   }
 
+  async countByUser(userId: string): Promise<number> {
+    return await this.enrolledCourseRepo.countBy({ userId: userId });
+  }
+
   async findByUserIdAndCourseId(
     userId: string,
     courseId: string,

@@ -99,10 +99,22 @@ export class UserProfileController {
     return await this.courseEnrollmentService.findByUserId(user.id, query);
   }
 
+  @Get('enrollment-count')
+  async getEnrollmentCount() {
+    const user = this.security.getAuthenticatedUser();
+    return await this.courseEnrollmentService.countByUser(user.id);
+  }
+
   @Get('bookmarks')
   async getBookmarks(@Query() query: QueryDto) {
     const user = this.security.getAuthenticatedUser();
     return await this.courseBookmarkService.findByUserId(user.id, query);
+  }
+
+  @Get('bookmark-count')
+  async getBookmarkCount() {
+    const user = this.security.getAuthenticatedUser();
+    return await this.courseBookmarkService.countByUser(user.id);
   }
 
   @Get('reviews/:courseId/me')

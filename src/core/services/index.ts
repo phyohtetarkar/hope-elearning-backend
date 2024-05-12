@@ -19,3 +19,5 @@ export * from './lesson-revision.service';
 export * from './lesson.service';
 
 export * from './dashboard.service';
+
+export * from './site-setting.service';

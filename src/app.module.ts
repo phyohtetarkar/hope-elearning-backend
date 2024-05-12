@@ -9,6 +9,7 @@ import { CourseModule } from './course/course.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { EnrollmentModule } from './enrollment/enrollment.module';
 import { ReviewModule } from './review/review.module';
+import { SettingModule } from './setting/setting.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { ReviewModule } from './review/review.module';
     EnrollmentModule,
     BookmarkModule,
     ReviewModule,
+    SettingModule,
   ],
   providers: [
     {
