@@ -1,5 +1,10 @@
 import { Staff } from '@/common/decorators';
-import { PostCreateDto, PostQueryDto, PostUpdateDto } from '@/core/models';
+import {
+  PostCreateDto,
+  PostQueryDto,
+  PostUpdateDto,
+  UserRole,
+} from '@/core/models';
 import { SecurityContextService } from '@/core/security/security-context.service';
 import { POST_SERVICE, PostService } from '@/core/services';
 import {
@@ -7,10 +12,10 @@ import {
   FileStorageService,
 } from '@/core/storage/file-storage.service';
 import {
-  BadRequestException,
   Body,
   Controller,
   Delete,
+  ForbiddenException,
   Get,
   HttpStatus,
   Inject,
@@ -20,11 +25,8 @@ import {
   Query,
   Res,
   SerializeOptions,
-  UploadedFile,
   UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
 import { PostOwnerGuard } from '../guards/post-owner.guard';
 import { PostCreateTransformPipe } from '../pipes/post-create-transform.pipe';
@@ -65,30 +67,37 @@ export class PostAdminController {
   @Put(':id/publish')
   async publishPost(@Param('id') id: string) {
     const user = this.security.getAuthenticatedUser();
+    if (user.role === UserRole.CONTRIBUTOR) {
+      throw new ForbiddenException('Contributors cannot publish posts');
+    }
     await this.postService.publish(user.id, id);
   }
 
   @UseGuards(PostOwnerGuard)
   @Put(':id/unpublish')
   async unpublishPost(@Param('id') id: string) {
+    const user = this.security.getAuthenticatedUser();
+    if (user.role === UserRole.CONTRIBUTOR) {
+      throw new ForbiddenException('Contributors cannot upublish posts');
+    }
     await this.postService.unpublish(id);
   }
 
-  @UseGuards(PostOwnerGuard)
-  @Post(':id/image')
-  @UseInterceptors(FileInterceptor('file'))
-  async uploadImage(
-    @Param('id') id: string,
-    @UploadedFile() file: Express.Multer.File,
-  ) {
-    const result = await this.fileStorageService.writeFile(file);
+  // @UseGuards(PostOwnerGuard)
+  // @Post(':id/image')
+  // @UseInterceptors(FileInterceptor('file'))
+  // async uploadImage(
+  //   @Param('id') id: string,
+  //   @UploadedFile() file: Express.Multer.File,
+  // ) {
+  //   const result = await this.fileStorageService.writeFile(file);
 
-    if (!result) {
-      throw new BadRequestException('Required upload file');
-    }
+  //   if (!result) {
+  //     throw new BadRequestException('Required upload file');
+  //   }
 
-    return result.url;
-  }
+  //   return result.url;
+  // }
 
   @SerializeOptions({
     groups: ['detail'],

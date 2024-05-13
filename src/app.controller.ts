@@ -1,20 +1,19 @@
 import {
+  BadRequestException,
   Controller,
-  Get,
   Inject,
   Post,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { closeSync, openSync, rename } from 'fs';
+import { ApiBody, ApiConsumes } from '@nestjs/swagger';
 import {
   FILE_STORAGE_SERVICE,
   FileStorageService,
 } from './core/storage/file-storage.service';
-import { ApiBody, ApiConsumes } from '@nestjs/swagger';
 
-@Controller('test')
+@Controller('common')
 export class AppController {
   constructor(
     @Inject(FILE_STORAGE_SERVICE)
@@ -33,28 +32,15 @@ export class AppController {
       },
     },
   })
-  @Post()
+  @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
-  async getHello(@UploadedFile() file: Express.Multer.File) {
-    // console.log(file.destination);
-    // console.log(file.path);
-    // console.log(file.originalname);
-
-    // const dest = `${file.destination}/${file.originalname}`;
-
-    // // wx flag to fail on file exists
-    // closeSync(openSync(dest, 'wx'));
-
-    // rename(file.path, dest, (err) => {
-    //   console.log(err);
-    // });
-
+  async uploadImage(@UploadedFile() file: Express.Multer.File) {
     const result = await this.fileStorageService.writeFile(file);
-    console.log(result);
-  }
 
-  @Get()
-  sayHello(): string {
-    return 'Hello, world';
+    if (!result) {
+      throw new BadRequestException('Required upload file');
+    }
+
+    return result.url;
   }
 }

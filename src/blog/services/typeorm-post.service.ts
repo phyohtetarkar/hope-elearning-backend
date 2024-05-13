@@ -221,6 +221,7 @@ export class TypeormPostService implements PostService {
 
     const postQuery = this.postRepo
       .createQueryBuilder('post')
+      .leftJoinAndSelect('post.meta', 'meta')
       .leftJoinAndSelect('post.authors', 'post_author')
       .leftJoinAndSelect('post.tags', 'post_tag')
       .leftJoinAndSelect('post_author.author', 'author')

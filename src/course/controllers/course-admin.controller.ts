@@ -4,6 +4,7 @@ import {
   CourseQueryDto,
   CourseUpdateDto,
   SortUpdateDto,
+  UserRole,
 } from '@/core/models';
 import { SecurityContextService } from '@/core/security/security-context.service';
 import {
@@ -19,10 +20,10 @@ import {
   FileStorageService,
 } from '@/core/storage/file-storage.service';
 import {
-  BadRequestException,
   Body,
   Controller,
   Delete,
+  ForbiddenException,
   Get,
   HttpStatus,
   Inject,
@@ -32,11 +33,8 @@ import {
   Query,
   Res,
   SerializeOptions,
-  UploadedFile,
   UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBody } from '@nestjs/swagger';
 import { Response } from 'express';
 import { CourseOwnerGuard } from '../guards/course-owner.guard';
@@ -79,30 +77,37 @@ export class CourseAdminController {
   @Put(':id/publish')
   async publishCourse(@Param('id') id: string) {
     const user = this.security.getAuthenticatedUser();
+    if (user.role === UserRole.CONTRIBUTOR) {
+      throw new ForbiddenException('Contributors cannot publish courses');
+    }
     await this.courseService.publish(user.id, id);
   }
 
   @UseGuards(CourseOwnerGuard)
   @Put(':id/unpublish')
   async unpublishCourse(@Param('id') id: string) {
+    const user = this.security.getAuthenticatedUser();
+    if (user.role === UserRole.CONTRIBUTOR) {
+      throw new ForbiddenException('Contributors cannot unpublish courses');
+    }
     await this.courseService.unpublish(id);
   }
 
-  @UseGuards(CourseOwnerGuard)
-  @Post(':id/image')
-  @UseInterceptors(FileInterceptor('file'))
-  async uploadImage(
-    @Param('id') id: string,
-    @UploadedFile() file: Express.Multer.File,
-  ) {
-    const result = await this.fileStorageService.writeFile(file);
+  // @UseGuards(CourseOwnerGuard)
+  // @Post(':id/image')
+  // @UseInterceptors(FileInterceptor('file'))
+  // async uploadImage(
+  //   @Param('id') id: string,
+  //   @UploadedFile() file: Express.Multer.File,
+  // ) {
+  //   const result = await this.fileStorageService.writeFile(file);
 
-    if (!result) {
-      throw new BadRequestException('Required upload file');
-    }
+  //   if (!result) {
+  //     throw new BadRequestException('Required upload file');
+  //   }
 
-    return result.url;
-  }
+  //   return result.url;
+  // }
 
   @ApiBody({
     type: SortUpdateDto,
