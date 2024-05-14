@@ -1,7 +1,7 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
+import { PostStatus } from '../models/post.dto';
 import { PostEntity } from './post.entity';
 import { UserEntity } from './user.entity';
-import { PostStatus } from '../models/post.dto';
 
 @Entity({ name: 'post_revision' })
 export class PostRevisionEntity {
@@ -14,8 +14,8 @@ export class PostRevisionEntity {
   @PrimaryColumn({ name: 'created_at', type: 'timestamptz' })
   createdAt: Date;
 
-  @Column({ type: 'varchar', length: 2000 })
-  title: string;
+  @Column({ type: 'varchar', length: 2000, nullable: true })
+  title?: string | null;
 
   @Column({ type: 'varchar', length: 100 })
   reason: string;

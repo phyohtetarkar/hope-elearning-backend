@@ -17,6 +17,7 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { CourseOwnerGuard } from '../guards/course-owner.guard';
+import { LessonUpdateTransformPipe } from '../pipes/lesson-update-transform.pipe';
 
 @Controller('/admin/courses/:courseId/lessons')
 @UseGuards(CourseOwnerGuard)
@@ -38,7 +39,7 @@ export class LessonAdminController {
   @Put()
   async update(
     @Param('courseId') courseId: string,
-    @Body() values: LessonUpdateDto,
+    @Body(LessonUpdateTransformPipe) values: LessonUpdateDto,
   ) {
     await this.lessonService.update({
       ...values,

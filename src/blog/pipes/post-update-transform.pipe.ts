@@ -10,6 +10,7 @@ export class PostUpdateTransformPipe
 
   transform(value: PostUpdateDto, metadata: ArgumentMetadata) {
     const user = this.security.getAuthenticatedUser();
+    value.updatedBy = user.id;
     if (user.isAdminOrOwner()) {
       return value;
     }

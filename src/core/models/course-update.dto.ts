@@ -1,3 +1,4 @@
+import { ApiHideProperty } from '@nestjs/swagger';
 import {
   ArrayMinSize,
   IsArray,
@@ -45,4 +46,7 @@ export class CourseUpdateDto {
 
   @IsDateString()
   updatedAt: string;
+
+  @ApiHideProperty()
+  updatedBy: string;
 }

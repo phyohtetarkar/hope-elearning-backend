@@ -1,3 +1,4 @@
+import { ApiHideProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
 import {
   IsDateString,
@@ -27,4 +28,7 @@ export class LessonUpdateDto {
 
   @IsDateString()
   updatedAt: string;
+
+  @ApiHideProperty()
+  updatedBy: string;
 }

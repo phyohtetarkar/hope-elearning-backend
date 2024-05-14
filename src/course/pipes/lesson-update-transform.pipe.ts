@@ -1,26 +1,19 @@
-import { CourseUpdateDto } from '@/core/models';
+import { LessonUpdateDto } from '@/core/models';
 import { SecurityContextService } from '@/core/security/security-context.service';
 import { ArgumentMetadata, Injectable, PipeTransform } from '@nestjs/common';
 
 @Injectable()
-export class CourseUpdateTransformPipe
-  implements PipeTransform<CourseUpdateDto, CourseUpdateDto>
+export class LessonUpdateTransformPipe
+  implements PipeTransform<LessonUpdateDto, LessonUpdateDto>
 {
   constructor(private security: SecurityContextService) {}
 
   transform(
-    value: CourseUpdateDto,
+    value: LessonUpdateDto,
     metadata: ArgumentMetadata,
-  ): CourseUpdateDto {
+  ): LessonUpdateDto {
     const user = this.security.getAuthenticatedUser();
     value.updatedBy = user.id;
-    if (user.isAdminOrOwner()) {
-      return value;
-    }
-
-    value.authors = undefined;
-    value.access = undefined;
-
     return value;
   }
 }
