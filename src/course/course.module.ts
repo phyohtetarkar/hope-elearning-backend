@@ -31,6 +31,7 @@ import { TypeormCourseService } from './services/typeorm-course.service';
 import { TypeormLessonRevisionService } from './services/typeorm-lesson-revision.service';
 import { TypeormLessonService } from './services/typeorm-lesson.service';
 import { CategoryController } from './controllers/category.controller';
+import { LessonController } from './controllers/lesson.controller';
 
 @Module({
   imports: [
@@ -81,6 +82,7 @@ import { CategoryController } from './controllers/category.controller';
     CourseController,
     ChapterAdminController,
     LessonAdminController,
+    LessonController,
   ],
 })
 export class CourseModule {}

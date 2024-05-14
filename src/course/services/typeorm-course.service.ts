@@ -232,7 +232,7 @@ export class TypeormCourseService implements CourseService {
       .leftJoinAndSelect(
         'course.category',
         'category',
-        'caegory.id = course.category_id',
+        'category.id = course.category_id',
       )
       .leftJoinAndSelect('course.meta', 'meta')
       .leftJoinAndSelect('course.authors', 'course_author')

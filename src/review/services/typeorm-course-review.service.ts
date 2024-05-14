@@ -46,8 +46,9 @@ export class TypeormCourseReviewService implements CourseReviewService {
         .createQueryBuilder()
         .update(CourseMetaEntity, {
           rating: () =>
-            `SELECT AVG(review.rating) FROM course_review review WHERE review.course_id = ${values.courseId}`,
-          ratingCount: () => 'rating_count + 1',
+            `(SELECT AVG(review.rating) FROM el_course_review review WHERE review.course_id = ${values.courseId})`,
+          ratingCount: () =>
+            `(SELECT COUNT(review.course_id) FROM el_course_review review WHERE review.course_id = ${values.courseId})`,
         })
         .where('id = :id', { id: values.courseId })
         .execute();
@@ -97,7 +98,7 @@ export class TypeormCourseReviewService implements CourseReviewService {
       .createQueryBuilder('review')
       .leftJoinAndSelect('review.user', 'user')
       .where('review.courseId = :courseId', { courseId })
-      .orderBy('ec.createdAt', 'DESC')
+      .orderBy('review.createdAt', 'DESC')
       .offset(offset)
       .limit(limit)
       .getManyAndCount();

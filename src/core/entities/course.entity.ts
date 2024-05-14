@@ -88,6 +88,7 @@ export class CourseEntity extends AuditingEntity {
         title: this.title,
         slug: this.slug,
         featured: this.featured,
+        cover: this.cover ?? undefined,
         level: this.level,
         access: this.access,
         status: this.status,
