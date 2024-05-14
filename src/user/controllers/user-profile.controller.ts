@@ -59,7 +59,7 @@ export class UserProfileController {
     return request['user'] as UserDto;
   }
 
-  @Post()
+  @Put()
   async update(@Body() values: UserUpdateDto) {
     const user = this.security.getAuthenticatedUser();
     await this.userService.update({
