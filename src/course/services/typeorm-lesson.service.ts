@@ -109,21 +109,16 @@ export class TypeormLessonService implements LessonService {
 
     await this.dataSource.transaction(async (em) => {
       for (const v of values) {
-        await em.update(LessonEntity, v.id, {
-          sortOrder: v.sortOrder,
-        });
+        await em
+          .createQueryBuilder()
+          .update(LessonEntity, {
+            sortOrder: v.sortOrder,
+          })
+          .where('id = :id', { id: v.id })
+          .callListeners(false)
+          .execute();
       }
     });
-
-    // await this.lessonRepo.save(
-    //   values.map((v) => {
-    //     return {
-    //       id: v.id,
-    //       sortOrder: v.sortOrder,
-    //     } as DeepPartial<LessonEntity>;
-    //   }),
-    //   { listeners: false },
-    // );
   }
 
   async delete(courseId: string, lessonId: string): Promise<void> {

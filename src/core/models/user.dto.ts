@@ -21,6 +21,8 @@ export class UserDto {
   @Expose({ groups: ['detail'] })
   bio?: string;
 
+  expiredAt: number;
+
   audit?: AuditingDto;
 
   constructor(partial: Partial<UserDto> = {}) {

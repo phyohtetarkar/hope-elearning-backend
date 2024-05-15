@@ -199,7 +199,7 @@ export class TypeormCourseEnrollmentService implements CourseEnrollmentService {
       const completedCount = dto.completedLessons?.length ?? 0;
 
       const progress = (completedCount / lessonCount) * 100;
-      dto.progress = isNaN(progress) ? 0 : progress;
+      dto.progress = isNaN(progress) ? 0 : Math.round(progress);
     }
 
     return dto;
@@ -263,7 +263,7 @@ export class TypeormCourseEnrollmentService implements CourseEnrollmentService {
         const completedCount = e.completedLessons?.length ?? 0;
 
         const progress = (completedCount / lessonCount) * 100;
-        dto.progress = isNaN(progress) ? 0 : progress;
+        dto.progress = isNaN(progress) ? 0 : Math.round(progress);
         return dto;
       }),
       count: count,

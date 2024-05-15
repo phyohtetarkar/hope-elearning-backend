@@ -150,13 +150,14 @@ export class TypeormCourseService implements CourseService {
         publishedAt: entity.publishedAt ?? now,
       });
 
-      await em.update(
-        LessonEntity,
-        { courseId: courseId },
-        {
+      await em
+        .createQueryBuilder()
+        .update(LessonEntity, {
           status: LessonStatus.PUBLISHED,
-        },
-      );
+        })
+        .where('courseId = :courseId', { courseId })
+        .callListeners(false)
+        .execute();
     });
   }
 
@@ -171,13 +172,14 @@ export class TypeormCourseService implements CourseService {
         status: CourseStatus.DRAFT,
       });
 
-      await em.update(
-        LessonEntity,
-        { courseId: courseId },
-        {
+      await em
+        .createQueryBuilder()
+        .update(LessonEntity, {
           status: LessonStatus.DRAFT,
-        },
-      );
+        })
+        .where('courseId = :courseId', { courseId })
+        .callListeners(false)
+        .execute();
     });
   }
 
@@ -221,6 +223,7 @@ export class TypeormCourseService implements CourseService {
       .leftJoinAndSelect('course.chapters', 'chapter')
       .leftJoinAndSelect('chapter.lessons', 'lesson')
       .where('course.slug = :slug', { slug })
+      .andWhere('course.status = :status', { status: CourseStatus.PUBLISHED })
       .getOne();
 
     return entity?.toDto();

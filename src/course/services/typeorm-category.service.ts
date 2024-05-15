@@ -19,6 +19,8 @@ import { Not, Repository } from 'typeorm';
 @Injectable()
 export class TypeormCategoryService implements CategorySerive {
   constructor(
+    @InjectRepository(CourseEntity)
+    private courseRepo: Repository<CourseEntity>,
     @InjectRepository(CategoryEntity)
     private categoryRepo: Repository<CategoryEntity>,
   ) {}
@@ -62,7 +64,18 @@ export class TypeormCategoryService implements CategorySerive {
 
   async findBySlug(slug: string): Promise<CategoryDto | undefined> {
     const entity = await this.categoryRepo.findOneBy({ slug: slug });
-    return entity?.toDto();
+    const dto = entity?.toDto();
+
+    if (dto) {
+      const count = await this.courseRepo
+        .createQueryBuilder('course')
+        .where('course.category_id = :categoryId', { categoryId: dto.id })
+        .andWhere('course.status = :status', { status: CourseStatus.PUBLISHED })
+        .getCount();
+      dto.courseCount = `${count}`;
+    }
+
+    return dto;
   }
 
   async find(query: CategoryQueryDto): Promise<PageDto<CategoryDto>> {

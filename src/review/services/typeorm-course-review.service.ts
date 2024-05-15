@@ -34,21 +34,40 @@ export class TypeormCourseReviewService implements CourseReviewService {
       throw new DomainError('Course not found');
     }
 
+    const reviewExists = await this.courseReviewRepo.existsBy({
+      userId: values.userId,
+      courseId: values.courseId,
+    });
+
     await this.dataSource.transaction(async (em) => {
-      await em.save(CourseReviewEntity, {
-        userId: values.userId,
-        courseId: values.courseId,
-        rating: values.rating,
-        message: values.message,
-      });
+      if (reviewExists) {
+        await em.update(
+          CourseReviewEntity,
+          { userId: values.userId, courseId: values.courseId },
+          {
+            rating: values.rating,
+            message: values.message,
+          },
+        );
+      } else {
+        await em.insert(CourseReviewEntity, {
+          userId: values.userId,
+          courseId: values.courseId,
+          rating: values.rating,
+          message: values.message,
+        });
+      }
 
       await em
         .createQueryBuilder()
         .update(CourseMetaEntity, {
           rating: () =>
             `(SELECT AVG(review.rating) FROM el_course_review review WHERE review.course_id = ${values.courseId})`,
-          ratingCount: () =>
-            `(SELECT COUNT(review.course_id) FROM el_course_review review WHERE review.course_id = ${values.courseId})`,
+          ratingCount: !reviewExists
+            ? () => {
+                return 'rating_count + 1';
+              }
+            : undefined,
         })
         .where('id = :id', { id: values.courseId })
         .execute();

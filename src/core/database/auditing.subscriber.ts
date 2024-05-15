@@ -30,9 +30,9 @@ export class AuditingSubscriber
       event.entity.createdBy = userId;
       event.entity.updatedBy = userId;
     }
-    // const date = new Date();
-    // event.entity.createdAt = date;
-    // event.entity.updatedAt = date;
+    const date = new Date();
+    event.entity.createdAt = date;
+    event.entity.updatedAt = date;
   }
 
   beforeUpdate(event: UpdateEvent<AuditingEntity>) {
@@ -44,8 +44,8 @@ export class AuditingSubscriber
     if (userId) {
       event.entity.updatedBy = userId;
     }
-    // const date = new Date();
-    // event.entity.updatedAt = date;
+    const date = new Date();
+    event.entity.updatedAt = date;
   }
 
   // beforeSoftRemove(event: SoftRemoveEvent<AuditingEntity>) {

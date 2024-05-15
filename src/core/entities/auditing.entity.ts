@@ -1,14 +1,14 @@
-import { Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Column } from 'typeorm';
 import { AuditingDto } from '../models/auditing.dto';
 
 export abstract class AuditingEntity {
-  @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
+  @Column({ name: 'created_at', type: 'timestamptz' })
   createdAt: Date;
 
   @Column({ name: 'created_by', nullable: true })
   createdBy?: string;
 
-  @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz' })
+  @Column({ name: 'updated_at', type: 'timestamptz' })
   updatedAt: Date;
 
   @Column({ name: 'updated_by', nullable: true })

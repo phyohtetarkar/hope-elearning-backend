@@ -26,7 +26,7 @@ export class CategoryController {
   }
 
   @Get(':slug')
-  async getCourseBySlug(
+  async getCategory(
     @Param('slug') slug: string,
     @Res({ passthrough: true }) resp: Response,
   ) {

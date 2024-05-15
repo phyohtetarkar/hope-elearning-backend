@@ -1,6 +1,6 @@
+import { UserDto, UserRole } from '@/core/models/user.dto';
 import { Column, Entity, PrimaryColumn } from 'typeorm';
 import { AuditingEntity } from './auditing.entity';
-import { UserDto, UserRole } from '@/core/models/user.dto';
 
 @Entity({ name: 'user' })
 export class UserEntity extends AuditingEntity {
@@ -43,6 +43,9 @@ export class UserEntity extends AuditingEntity {
   })
   bio?: string | null;
 
+  @Column({ name: 'expired_at', type: 'timestamptz', nullable: true })
+  expiredAt?: Date | null;
+
   toDto() {
     return new UserDto({
       id: this.id,
@@ -53,6 +56,7 @@ export class UserEntity extends AuditingEntity {
       headline: this.headline ?? undefined,
       image: this.image ?? undefined,
       bio: this.bio ?? undefined,
+      expiredAt: this.expiredAt?.getTime() ?? 0,
       audit: this.toAudit(),
     });
   }

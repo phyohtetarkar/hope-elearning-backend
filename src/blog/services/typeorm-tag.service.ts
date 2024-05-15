@@ -4,6 +4,7 @@ import { PostTagEntity } from '@/core/entities/post-tag.entity';
 import { TagEntity } from '@/core/entities/tag.entity';
 import {
   PageDto,
+  PostStatus,
   QueryDto,
   TagCreateDto,
   TagDto,
@@ -21,6 +22,8 @@ export class TypeormTagService implements TagService {
     private dataSource: DataSource,
     @InjectRepository(TagEntity)
     private tagRepo: Repository<TagEntity>,
+    @InjectRepository(PostTagEntity)
+    private postTagRepo: Repository<PostTagEntity>,
   ) {}
 
   async create(values: TagCreateDto): Promise<number> {
@@ -65,7 +68,17 @@ export class TypeormTagService implements TagService {
 
   async findBySlug(slug: string): Promise<TagDto | undefined> {
     const entity = await this.tagRepo.findOneBy({ slug: slug });
-    return entity?.toDto();
+    const dto = entity?.toDto();
+    if (dto) {
+      const count = await this.postTagRepo
+        .createQueryBuilder('post_tag')
+        .leftJoin('post_tag.post', 'post')
+        .where('post_tag.tagId = :tagId', { tagId: dto.id })
+        .andWhere('post.status = :status', { status: PostStatus.PUBLISHED })
+        .getCount();
+      dto.postCount = `${count}`;
+    }
+    return dto;
   }
 
   async find(query: TagQueryDto): Promise<PageDto<TagDto>> {

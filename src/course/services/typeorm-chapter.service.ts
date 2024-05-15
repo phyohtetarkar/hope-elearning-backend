@@ -85,21 +85,16 @@ export class TypeormChapterService implements ChapterService {
     if (values.length === 0) return;
     await this.dataSource.transaction(async (em) => {
       for (const v of values) {
-        await em.update(ChapterEntity, v.id, {
-          sortOrder: v.sortOrder,
-        });
+        await em
+          .createQueryBuilder()
+          .update(ChapterEntity, {
+            sortOrder: v.sortOrder,
+          })
+          .where('id = :id', { id: v.id })
+          .callListeners(false)
+          .execute();
       }
     });
-
-    // await this.chapterRepo.save(
-    //   values.map((v) => {
-    //     return {
-    //       id: v.id,
-    //       sortOrder: v.sortOrder,
-    //     } as DeepPartial<ChapterEntity>;
-    //   }),
-    //   { listeners: false },
-    // );
   }
 
   async delete(courseId: string, chapterId: string): Promise<void> {

@@ -206,6 +206,7 @@ export class TypeormPostService implements PostService {
       .leftJoinAndSelect('post_author.author', 'author')
       .leftJoinAndSelect('post_tag.tag', 'tag')
       .where('post.slug = :slug', { slug })
+      .andWhere('post.status = :status', { status: PostStatus.PUBLISHED })
       .getOne();
 
     if (entity) {
