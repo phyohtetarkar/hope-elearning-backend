@@ -7,6 +7,7 @@ export * from './user-query.dto';
 export * from './user-subscription.dto';
 export * from './user-update.dto';
 export * from './user.dto';
+export * from './user-meta.dto';
 
 export * from './tag-create.dto';
 export * from './tag-query.dto';

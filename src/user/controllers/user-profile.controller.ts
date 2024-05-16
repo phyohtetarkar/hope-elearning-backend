@@ -1,4 +1,4 @@
-import { QueryDto, UserDto, UserUpdateDto } from '@/core/models';
+import { QueryDto, UserDto, UserMetaDto, UserUpdateDto } from '@/core/models';
 import { SecurityContextService } from '@/core/security/security-context.service';
 import {
   COURSE_BOOKMARK_SERVICE,
@@ -10,10 +10,6 @@ import {
   USER_SERVICE,
   UserService,
 } from '@/core/services';
-import {
-  FILE_STORAGE_SERVICE,
-  FileStorageService,
-} from '@/core/storage/file-storage.service';
 import {
   Body,
   Controller,
@@ -41,8 +37,6 @@ export class UserProfileController {
     private courseEnrollmentService: CourseEnrollmentService,
     @Inject(COURSE_BOOKMARK_SERVICE)
     private courseBookmarkService: CourseBookmarkService,
-    @Inject(FILE_STORAGE_SERVICE)
-    private fileStorageService: FileStorageService,
   ) {}
 
   @SerializeOptions({
@@ -62,28 +56,30 @@ export class UserProfileController {
     });
   }
 
+  @Get('meta')
+  async getUserMeta() {
+    const user = this.security.getAuthenticatedUser();
+    const enrollmentCount = await this.courseEnrollmentService.countByUser(
+      user.id,
+    );
+    const bookmarkCount = await this.courseBookmarkService.countByUser(user.id);
+
+    return new UserMetaDto({
+      enrollmentCount,
+      bookmarkCount,
+    });
+  }
+
   @Get('enrollments')
   async getEnrollments(@Query() query: QueryDto) {
     const user = this.security.getAuthenticatedUser();
     return await this.courseEnrollmentService.findByUserId(user.id, query);
   }
 
-  @Get('enrollment-count')
-  async getEnrollmentCount() {
-    const user = this.security.getAuthenticatedUser();
-    return await this.courseEnrollmentService.countByUser(user.id);
-  }
-
   @Get('bookmarks')
   async getBookmarks(@Query() query: QueryDto) {
     const user = this.security.getAuthenticatedUser();
     return await this.courseBookmarkService.findByUserId(user.id, query);
-  }
-
-  @Get('bookmark-count')
-  async getBookmarkCount() {
-    const user = this.security.getAuthenticatedUser();
-    return await this.courseBookmarkService.countByUser(user.id);
   }
 
   @Get('reviews/:courseId/me')
