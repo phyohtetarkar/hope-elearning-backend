@@ -50,11 +50,12 @@ export class TypeormUserService implements UserService {
     await this.userRepo.update(values.id, {
       id: values.id,
       nickname: values.nickname,
-      username: await normalizeSlug(values.nickname, (v) => {
+      username: await normalizeSlug(values.username, (v) => {
         return this.userRepo.existsBy({ id: Not(values.id), username: v });
       }),
       headline: values.headline ?? null,
       bio: values.bio ?? null,
+      image: values.image,
     });
   }
 

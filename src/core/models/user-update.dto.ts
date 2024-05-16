@@ -14,4 +14,6 @@ export class UserUpdateDto {
   headline?: string;
 
   bio?: string;
+
+  image?: string;
 }

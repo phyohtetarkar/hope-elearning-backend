@@ -15,24 +15,18 @@ import {
   FileStorageService,
 } from '@/core/storage/file-storage.service';
 import {
-  BadRequestException,
   Body,
   Controller,
   Get,
   HttpStatus,
   Inject,
   Param,
-  Post,
   Put,
   Query,
   Req,
   Res,
   SerializeOptions,
-  UploadedFile,
-  UseInterceptors,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiBody, ApiConsumes } from '@nestjs/swagger';
 import { Response } from 'express';
 
 @Controller('profile')
@@ -66,31 +60,6 @@ export class UserProfileController {
       ...values,
       id: user.id,
     });
-  }
-
-  @ApiConsumes('multipart/form-data')
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        file: {
-          type: 'file',
-          format: 'binary',
-        },
-      },
-    },
-  })
-  @Put('image')
-  @UseInterceptors(FileInterceptor('file'))
-  async updateImage(@UploadedFile() file: Express.Multer.File) {
-    const user = this.security.getAuthenticatedUser();
-    const result = await this.fileStorageService.writeFile(file);
-
-    if (!result) {
-      throw new BadRequestException('Required upload file');
-    }
-
-    await this.userService.updateImage(user.id, result.url);
   }
 
   @Get('enrollments')

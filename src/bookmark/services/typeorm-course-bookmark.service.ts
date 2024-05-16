@@ -70,6 +70,7 @@ export class TypeormCourseBookmarkService implements CourseBookmarkService {
     const [entities, count] = await this.bookmarkedCourseRepo
       .createQueryBuilder('bookmark')
       .leftJoinAndSelect('bookmark.course', 'course')
+      .leftJoinAndSelect('course.meta', 'meta')
       .where('bookmark.userId = :userId', { userId })
       .andWhere('course.status = :status', { status: CourseStatus.PUBLISHED })
       .orderBy('bookmark.createdAt', 'DESC')
@@ -78,7 +79,7 @@ export class TypeormCourseBookmarkService implements CourseBookmarkService {
       .getManyAndCount();
 
     return PageDto.from({
-      list: entities.map((e) => e.course.toDto(true)),
+      list: entities.map((e) => e.course.toDto()),
       count: count,
       offset: offset,
       limit: limit,

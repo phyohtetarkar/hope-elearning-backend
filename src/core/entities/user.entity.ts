@@ -25,7 +25,7 @@ export class UserEntity extends AuditingEntity {
 
   @Column({
     type: 'varchar',
-    length: 2000,
+    length: 1000,
     nullable: true,
   })
   headline?: string | null;
