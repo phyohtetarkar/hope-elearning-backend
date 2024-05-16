@@ -232,15 +232,15 @@ export class TypeormCourseService implements CourseService {
   async findRelated(slug: string, limit: number): Promise<CourseDto[]> {
     const entities = await this.courseRepo
       .createQueryBuilder('course')
-      .leftJoinAndSelect(
-        'course.category',
-        'category',
-        'category.id = course.category_id',
-      )
+      .leftJoinAndSelect('course.category', 'category')
       .leftJoinAndSelect('course.meta', 'meta')
       .leftJoinAndSelect('course.authors', 'course_author')
       .leftJoinAndSelect('course_author.author', 'author')
       .where('course.slug != :slug', { slug })
+      .andWhere(
+        'course.category_id = (SELECT category_id FROM el_course WHERE slug = :slug)',
+        { slug },
+      )
       .andWhere('course.status = :status', { status: CourseStatus.PUBLISHED })
       .limit(limit)
       .getMany();

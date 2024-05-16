@@ -43,7 +43,8 @@ export * from './lesson-update.dto';
 export * from './lesson.dto';
 
 export * from './completed-lesson-update.dto';
-export * from './dashboard.dto';
+export * from './summary.dto';
 export * from './resume-lesson-update.dto';
 export * from './site-setting.dto';
 export * from './sort-update.dto';
+export * from './monthly-enrollment.dto';

@@ -1,12 +1,11 @@
-export class DashboardDto {
+export class SummaryDto {
   courseCount: number;
   postCount: number;
   subscriberCount: number;
   userCount: number;
-  monthlyEnrollments: { [key: string]: number };
   enrolledByLevel: { [key: string]: number };
 
-  constructor(partial: Partial<DashboardDto> = {}) {
+  constructor(partial: Partial<SummaryDto> = {}) {
     Object.assign(this, partial);
   }
 }

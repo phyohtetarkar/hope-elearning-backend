@@ -1,7 +1,9 @@
-import { DashboardDto } from '../models';
+import { MonthlyEnrollmentDto, SummaryDto } from '../models';
 
 export interface DashboardService {
-  getSummary(): Promise<DashboardDto>;
+  getSummary(): Promise<SummaryDto>;
+
+  getMonthlyEnrollments(year: number): Promise<MonthlyEnrollmentDto>;
 }
 
 export const DASHBOARD_SERVICE = 'DashboardService';
