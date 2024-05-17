@@ -30,7 +30,7 @@ export class TypeormSiteSettingService implements SiteSettingService {
       .where('ss.id = :id', { id: this.DEFAULT_ID })
       .getRawOne();
 
-    return raw['aboutUs'] ?? '';
+    return raw?.['aboutUs'] ?? '';
   }
 
   async getPrivacyPolicy(): Promise<string> {
@@ -40,7 +40,7 @@ export class TypeormSiteSettingService implements SiteSettingService {
       .where('ss.id = :id', { id: this.DEFAULT_ID })
       .getRawOne();
 
-    return raw['privacyPolicy'] ?? '';
+    return raw?.['privacyPolicy'] ?? '';
   }
 
   async getTermsAndConditions(): Promise<string> {
@@ -50,7 +50,7 @@ export class TypeormSiteSettingService implements SiteSettingService {
       .where('ss.id = :id', { id: this.DEFAULT_ID })
       .getRawOne();
 
-    return raw['termsAndConditions'] ?? '';
+    return raw?.['termsAndConditions'] ?? '';
   }
 
   async getSiteSetting(): Promise<SiteSettingDto> {
