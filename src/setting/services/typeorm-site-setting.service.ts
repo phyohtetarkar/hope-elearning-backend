@@ -26,31 +26,33 @@ export class TypeormSiteSettingService implements SiteSettingService {
   async getAboutUs(): Promise<string> {
     const raw = await this.siteSettingRepo
       .createQueryBuilder('ss')
-      .select(['ss.aboutUs AS aboutUs'])
+      .select(['ss.aboutUs AS about_us'])
       .where('ss.id = :id', { id: this.DEFAULT_ID })
       .getRawOne();
 
-    return raw?.['aboutUs'] ?? '';
+    console.log(raw);
+
+    return raw?.['about_us'] ?? '';
   }
 
   async getPrivacyPolicy(): Promise<string> {
     const raw = await this.siteSettingRepo
       .createQueryBuilder('ss')
-      .select(['ss.privacyPolicy AS privacyPolicy'])
+      .select(['ss.privacyPolicy AS privacy_policy'])
       .where('ss.id = :id', { id: this.DEFAULT_ID })
       .getRawOne();
 
-    return raw?.['privacyPolicy'] ?? '';
+    return raw?.['privacy_policy'] ?? '';
   }
 
   async getTermsAndConditions(): Promise<string> {
     const raw = await this.siteSettingRepo
       .createQueryBuilder('ss')
-      .select(['ss.termsAndConditions AS termsAndConditions'])
+      .select(['ss.termsAndConditions AS terms_and_conditions'])
       .where('ss.id = :id', { id: this.DEFAULT_ID })
       .getRawOne();
 
-    return raw?.['termsAndConditions'] ?? '';
+    return raw?.['terms_and_conditions'] ?? '';
   }
 
   async getSiteSetting(): Promise<SiteSettingDto> {
