@@ -30,8 +30,6 @@ export class TypeormSiteSettingService implements SiteSettingService {
       .where('ss.id = :id', { id: this.DEFAULT_ID })
       .getRawOne();
 
-    console.log(raw);
-
     return raw?.['about_us'] ?? '';
   }
 
