@@ -18,7 +18,9 @@ import {
 import { Response } from 'express';
 import { CourseOwnerGuard } from '../guards/course-owner.guard';
 import { LessonUpdateTransformPipe } from '../pipes/lesson-update-transform.pipe';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Course')
 @Controller('/admin/courses/:courseId/lessons')
 @UseGuards(CourseOwnerGuard)
 @Staff()

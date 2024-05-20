@@ -14,7 +14,7 @@ import {
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
-@ApiTags('Admin')
+@ApiTags('User')
 @Controller('/admin/users')
 @Roles(UserRole.OWNER, UserRole.ADMIN)
 export class UserAdminController {

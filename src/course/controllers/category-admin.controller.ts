@@ -1,6 +1,7 @@
-import { Roles } from '@/common/decorators';
+import { ApiOkResponsePaginated, Roles, Staff } from '@/common/decorators';
 import {
   CategoryCreateDto,
+  CategoryDto,
   CategoryQueryDto,
   CategoryUpdateDto,
   UserRole,
@@ -20,8 +21,10 @@ import {
   Query,
   Res,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 
+@ApiTags('Course')
 @Controller('/admin/categories')
 @Roles(UserRole.OWNER, UserRole.ADMIN)
 export class CategoryAdminController {
@@ -39,6 +42,8 @@ export class CategoryAdminController {
     return await this.categoryService.update(values);
   }
 
+  @Staff()
+  @ApiOkResponsePaginated(CategoryDto)
   @Get()
   async find(@Query() query: CategoryQueryDto) {
     return await this.categoryService.find(query);

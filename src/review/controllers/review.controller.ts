@@ -1,4 +1,9 @@
-import { CourseReviewUpdateDto, QueryDto } from '@/core/models';
+import { ApiOkResponsePaginated } from '@/common/decorators';
+import {
+  CourseReviewDto,
+  CourseReviewUpdateDto,
+  QueryDto,
+} from '@/core/models';
 import { SecurityContextService } from '@/core/security/security-context.service';
 import { COURSE_REVIEW_SERVICE, CourseReviewService } from '@/core/services';
 import {
@@ -10,7 +15,9 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Review')
 @Controller('/content/courses/:courseId/reviews')
 export class ReviewController {
   constructor(
@@ -32,6 +39,7 @@ export class ReviewController {
     });
   }
 
+  @ApiOkResponsePaginated(CourseReviewDto)
   @Get()
   async getCourseReviews(
     @Param('courseId') courseId: string,

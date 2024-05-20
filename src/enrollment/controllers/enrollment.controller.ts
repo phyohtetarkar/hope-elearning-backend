@@ -1,4 +1,5 @@
-import { QueryDto } from '@/core/models';
+import { ApiOkResponsePaginated } from '@/common/decorators';
+import { EnrolledCourseDto, QueryDto } from '@/core/models';
 import { SecurityContextService } from '@/core/security/security-context.service';
 import {
   COURSE_ENROLLMENT_SERVICE,
@@ -17,8 +18,10 @@ import {
   Res,
   SerializeOptions,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 
+@ApiTags('Enrollment')
 @Controller('/enrollments')
 export class EnrollmentController {
   constructor(
@@ -27,6 +30,7 @@ export class EnrollmentController {
     private courseEnrollmentService: CourseEnrollmentService,
   ) {}
 
+  @ApiOkResponsePaginated(EnrolledCourseDto)
   @Get()
   async find(@Query() query: QueryDto) {
     const user = this.security.getAuthenticatedUser();

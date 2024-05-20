@@ -1,6 +1,7 @@
-import { Staff } from '@/common/decorators';
+import { ApiOkResponsePaginated, Staff } from '@/common/decorators';
 import {
   CourseCreateDto,
+  CourseDto,
   CourseQueryDto,
   CourseUpdateDto,
   SortUpdateDto,
@@ -35,13 +36,14 @@ import {
   SerializeOptions,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBody } from '@nestjs/swagger';
+import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { CourseOwnerGuard } from '../guards/course-owner.guard';
 import { CourseCreateTransformPipe } from '../pipes/course-create-transform.pipe';
 import { CourseQueryTransformPipe } from '../pipes/course-query-transform.pipe';
 import { CourseUpdateTransformPipe } from '../pipes/course-update-transform.pipe';
 
+@ApiTags('Course')
 @Controller('/admin/courses')
 @Staff()
 export class CourseAdminController {
@@ -68,6 +70,7 @@ export class CourseAdminController {
     await this.courseService.update(values);
   }
 
+  @ApiOkResponsePaginated(CourseDto)
   @Get()
   async find(@Query(CourseQueryTransformPipe) query: CourseQueryDto) {
     return await this.courseService.find(query);

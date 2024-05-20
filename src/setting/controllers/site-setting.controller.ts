@@ -2,7 +2,9 @@ import { Roles } from '@/common/decorators';
 import { SiteSettingDto, UserRole } from '@/core/models';
 import { SITE_SETTING_SERVICE, SiteSettingService } from '@/core/services';
 import { Body, Controller, Get, Inject, Post } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Setting')
 @Controller('/content/site-settings')
 export class SiteSettingController {
   constructor(

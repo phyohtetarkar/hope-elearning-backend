@@ -1,6 +1,7 @@
-import { Roles } from '@/common/decorators';
+import { ApiOkResponsePaginated, Roles, Staff } from '@/common/decorators';
 import {
   TagCreateDto,
+  TagDto,
   TagQueryDto,
   TagUpdateDto,
   UserRole,
@@ -18,7 +19,9 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Blog')
 @Controller('/admin/tags')
 @Roles(UserRole.OWNER, UserRole.ADMIN)
 export class TagAdminController {
@@ -34,6 +37,8 @@ export class TagAdminController {
     return await this.tagService.update(values);
   }
 
+  @Staff()
+  @ApiOkResponsePaginated(TagDto)
   @Get()
   async find(@Query() query: TagQueryDto) {
     return await this.tagService.find(query);

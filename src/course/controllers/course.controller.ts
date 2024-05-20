@@ -1,4 +1,5 @@
-import { CourseQueryDto, CourseStatus } from '@/core/models';
+import { ApiOkResponsePaginated } from '@/common/decorators';
+import { CourseDto, CourseQueryDto, CourseStatus } from '@/core/models';
 import { COURSE_SERVICE, CourseService } from '@/core/services';
 import {
   Controller,
@@ -10,12 +11,15 @@ import {
   Res,
   SerializeOptions,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 
+@ApiTags('Course')
 @Controller('/content/courses')
 export class CourseController {
   constructor(@Inject(COURSE_SERVICE) private courseService: CourseService) {}
 
+  @ApiOkResponsePaginated(CourseDto)
   @Get()
   async find(@Query() query: CourseQueryDto) {
     return await this.courseService.find({

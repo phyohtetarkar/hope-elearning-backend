@@ -1,4 +1,12 @@
-import { QueryDto, UserDto, UserMetaDto, UserUpdateDto } from '@/core/models';
+import { ApiOkResponsePaginated } from '@/common/decorators';
+import {
+  CourseDto,
+  EnrolledCourseDto,
+  QueryDto,
+  UserDto,
+  UserMetaDto,
+  UserUpdateDto,
+} from '@/core/models';
 import { SecurityContextService } from '@/core/security/security-context.service';
 import {
   COURSE_BOOKMARK_SERVICE,
@@ -23,8 +31,10 @@ import {
   Res,
   SerializeOptions,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 
+@ApiTags('Profile')
 @Controller('profile')
 export class UserProfileController {
   constructor(
@@ -70,12 +80,14 @@ export class UserProfileController {
     });
   }
 
+  @ApiOkResponsePaginated(EnrolledCourseDto)
   @Get('enrollments')
   async getEnrollments(@Query() query: QueryDto) {
     const user = this.security.getAuthenticatedUser();
     return await this.courseEnrollmentService.findByUserId(user.id, query);
   }
 
+  @ApiOkResponsePaginated(CourseDto)
   @Get('bookmarks')
   async getBookmarks(@Query() query: QueryDto) {
     const user = this.security.getAuthenticatedUser();

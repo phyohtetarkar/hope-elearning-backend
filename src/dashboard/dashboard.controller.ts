@@ -2,7 +2,9 @@ import { Roles } from '@/common/decorators';
 import { UserRole } from '@/core/models';
 import { DASHBOARD_SERVICE, DashboardService } from '@/core/services';
 import { Controller, Get, Inject, Param, ParseIntPipe } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Dashboard')
 @Controller('/admin/dashboard')
 @Roles(UserRole.ADMIN, UserRole.OWNER)
 export class DashboardController {

@@ -12,7 +12,9 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { CourseOwnerGuard } from '../guards/course-owner.guard';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Course')
 @Controller('/admin/courses/:courseId/chapters')
 @UseGuards(CourseOwnerGuard)
 @Staff()

@@ -1,6 +1,7 @@
-import { Staff } from '@/common/decorators';
+import { ApiOkResponsePaginated, Staff } from '@/common/decorators';
 import {
   PostCreateDto,
+  PostDto,
   PostQueryDto,
   PostUpdateDto,
   UserRole,
@@ -32,7 +33,9 @@ import { PostOwnerGuard } from '../guards/post-owner.guard';
 import { PostCreateTransformPipe } from '../pipes/post-create-transform.pipe';
 import { PostQueryTransformPipe } from '../pipes/post-query-transform.pipe';
 import { PostUpdateTransformPipe } from '../pipes/post-update-transform.pipe';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Blog')
 @Controller('/admin/posts')
 @Staff()
 export class PostAdminController {
@@ -58,6 +61,7 @@ export class PostAdminController {
     await this.postService.update(values);
   }
 
+  @ApiOkResponsePaginated(PostDto)
   @Get()
   async find(@Query(PostQueryTransformPipe) query: PostQueryDto) {
     return await this.postService.find(query);

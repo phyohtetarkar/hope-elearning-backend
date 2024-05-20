@@ -9,8 +9,10 @@ import {
   Res,
   SerializeOptions,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 
+@ApiTags('Course')
 @Controller('/content/lessons')
 export class LessonController {
   constructor(@Inject(LESSON_SERVICE) private lessonService: LessonService) {}

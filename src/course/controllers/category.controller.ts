@@ -1,4 +1,5 @@
-import { CategoryQueryDto } from '@/core/models';
+import { ApiOkResponsePaginated } from '@/common/decorators';
+import { CategoryDto, CategoryQueryDto } from '@/core/models';
 import { CATEGORY_SERVICE, CategorySerive } from '@/core/services';
 import {
   Controller,
@@ -9,14 +10,17 @@ import {
   Query,
   Res,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 
+@ApiTags('Course')
 @Controller('/content/categories')
 export class CategoryController {
   constructor(
     @Inject(CATEGORY_SERVICE) private categoryService: CategorySerive,
   ) {}
 
+  @ApiOkResponsePaginated(CategoryDto)
   @Get()
   async find(@Query() query: CategoryQueryDto) {
     return await this.categoryService.find({

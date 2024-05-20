@@ -1,4 +1,5 @@
-import { QueryDto } from '@/core/models';
+import { ApiOkResponsePaginated } from '@/common/decorators';
+import { CourseDto, QueryDto } from '@/core/models';
 import { SecurityContextService } from '@/core/security/security-context.service';
 import {
   COURSE_BOOKMARK_SERVICE,
@@ -13,7 +14,9 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Bookmark')
 @Controller('/bookmarks')
 export class BookmarkController {
   constructor(
@@ -22,6 +25,7 @@ export class BookmarkController {
     private courseBookmarkService: CourseBookmarkService,
   ) {}
 
+  @ApiOkResponsePaginated(CourseDto)
   @Get()
   async find(@Query() query: QueryDto) {
     const user = this.security.getAuthenticatedUser();

@@ -1,4 +1,5 @@
-import { PostQueryDto, PostStatus } from '@/core/models';
+import { ApiOkResponsePaginated } from '@/common/decorators';
+import { PostDto, PostQueryDto, PostStatus } from '@/core/models';
 import { POST_SERVICE, PostService } from '@/core/services';
 import {
   Controller,
@@ -10,12 +11,15 @@ import {
   Res,
   SerializeOptions,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 
+@ApiTags('Blog')
 @Controller('/content/posts')
 export class PostController {
   constructor(@Inject(POST_SERVICE) private postService: PostService) {}
 
+  @ApiOkResponsePaginated(PostDto)
   @Get()
   async find(@Query() query: PostQueryDto) {
     return await this.postService.find({

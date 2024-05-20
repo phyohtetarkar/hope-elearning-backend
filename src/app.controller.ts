@@ -7,12 +7,13 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiBody, ApiConsumes } from '@nestjs/swagger';
+import { ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import {
   FILE_STORAGE_SERVICE,
   FileStorageService,
 } from './core/storage/file-storage.service';
 
+@ApiTags('Common')
 @Controller('common')
 export class AppController {
   constructor(
