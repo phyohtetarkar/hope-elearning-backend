@@ -29,8 +29,9 @@ export class CourseUpdateDto {
 
   description?: string;
 
+  @IsOptional()
   @IsEnum(CourseLevel)
-  level: CourseLevel;
+  level?: CourseLevel;
 
   @IsOptional()
   @IsEnum(CourseAccess)

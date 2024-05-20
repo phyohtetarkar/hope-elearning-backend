@@ -11,6 +11,11 @@ export class PostUpdateTransformPipe
   transform(value: PostUpdateDto, metadata: ArgumentMetadata) {
     const user = this.security.getAuthenticatedUser();
     value.updatedBy = user.id;
+
+    if (value.publishedAt && new Date(value.publishedAt) > new Date()) {
+      value.publishedAt = undefined;
+    }
+
     if (user.isAdminOrOwner()) {
       return value;
     }
