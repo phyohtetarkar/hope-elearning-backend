@@ -17,7 +17,7 @@ export class CourseQueryDto extends QueryDto {
   @IsEnum(CourseStatus)
   status?: CourseStatus;
 
-  category?: number;
+  category?: string;
   author?: string;
 
   featured?: boolean;

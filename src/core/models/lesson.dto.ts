@@ -24,6 +24,8 @@ export class LessonDto {
   @Expose({ groups: ['lesson-detail'] })
   lexical?: string;
 
+  wordCount: number;
+
   sortOrder: number;
 
   courseId: string;

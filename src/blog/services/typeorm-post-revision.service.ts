@@ -42,7 +42,6 @@ export class TypeormPostRevisionService implements PostRevisionService {
       cover: oldPost.cover,
       status: oldPost.status,
       lexical: oldPost.lexical,
-      wordCount: oldPost.wordCount,
       reason: reason,
     });
   }

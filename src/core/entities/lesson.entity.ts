@@ -41,6 +41,9 @@ export class LessonEntity extends AuditingEntity {
   @Column({ type: 'text', nullable: true })
   lexical?: string | null;
 
+  @Column({ name: 'word_count', default: 0 })
+  wordCount: number;
+
   @Column({ name: 'sort_order', default: 0 })
   sortOrder: number;
 
@@ -65,6 +68,7 @@ export class LessonEntity extends AuditingEntity {
         title: this.title,
         slug: this.slug,
         trial: this.trial,
+        wordCount: this.wordCount,
         sortOrder: this.sortOrder,
         status: this.status,
         type: this.type,
@@ -82,6 +86,7 @@ export class LessonEntity extends AuditingEntity {
       status: this.status,
       type: this.type,
       lexical: this.lexical ?? undefined,
+      wordCount: this.wordCount,
       sortOrder: this.sortOrder,
       courseId: this.courseId,
       chapterId: this.chapterId,

@@ -281,8 +281,8 @@ export class TypeormCourseService implements CourseService {
     }
 
     if (query.category) {
-      courseQuery.andWhere('course.category_id = :categoryId', {
-        categoryId: query.category,
+      courseQuery.andWhere('category.slug = :category', {
+        category: query.category,
       });
     }
 

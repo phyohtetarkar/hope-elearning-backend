@@ -24,6 +24,8 @@ export class LessonUpdateDto {
 
   lexical?: string;
 
+  wordCount?: number;
+
   trial?: boolean;
 
   @IsDateString()

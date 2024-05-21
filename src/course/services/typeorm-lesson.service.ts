@@ -85,6 +85,7 @@ export class TypeormLessonService implements LessonService {
       title: values.title,
       lexical: values.lexical,
       trial: values.trial,
+      wordCount: values.wordCount,
       slug:
         entity.slug !== values.slug
           ? await normalizeSlug(
