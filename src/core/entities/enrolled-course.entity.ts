@@ -1,5 +1,4 @@
 import {
-  Column,
   Entity,
   JoinColumn,
   ManyToOne,
@@ -19,7 +18,7 @@ export class EnrolledCourseEntity extends AuditingEntity {
   userId: string;
 
   @PrimaryColumn({ name: 'course_id', type: 'bigint' })
-  courseId: string;
+  courseId: number;
 
   @ManyToOne(() => UserEntity)
   @JoinColumn({ name: 'user_id' })
@@ -45,7 +44,7 @@ export class EnrolledCourseEntity extends AuditingEntity {
     }
     return new EnrolledCourseDto({
       course: this.course.toDto(),
-      completedLessons: this.completedLessons?.map((l) => l.lessonId),
+      completedLessons: this.completedLessons?.map((l) => Number(l.lessonId)),
       resumeLesson: this.resumeLesson?.toDto(true),
     });
   }

@@ -6,15 +6,15 @@ import {
 } from '../models';
 
 export interface LessonService {
-  create(values: LessonCreateDto): Promise<string>;
+  create(values: LessonCreateDto): Promise<number>;
 
   update(values: LessonUpdateDto): Promise<void>;
 
   updateSort(values: SortUpdateDto[]): Promise<void>;
 
-  delete(courseId: string, lessonId: string): Promise<void>;
+  delete(courseId: number, lessonId: number): Promise<void>;
 
-  findById(id: string): Promise<LessonDto | undefined>;
+  findById(id: number): Promise<LessonDto | undefined>;
 
   findBySlug(slug: string): Promise<LessonDto | undefined>;
 }

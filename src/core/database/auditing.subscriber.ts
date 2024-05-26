@@ -47,15 +47,4 @@ export class AuditingSubscriber
     const date = new Date();
     event.entity.updatedAt = date;
   }
-
-  // beforeSoftRemove(event: SoftRemoveEvent<AuditingEntity>) {
-  //   const userId = this.security.getAuthenticatedUserOpt()?.id;
-  //   console.log('beforeSoftRemove', event.entity);
-  //   if (!event.entity) {
-  //     return;
-  //   }
-  //   if (userId) {
-  //     event.entity.deletedBy = userId;
-  //   }
-  // }
 }

@@ -14,7 +14,7 @@ import { PostTagEntity } from './post-tag.entity';
 @Entity({ name: 'post' })
 export class PostEntity extends AuditingEntity {
   @PrimaryGeneratedColumn({ type: 'bigint' })
-  id: string;
+  id: number;
 
   @Column({ type: 'varchar', length: 2000, nullable: true })
   cover?: string | null;

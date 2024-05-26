@@ -1,7 +1,7 @@
-import { IsInt, IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, IsNumber } from 'class-validator';
 
 export class TagUpdateDto {
-  @IsInt()
+  @IsNumber()
   id: number;
 
   @IsNotEmpty()

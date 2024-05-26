@@ -11,6 +11,7 @@ import { CourseEntity } from '@/core/entities/course.entity';
 import { EnrolledCourseEntity } from '@/core/entities/enrolled-course.entity';
 import { LessonRevisionEntity } from '@/core/entities/lesson-revision.entity';
 import { LessonEntity } from '@/core/entities/lesson.entity';
+import { AuditEvent } from '@/core/events';
 import {
   CourseCreateDto,
   CourseDto,
@@ -23,6 +24,7 @@ import {
 } from '@/core/models';
 import { CourseService } from '@/core/services';
 import { Injectable } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 
@@ -30,13 +32,14 @@ import { DataSource, Repository } from 'typeorm';
 export class TypeormCourseService implements CourseService {
   constructor(
     private dataSource: DataSource,
+    private eventEmitter: EventEmitter2,
     @InjectRepository(CategoryEntity)
     private categoryRepo: Repository<CategoryEntity>,
     @InjectRepository(CourseEntity)
     private courseRepo: Repository<CourseEntity>,
   ) {}
 
-  async create(values: CourseCreateDto): Promise<string> {
+  async create(values: CourseCreateDto): Promise<number> {
     if (
       !(await this.categoryRepo.existsBy({
         id: values.categoryId,
@@ -49,7 +52,7 @@ export class TypeormCourseService implements CourseService {
       throw new DomainError('Required at least one author');
     }
 
-    return await this.dataSource.transaction(async (em) => {
+    const courseId = await this.dataSource.transaction(async (em) => {
       const result = await em.insert(CourseEntity, {
         title: values.title,
         level: values.level,
@@ -77,6 +80,17 @@ export class TypeormCourseService implements CourseService {
 
       return courseId;
     });
+
+    this.eventEmitter.emit(
+      'audit.created',
+      new AuditEvent({
+        resourceId: `${courseId}`,
+        resourceType: 'course',
+        context: JSON.stringify({ title: values.title }),
+      }),
+    );
+
+    return courseId;
   }
 
   async update(values: CourseUpdateDto): Promise<void> {
@@ -132,9 +146,18 @@ export class TypeormCourseService implements CourseService {
         await em.insert(CourseAuthorEntity, courseAuthors);
       }
     });
+
+    this.eventEmitter.emit(
+      'audit.updated',
+      new AuditEvent({
+        resourceId: `${courseId}`,
+        resourceType: 'course',
+        context: JSON.stringify({ title: values.title }),
+      }),
+    );
   }
 
-  async publish(userId: string, courseId: string): Promise<void> {
+  async publish(userId: string, courseId: number): Promise<void> {
     const entity = await this.courseRepo.findOneBy({ id: courseId });
     if (!entity) {
       throw new DomainError('Course not found');
@@ -161,7 +184,7 @@ export class TypeormCourseService implements CourseService {
     });
   }
 
-  async unpublish(courseId: string): Promise<void> {
+  async unpublish(courseId: number): Promise<void> {
     const exists = await this.courseRepo.existsBy({ id: courseId });
     if (!exists) {
       throw new DomainError('Course not found');
@@ -183,7 +206,13 @@ export class TypeormCourseService implements CourseService {
     });
   }
 
-  async delete(id: string): Promise<void> {
+  async delete(id: number): Promise<void> {
+    const entity = await this.courseRepo.findOneBy({ id: id });
+
+    if (!entity) {
+      throw new DomainError('Course not found');
+    }
+
     await this.dataSource.transaction(async (em) => {
       await em.delete(CompletedLessonEntity, { courseId: id });
       await em.delete(EnrolledCourseEntity, { courseId: id });
@@ -196,9 +225,18 @@ export class TypeormCourseService implements CourseService {
       await em.delete(CourseMetaEntity, id);
       await em.delete(CourseEntity, id);
     });
+
+    this.eventEmitter.emit(
+      'audit.deleted',
+      new AuditEvent({
+        resourceId: `${id}`,
+        resourceType: 'course',
+        context: JSON.stringify({ title: entity.title }),
+      }),
+    );
   }
 
-  async findById(id: string): Promise<CourseDto | undefined> {
+  async findById(id: number): Promise<CourseDto | undefined> {
     const entity = await this.courseRepo
       .createQueryBuilder('course')
       .leftJoinAndSelect('course.category', 'category')

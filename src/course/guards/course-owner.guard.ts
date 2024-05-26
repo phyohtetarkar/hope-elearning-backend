@@ -27,7 +27,7 @@ export class CourseOwnerGuard implements CanActivate {
     const courseId =
       request.params['id'] || request.params['courseId'] || request.body['id'];
 
-    if (courseId) {
+    if (courseId && !isNaN(parseInt(courseId))) {
       return await this.courseAuthorService.existByCourseAndAuthor(
         courseId,
         user.id,

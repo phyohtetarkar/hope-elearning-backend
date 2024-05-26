@@ -35,7 +35,7 @@ export class TypeormLessonService implements LessonService {
     private lessonRevisionService: LessonRevisionService,
   ) {}
 
-  async create(values: LessonCreateDto): Promise<string> {
+  async create(values: LessonCreateDto): Promise<number> {
     if (!(await this.courseRepo.existsBy({ id: values.courseId }))) {
       throw new DomainError('Course not found');
     }
@@ -122,7 +122,7 @@ export class TypeormLessonService implements LessonService {
     });
   }
 
-  async delete(courseId: string, lessonId: string): Promise<void> {
+  async delete(courseId: number, lessonId: number): Promise<void> {
     await this.dataSource.transaction(async (em) => {
       await em.delete(CompletedLessonEntity, {
         courseId: courseId,
@@ -154,7 +154,7 @@ export class TypeormLessonService implements LessonService {
     });
   }
 
-  async findById(id: string): Promise<LessonDto | undefined> {
+  async findById(id: number): Promise<LessonDto | undefined> {
     const entity = await this.lessonRepo
       .createQueryBuilder('lesson')
       .leftJoinAndSelect('lesson.chapter', 'chapter')

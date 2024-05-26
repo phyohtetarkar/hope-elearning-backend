@@ -9,7 +9,7 @@ export class BookmarkedCourseEntity extends AuditingEntity {
   userId: string;
 
   @PrimaryColumn({ name: 'course_id', type: 'bigint' })
-  courseId: string;
+  courseId: number;
 
   @ManyToOne(() => UserEntity)
   @JoinColumn({ name: 'user_id' })

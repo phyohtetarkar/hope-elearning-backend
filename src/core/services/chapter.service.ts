@@ -6,15 +6,15 @@ import {
 } from '../models';
 
 export interface ChapterService {
-  create(values: ChapterCreateDto): Promise<string>;
+  create(values: ChapterCreateDto): Promise<number>;
 
   update(values: ChapterUpdateDto): Promise<void>;
 
   updateSort(values: SortUpdateDto[]): Promise<void>;
 
-  delete(courseId: string, chapterId: string): Promise<void>;
+  delete(courseId: number, chapterId: number): Promise<void>;
 
-  findById(id: string): Promise<ChapterDto | undefined>;
+  findById(id: number): Promise<ChapterDto | undefined>;
 }
 
 export const CHAPTER_SERVICE = 'ChapterService';

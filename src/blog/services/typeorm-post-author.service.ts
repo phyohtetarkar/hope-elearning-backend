@@ -12,7 +12,7 @@ export class TypeormPostAuthorService implements PostAuthorService {
   ) {}
 
   async existByPostAndAuthor(
-    postId: string,
+    postId: number,
     authorId: string,
   ): Promise<boolean> {
     return await this.postAuthorRepo.existsBy({

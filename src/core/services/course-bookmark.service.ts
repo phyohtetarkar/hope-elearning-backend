@@ -1,11 +1,11 @@
 import { CourseDto, PageDto, QueryDto } from '../models';
 
 export interface CourseBookmarkService {
-  add(userId: string, courseId: string): Promise<void>;
+  add(userId: string, courseId: number): Promise<void>;
 
-  remove(userId: string, courseId: string): Promise<void>;
+  remove(userId: string, courseId: number): Promise<void>;
 
-  existsByUserIdAndCourseId(userId: string, courseId: string): Promise<boolean>;
+  existsByUserIdAndCourseId(userId: string, courseId: number): Promise<boolean>;
 
   countByUser(userId: string): Promise<number>;
 

@@ -13,7 +13,7 @@ import { CourseEntity } from './course.entity';
 @Entity({ name: 'lesson' })
 export class LessonEntity extends AuditingEntity {
   @PrimaryGeneratedColumn({ type: 'bigint' })
-  id: string;
+  id: number;
 
   @Column({ length: 2000 })
   title: string;
@@ -48,10 +48,10 @@ export class LessonEntity extends AuditingEntity {
   sortOrder: number;
 
   @Column({ name: 'course_id', type: 'bigint' })
-  courseId: string;
+  courseId: number;
 
   @Column({ name: 'chapter_id', type: 'bigint' })
-  chapterId: string;
+  chapterId: number;
 
   @ManyToOne(() => ChapterEntity, (type) => type.lessons)
   @JoinColumn({ name: 'chapter_id' })

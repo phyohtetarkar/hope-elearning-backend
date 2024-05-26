@@ -10,7 +10,7 @@ export class CourseReviewEntity extends AuditingEntity {
   userId: string;
 
   @PrimaryColumn({ name: 'course_id', type: 'bigint' })
-  courseId: string;
+  courseId: number;
 
   @Column({ type: 'smallint', default: 0 })
   rating: number;

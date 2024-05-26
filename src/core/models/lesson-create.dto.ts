@@ -1,12 +1,12 @@
 import { Exclude } from 'class-transformer';
-import { IsInt, IsNotEmpty, MaxLength } from 'class-validator';
+import { IsInt, IsNotEmpty, IsNumber, MaxLength } from 'class-validator';
 
 export class LessonCreateDto {
-  @IsNotEmpty()
-  chapterId: string;
+  @IsNumber()
+  chapterId: number;
 
   @Exclude()
-  courseId: string;
+  courseId: number;
 
   @IsNotEmpty()
   @MaxLength(2000)

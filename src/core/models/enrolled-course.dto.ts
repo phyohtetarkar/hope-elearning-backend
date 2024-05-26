@@ -8,7 +8,7 @@ export class EnrolledCourseDto {
 
   resumeLesson?: LessonDto;
 
-  completedLessons?: string[];
+  completedLessons?: number[];
 
   constructor(partial: Partial<EnrolledCourseDto> = {}) {
     Object.assign(this, partial);

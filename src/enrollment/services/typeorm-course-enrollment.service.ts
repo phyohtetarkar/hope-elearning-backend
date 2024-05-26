@@ -32,7 +32,7 @@ export class TypeormCourseEnrollmentService implements CourseEnrollmentService {
     private completedLessonRepo: Repository<CompletedLessonEntity>,
   ) {}
 
-  async enroll(userId: string, courseId: string): Promise<void> {
+  async enroll(userId: string, courseId: number): Promise<void> {
     const courseExists = await this.courseRepo.existsBy({
       id: courseId,
       status: CourseStatus.PUBLISHED,
@@ -80,7 +80,7 @@ export class TypeormCourseEnrollmentService implements CourseEnrollmentService {
     });
   }
 
-  async remove(userId: string, courseId: string): Promise<void> {
+  async remove(userId: string, courseId: number): Promise<void> {
     await this.dataSource.transaction(async (em) => {
       await em.delete(CompletedLessonEntity, {
         userId: userId,
@@ -180,7 +180,7 @@ export class TypeormCourseEnrollmentService implements CourseEnrollmentService {
 
   async findByUserIdAndCourseId(
     userId: string,
-    courseId: string,
+    courseId: number,
   ): Promise<EnrolledCourseDto | undefined> {
     const entity = await this.enrolledCourseRepo
       .createQueryBuilder('ec')

@@ -9,16 +9,17 @@ import {
   HttpStatus,
   Inject,
   Param,
+  ParseIntPipe,
   Post,
   Put,
   Res,
   SerializeOptions,
   UseGuards,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { CourseOwnerGuard } from '../guards/course-owner.guard';
 import { LessonUpdateTransformPipe } from '../pipes/lesson-update-transform.pipe';
-import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Course')
 @Controller('/admin/courses/:courseId/lessons')
@@ -29,7 +30,7 @@ export class LessonAdminController {
 
   @Post()
   async create(
-    @Param('courseId') courseId: string,
+    @Param('courseId', ParseIntPipe) courseId: number,
     @Body() values: LessonCreateDto,
   ) {
     return await this.lessonService.create({
@@ -40,7 +41,7 @@ export class LessonAdminController {
 
   @Put()
   async update(
-    @Param('courseId') courseId: string,
+    @Param('courseId', ParseIntPipe) courseId: number,
     @Body(LessonUpdateTransformPipe) values: LessonUpdateDto,
   ) {
     await this.lessonService.update({
@@ -51,8 +52,8 @@ export class LessonAdminController {
 
   @Delete(':lessonId')
   async delete(
-    @Param('courseId') courseId: string,
-    @Param('lessonId') lessonId: string,
+    @Param('courseId', ParseIntPipe) courseId: number,
+    @Param('lessonId', ParseIntPipe) lessonId: number,
   ) {
     await this.lessonService.delete(courseId, lessonId);
   }
@@ -62,8 +63,8 @@ export class LessonAdminController {
   })
   @Get(':lessonId')
   async getCourse(
-    @Param('courseId') courseId: string,
-    @Param('lessonId') lessonId: string,
+    @Param('courseId', ParseIntPipe) courseId: number,
+    @Param('lessonId', ParseIntPipe) lessonId: number,
     @Res({ passthrough: true }) resp: Response,
   ) {
     const result = await this.lessonService.findById(lessonId);

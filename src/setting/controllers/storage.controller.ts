@@ -1,4 +1,8 @@
 import {
+  FILE_STORAGE_SERVICE,
+  FileStorageService,
+} from '@/core/storage/file-storage.service';
+import {
   BadRequestException,
   Controller,
   Inject,
@@ -8,14 +12,10 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
-import {
-  FILE_STORAGE_SERVICE,
-  FileStorageService,
-} from './core/storage/file-storage.service';
 
-@ApiTags('Common')
-@Controller('common')
-export class AppController {
+@ApiTags('Setting')
+@Controller('storage')
+export class StorageController {
   constructor(
     @Inject(FILE_STORAGE_SERVICE)
     private fileStorageService: FileStorageService,

@@ -5,7 +5,7 @@ import { CourseMetaDto } from '../models';
 @Entity({ name: 'course_meta' })
 export class CourseMetaEntity {
   @PrimaryColumn({ type: 'bigint' })
-  id: string;
+  id: number;
 
   @Column({ type: 'decimal', precision: 2, scale: 1, default: 0.0 })
   rating: string;

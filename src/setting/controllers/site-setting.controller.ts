@@ -1,5 +1,5 @@
 import { Roles } from '@/common/decorators';
-import { SiteSettingDto, UserRole } from '@/core/models';
+import { UserRole } from '@/core/models';
 import { SITE_SETTING_SERVICE, SiteSettingService } from '@/core/services';
 import { Body, Controller, Get, Inject, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
@@ -18,9 +18,21 @@ export class SiteSettingController {
   }
 
   @Roles(UserRole.OWNER, UserRole.ADMIN)
-  @Post()
-  async updateSiteSetting(@Body() values: SiteSettingDto) {
-    return await this.siteSettingService.save(values);
+  @Post('about-us')
+  async updateAboutUs(@Body('value') values: string) {
+    return await this.siteSettingService.updateAboutUs(values);
+  }
+
+  @Roles(UserRole.OWNER, UserRole.ADMIN)
+  @Post('privacy-policy')
+  async updatePrivacyPolicy(@Body('value') values: string) {
+    return await this.siteSettingService.updatePrivacyPolicy(values);
+  }
+
+  @Roles(UserRole.OWNER, UserRole.ADMIN)
+  @Post('terms-and-conditions')
+  async updateTermsAndConditions(@Body('value') values: string) {
+    return await this.siteSettingService.updateTermsAndConditions(values);
   }
 
   @Get('about-us')

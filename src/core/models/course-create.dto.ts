@@ -2,8 +2,8 @@ import {
   ArrayMinSize,
   IsArray,
   IsEnum,
-  IsInt,
   IsNotEmpty,
+  IsNumber,
   MaxLength,
 } from 'class-validator';
 import { CourseLevel } from './course.dto';
@@ -22,7 +22,7 @@ export class CourseCreateDto {
   @IsEnum(CourseLevel)
   level: CourseLevel;
 
-  @IsInt()
+  @IsNumber()
   categoryId: number;
 
   @IsArray()

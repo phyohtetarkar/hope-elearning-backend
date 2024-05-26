@@ -11,6 +11,7 @@ import {
   Get,
   Inject,
   Param,
+  ParseIntPipe,
   Post,
   Query,
 } from '@nestjs/common';
@@ -33,19 +34,21 @@ export class BookmarkController {
   }
 
   @Post(':courseId')
-  async add(@Param('courseId') courseId: string) {
+  async add(@Param('courseId', ParseIntPipe) courseId: number) {
     const user = this.security.getAuthenticatedUser();
     await this.courseBookmarkService.add(user.id, courseId);
   }
 
   @Delete(':courseId')
-  async remove(@Param('courseId') courseId: string) {
+  async remove(@Param('courseId', ParseIntPipe) courseId: number) {
     const user = this.security.getAuthenticatedUser();
     await this.courseBookmarkService.remove(user.id, courseId);
   }
 
   @Get(':courseId/check')
-  async checkBookmarkedCourse(@Param('courseId') courseId: string) {
+  async checkBookmarkedCourse(
+    @Param('courseId', ParseIntPipe) courseId: number,
+  ) {
     const user = this.security.getAuthenticatedUser();
     return await this.courseBookmarkService.existsByUserIdAndCourseId(
       user.id,

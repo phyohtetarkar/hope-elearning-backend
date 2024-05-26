@@ -16,7 +16,7 @@ export class TypeormCourseBookmarkService implements CourseBookmarkService {
     private bookmarkedCourseRepo: Repository<BookmarkedCourseEntity>,
   ) {}
 
-  async add(userId: string, courseId: string): Promise<void> {
+  async add(userId: string, courseId: number): Promise<void> {
     const courseExists = await this.courseRepo.existsBy({
       id: courseId,
       status: CourseStatus.PUBLISHED,
@@ -41,7 +41,7 @@ export class TypeormCourseBookmarkService implements CourseBookmarkService {
     });
   }
 
-  async remove(userId: string, courseId: string): Promise<void> {
+  async remove(userId: string, courseId: number): Promise<void> {
     await this.bookmarkedCourseRepo.delete({
       userId: userId,
       courseId: courseId,
@@ -50,7 +50,7 @@ export class TypeormCourseBookmarkService implements CourseBookmarkService {
 
   async existsByUserIdAndCourseId(
     userId: string,
-    courseId: string,
+    courseId: number,
   ): Promise<boolean> {
     return await this.bookmarkedCourseRepo.existsBy({
       userId: userId,

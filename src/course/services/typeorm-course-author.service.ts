@@ -12,7 +12,7 @@ export class TypeormCourseAuthorService implements CourseAuthorService {
   ) {}
 
   async existByCourseAndAuthor(
-    courseId: string,
+    courseId: number,
     authorId: string,
   ): Promise<boolean> {
     return await this.courseAuthorRepo.existsBy({

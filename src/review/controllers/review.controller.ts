@@ -12,6 +12,7 @@ import {
   Get,
   Inject,
   Param,
+  ParseIntPipe,
   Post,
   Query,
 } from '@nestjs/common';
@@ -28,7 +29,7 @@ export class ReviewController {
 
   @Post()
   async writeReview(
-    @Param('courseId') courseId: string,
+    @Param('courseId', ParseIntPipe) courseId: number,
     @Body() values: CourseReviewUpdateDto,
   ) {
     const user = this.security.getAuthenticatedUser();
@@ -42,7 +43,7 @@ export class ReviewController {
   @ApiOkResponsePaginated(CourseReviewDto)
   @Get()
   async getCourseReviews(
-    @Param('courseId') courseId: string,
+    @Param('courseId', ParseIntPipe) courseId: number,
     @Query() query: QueryDto,
   ) {
     return await this.courseReviewService.findByCourseId(courseId, query);

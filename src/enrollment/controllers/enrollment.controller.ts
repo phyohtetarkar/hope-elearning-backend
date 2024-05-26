@@ -12,6 +12,7 @@ import {
   HttpStatus,
   Inject,
   Param,
+  ParseIntPipe,
   Post,
   Put,
   Query,
@@ -39,8 +40,8 @@ export class EnrollmentController {
 
   @Post(':courseId/completed/:lessonId')
   async addCompletedLesson(
-    @Param('courseId') courseId: string,
-    @Param('lessonId') lessonId: string,
+    @Param('courseId', ParseIntPipe) courseId: number,
+    @Param('lessonId', ParseIntPipe) lessonId: number,
   ) {
     const user = this.security.getAuthenticatedUser();
     await this.courseEnrollmentService.insertCompletedLesson({
@@ -52,8 +53,8 @@ export class EnrollmentController {
 
   @Delete(':courseId/completed/:lessonId')
   async removeCompletedLesson(
-    @Param('courseId') courseId: string,
-    @Param('lessonId') lessonId: string,
+    @Param('courseId', ParseIntPipe) courseId: number,
+    @Param('lessonId', ParseIntPipe) lessonId: number,
   ) {
     const user = this.security.getAuthenticatedUser();
     await this.courseEnrollmentService.deleteCompletedLesson({
@@ -65,8 +66,8 @@ export class EnrollmentController {
 
   @Put(':courseId/resume/:lessonId')
   async updateResumeLesson(
-    @Param('courseId') courseId: string,
-    @Param('lessonId') lessonId: string,
+    @Param('courseId', ParseIntPipe) courseId: number,
+    @Param('lessonId', ParseIntPipe) lessonId: number,
   ) {
     const user = this.security.getAuthenticatedUser();
     await this.courseEnrollmentService.updateResumeLesson({
@@ -77,13 +78,13 @@ export class EnrollmentController {
   }
 
   @Post(':courseId')
-  async enroll(@Param('courseId') courseId: string) {
+  async enroll(@Param('courseId', ParseIntPipe) courseId: number) {
     const user = this.security.getAuthenticatedUser();
     await this.courseEnrollmentService.enroll(user.id, courseId);
   }
 
   @Delete(':courseId')
-  async remove(@Param('courseId') courseId: string) {
+  async remove(@Param('courseId', ParseIntPipe) courseId: number) {
     const user = this.security.getAuthenticatedUser();
     await this.courseEnrollmentService.remove(user.id, courseId);
   }
@@ -113,7 +114,7 @@ export class EnrollmentController {
 
   @Get(':courseId')
   async getEnrolledCourse(
-    @Param('courseId') courseId: string,
+    @Param('courseId', ParseIntPipe) courseId: number,
     @Res({ passthrough: true }) resp: Response,
   ) {
     const user = this.security.getAuthenticatedUser();

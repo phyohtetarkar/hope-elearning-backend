@@ -27,7 +27,7 @@ export class TypeormChapterService implements ChapterService {
     private chapterRepo: Repository<ChapterEntity>,
   ) {}
 
-  async create(values: ChapterCreateDto): Promise<string> {
+  async create(values: ChapterCreateDto): Promise<number> {
     if (!(await this.courseRepo.existsBy({ id: values.courseId }))) {
       throw new DomainError('Course not found');
     }
@@ -97,7 +97,7 @@ export class TypeormChapterService implements ChapterService {
     });
   }
 
-  async delete(courseId: string, chapterId: string): Promise<void> {
+  async delete(courseId: number, chapterId: number): Promise<void> {
     await this.dataSource.transaction(async (em) => {
       await em.delete(CompletedLessonEntity, {
         courseId: courseId,
@@ -137,7 +137,7 @@ export class TypeormChapterService implements ChapterService {
     });
   }
 
-  async findById(id: string): Promise<ChapterDto | undefined> {
+  async findById(id: number): Promise<ChapterDto | undefined> {
     const entity = await this.chapterRepo.findOneBy({ id: id });
     return entity?.toDto();
   }

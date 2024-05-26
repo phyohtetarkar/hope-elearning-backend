@@ -20,3 +20,5 @@ export * from './lesson.service';
 export * from './dashboard.service';
 
 export * from './site-setting.service';
+
+export * from './audit-action.service';

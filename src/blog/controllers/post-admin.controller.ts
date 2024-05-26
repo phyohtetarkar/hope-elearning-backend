@@ -21,6 +21,7 @@ import {
   HttpStatus,
   Inject,
   Param,
+  ParseIntPipe,
   Post,
   Put,
   Query,
@@ -69,7 +70,7 @@ export class PostAdminController {
 
   @UseGuards(PostOwnerGuard)
   @Put(':id/publish')
-  async publishPost(@Param('id') id: string) {
+  async publishPost(@Param('id', ParseIntPipe) id: number) {
     const user = this.security.getAuthenticatedUser();
     if (user.role === UserRole.CONTRIBUTOR) {
       throw new ForbiddenException('Contributors cannot publish posts');
@@ -79,7 +80,7 @@ export class PostAdminController {
 
   @UseGuards(PostOwnerGuard)
   @Put(':id/unpublish')
-  async unpublishPost(@Param('id') id: string) {
+  async unpublishPost(@Param('id', ParseIntPipe) id: number) {
     const user = this.security.getAuthenticatedUser();
     if (user.role === UserRole.CONTRIBUTOR) {
       throw new ForbiddenException('Contributors cannot upublish posts');
@@ -109,7 +110,7 @@ export class PostAdminController {
   @UseGuards(PostOwnerGuard)
   @Get(':id')
   async getPost(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Res({ passthrough: true }) resp: Response,
   ) {
     const result = await this.postService.findById(id);
@@ -121,7 +122,7 @@ export class PostAdminController {
 
   @UseGuards(PostOwnerGuard)
   @Delete(':id')
-  async deletePost(@Param('id') id: string) {
+  async deletePost(@Param('id', ParseIntPipe) id: number) {
     await this.postService.delete(id);
   }
 }

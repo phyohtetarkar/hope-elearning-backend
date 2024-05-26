@@ -2,6 +2,7 @@ import { DomainError } from '@/common/errors/domain.error';
 import { normalizeSlug } from '@/common/utils';
 import { PostTagEntity } from '@/core/entities/post-tag.entity';
 import { TagEntity } from '@/core/entities/tag.entity';
+import { AuditEvent } from '@/core/events';
 import {
   PageDto,
   PostStatus,
@@ -13,6 +14,7 @@ import {
 } from '@/core/models';
 import { TagService } from '@/core/services';
 import { Injectable } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Not, Repository } from 'typeorm';
 
@@ -20,6 +22,7 @@ import { DataSource, Not, Repository } from 'typeorm';
 export class TypeormTagService implements TagService {
   constructor(
     private dataSource: DataSource,
+    private eventEmitter: EventEmitter2,
     @InjectRepository(TagEntity)
     private tagRepo: Repository<TagEntity>,
     @InjectRepository(PostTagEntity)
@@ -34,11 +37,21 @@ export class TypeormTagService implements TagService {
       }),
     });
 
+    this.eventEmitter.emit(
+      'audit.created',
+      new AuditEvent({
+        resourceId: result.identifiers[0].id,
+        resourceType: 'tag',
+        context: JSON.stringify({ title: values.name }),
+      }),
+    );
+
     return result.identifiers[0].id;
   }
 
   async update(values: TagUpdateDto): Promise<number> {
-    const exists = await this.tagRepo.existsBy({ id: values.id });
+    const id = values.id;
+    const exists = await this.tagRepo.existsBy({ id: id });
 
     if (!exists) {
       throw new DomainError('Tag not found');
@@ -47,18 +60,42 @@ export class TypeormTagService implements TagService {
     await this.tagRepo.update(values.id, {
       name: values.name,
       slug: await normalizeSlug(values.slug, (v) => {
-        return this.tagRepo.existsBy({ id: Not(values.id), slug: v });
+        return this.tagRepo.existsBy({ id: Not(id), slug: v });
       }),
     });
+
+    this.eventEmitter.emit(
+      'audit.updated',
+      new AuditEvent({
+        resourceId: values.id.toString(),
+        resourceType: 'tag',
+        context: JSON.stringify({ title: values.name }),
+      }),
+    );
 
     return values.id;
   }
 
   async delete(id: number): Promise<void> {
+    const entity = await this.tagRepo.findOneBy({ id: id });
+
+    if (!entity) {
+      throw new DomainError('Tag not found');
+    }
+
     await this.dataSource.transaction(async (em) => {
       await em.delete(PostTagEntity, { tagId: id });
       await em.delete(TagEntity, { id });
     });
+
+    this.eventEmitter.emit(
+      'audit.deleted',
+      new AuditEvent({
+        resourceId: id.toString(),
+        resourceType: 'tag',
+        context: JSON.stringify({ title: entity.name }),
+      }),
+    );
   }
 
   async findById(id: number): Promise<TagDto | undefined> {

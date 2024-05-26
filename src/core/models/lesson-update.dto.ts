@@ -3,16 +3,18 @@ import { Exclude } from 'class-transformer';
 import {
   IsDateString,
   IsNotEmpty,
+  IsNumber,
+  IsNumberString,
   IsOptional,
   MaxLength,
 } from 'class-validator';
 
 export class LessonUpdateDto {
-  @IsNotEmpty()
-  id: string;
+  @IsNumber()
+  id: number;
 
   @Exclude()
-  courseId: string;
+  courseId: number;
 
   @IsOptional()
   @MaxLength(2000)

@@ -7,7 +7,7 @@ import { UserEntity } from './user.entity';
 @Entity({ name: 'lesson_revision' })
 export class LessonRevisionEntity {
   @PrimaryColumn({ name: 'lesson_id', type: 'bigint' })
-  lessonId: string;
+  lessonId: number;
 
   @PrimaryColumn({ name: 'author_id' })
   authorId: string;

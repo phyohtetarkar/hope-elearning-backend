@@ -7,17 +7,17 @@ import {
 } from '../models';
 
 export interface PostService {
-  create(values: PostCreateDto): Promise<string>;
+  create(values: PostCreateDto): Promise<number>;
 
   update(values: PostUpdateDto): Promise<void>;
 
-  publish(userId: string, postId: string): Promise<void>;
+  publish(userId: string, postId: number): Promise<void>;
 
-  unpublish(postId: string): Promise<void>;
+  unpublish(postId: number): Promise<void>;
 
-  delete(id: string): Promise<void>;
+  delete(id: number): Promise<void>;
 
-  findById(id: string): Promise<PostDto | undefined>;
+  findById(id: number): Promise<PostDto | undefined>;
 
   findBySlug(slug: string): Promise<PostDto | undefined>;
 

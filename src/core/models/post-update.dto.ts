@@ -5,14 +5,15 @@ import {
   IsDateString,
   IsEnum,
   IsNotEmpty,
+  IsNumber,
   IsOptional,
   MaxLength,
 } from 'class-validator';
 import { PostVisibility } from './post.dto';
 
 export class PostUpdateDto {
-  @IsNotEmpty()
-  id: string;
+  @IsNumber()
+  id: number;
 
   cover?: string;
 

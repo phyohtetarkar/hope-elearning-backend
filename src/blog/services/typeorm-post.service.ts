@@ -5,6 +5,7 @@ import { PostMetaEntity } from '@/core/entities/post-meta.entity';
 import { PostRevisionEntity } from '@/core/entities/post-revision.entity';
 import { PostTagEntity } from '@/core/entities/post-tag.entity';
 import { PostEntity } from '@/core/entities/post.entity';
+import { AuditEvent } from '@/core/events';
 import {
   PageDto,
   PostCreateDto,
@@ -20,6 +21,7 @@ import {
   PostService,
 } from '@/core/services';
 import { Inject, Injectable } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 
@@ -27,6 +29,7 @@ import { DataSource, Repository } from 'typeorm';
 export class TypeormPostService implements PostService {
   constructor(
     private dataSource: DataSource,
+    private eventEmitter: EventEmitter2,
     @InjectRepository(PostEntity)
     private postRepo: Repository<PostEntity>,
     @InjectRepository(PostMetaEntity)
@@ -35,12 +38,12 @@ export class TypeormPostService implements PostService {
     private postRevisionService: PostRevisionService,
   ) {}
 
-  async create(values: PostCreateDto): Promise<string> {
+  async create(values: PostCreateDto): Promise<number> {
     if (values.authors.length === 0) {
       throw new DomainError('Required at least one author');
     }
 
-    return await this.dataSource.transaction(async (em) => {
+    const postId = await this.dataSource.transaction(async (em) => {
       const result = await em.insert(PostEntity, {
         cover: values.cover,
         title: values.title,
@@ -80,6 +83,17 @@ export class TypeormPostService implements PostService {
 
       return postId;
     });
+
+    this.eventEmitter.emit(
+      'audit.created',
+      new AuditEvent({
+        resourceId: `${postId}`,
+        resourceType: 'post',
+        context: JSON.stringify({ title: values.title ?? '(Untitled)' }),
+      }),
+    );
+
+    return postId;
   }
 
   async update(values: PostUpdateDto): Promise<void> {
@@ -145,9 +159,18 @@ export class TypeormPostService implements PostService {
     const newPost = post.toDto();
 
     this.postRevisionService.save(entity.toDto(), newPost);
+
+    this.eventEmitter.emit(
+      'audit.updated',
+      new AuditEvent({
+        resourceId: `${postId}`,
+        resourceType: 'post',
+        context: JSON.stringify({ title: post.title ?? '(Untitled)' }),
+      }),
+    );
   }
 
-  async publish(userId: string, postId: string): Promise<void> {
+  async publish(userId: string, postId: number): Promise<void> {
     const entity = await this.postRepo.findOneBy({ id: postId });
     if (!entity) {
       throw new DomainError('Post not found');
@@ -163,7 +186,7 @@ export class TypeormPostService implements PostService {
     });
   }
 
-  async unpublish(postId: string): Promise<void> {
+  async unpublish(postId: number): Promise<void> {
     const exists = await this.postRepo.existsBy({ id: postId });
     if (!exists) {
       throw new DomainError('Post not found');
@@ -174,7 +197,13 @@ export class TypeormPostService implements PostService {
     });
   }
 
-  async delete(id: string): Promise<void> {
+  async delete(id: number): Promise<void> {
+    const entity = await this.postRepo.findOneBy({ id: id });
+
+    if (!entity) {
+      throw new DomainError('Post not found');
+    }
+
     await this.dataSource.transaction(async (em) => {
       await em.delete(PostTagEntity, { postId: id });
       await em.delete(PostRevisionEntity, { postId: id });
@@ -182,9 +211,18 @@ export class TypeormPostService implements PostService {
       await em.delete(PostMetaEntity, id);
       await em.delete(PostEntity, id);
     });
+
+    this.eventEmitter.emit(
+      'audit.deleted',
+      new AuditEvent({
+        resourceId: `${id}`,
+        resourceType: 'post',
+        context: JSON.stringify({ title: entity.title ?? '(Untitled)' }),
+      }),
+    );
   }
 
-  async findById(id: string): Promise<PostDto | undefined> {
+  async findById(id: number): Promise<PostDto | undefined> {
     const entity = await this.postRepo
       .createQueryBuilder('post')
       .leftJoinAndSelect('post.authors', 'post_author')

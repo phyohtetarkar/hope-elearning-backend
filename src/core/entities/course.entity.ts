@@ -17,7 +17,7 @@ import { CourseMetaEntity } from './course-meta.entity';
 @Entity({ name: 'course' })
 export class CourseEntity extends AuditingEntity {
   @PrimaryGeneratedColumn({ type: 'bigint' })
-  id: string;
+  id: number;
 
   @Column({ length: 2000 })
   title: string;

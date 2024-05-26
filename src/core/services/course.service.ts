@@ -7,17 +7,17 @@ import {
 } from '../models';
 
 export interface CourseService {
-  create(values: CourseCreateDto): Promise<string>;
+  create(values: CourseCreateDto): Promise<number>;
 
   update(values: CourseUpdateDto): Promise<void>;
 
-  publish(userId: string, courseId: string): Promise<void>;
+  publish(userId: string, courseId: number): Promise<void>;
 
-  unpublish(courseId: string): Promise<void>;
+  unpublish(courseId: number): Promise<void>;
 
-  delete(id: string): Promise<void>;
+  delete(id: number): Promise<void>;
 
-  findById(id: string): Promise<CourseDto | undefined>;
+  findById(id: number): Promise<CourseDto | undefined>;
 
   findBySlug(slug: string): Promise<CourseDto | undefined>;
 

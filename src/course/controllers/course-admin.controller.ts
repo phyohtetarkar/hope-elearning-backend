@@ -29,6 +29,7 @@ import {
   HttpStatus,
   Inject,
   Param,
+  ParseIntPipe,
   Post,
   Put,
   Query,
@@ -78,7 +79,7 @@ export class CourseAdminController {
 
   @UseGuards(CourseOwnerGuard)
   @Put(':id/publish')
-  async publishCourse(@Param('id') id: string) {
+  async publishCourse(@Param('id', ParseIntPipe) id: number) {
     const user = this.security.getAuthenticatedUser();
     if (user.role === UserRole.CONTRIBUTOR) {
       throw new ForbiddenException('Contributors cannot publish courses');
@@ -88,7 +89,7 @@ export class CourseAdminController {
 
   @UseGuards(CourseOwnerGuard)
   @Put(':id/unpublish')
-  async unpublishCourse(@Param('id') id: string) {
+  async unpublishCourse(@Param('id', ParseIntPipe) id: number) {
     const user = this.security.getAuthenticatedUser();
     if (user.role === UserRole.CONTRIBUTOR) {
       throw new ForbiddenException('Contributors cannot unpublish courses');
@@ -138,7 +139,7 @@ export class CourseAdminController {
   @UseGuards(CourseOwnerGuard)
   @Get(':id')
   async getCourse(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Res({ passthrough: true }) resp: Response,
   ) {
     const result = await this.courseService.findById(id);
@@ -151,7 +152,7 @@ export class CourseAdminController {
 
   @UseGuards(CourseOwnerGuard)
   @Delete(':id')
-  async delete(@Param('id') id: string) {
+  async delete(@Param('id', ParseIntPipe) id: number) {
     await this.courseService.delete(id);
   }
 }

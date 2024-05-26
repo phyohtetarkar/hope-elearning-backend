@@ -5,7 +5,7 @@ import { UserEntity } from './user.entity';
 @Entity({ name: 'post_author' })
 export class PostAuthorEntity {
   @PrimaryColumn({ name: 'post_id', type: 'bigint' })
-  postId: string;
+  postId: number;
 
   @PrimaryColumn({ name: 'author_id' })
   authorId: string;

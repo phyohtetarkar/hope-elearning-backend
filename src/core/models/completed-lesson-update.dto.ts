@@ -1,7 +1,11 @@
+import { IsNumber } from 'class-validator';
+
 export class CompletedLessonUpdateDto {
   userId: string;
 
-  courseId: string;
+  @IsNumber()
+  courseId: number;
 
-  lessonId: string;
+  @IsNumber()
+  lessonId: number;
 }

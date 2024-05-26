@@ -2,6 +2,7 @@ import { DomainError } from '@/common/errors';
 import { normalizeSlug } from '@/common/utils';
 import { CategoryEntity } from '@/core/entities/category.entity';
 import { CourseEntity } from '@/core/entities/course.entity';
+import { AuditEvent } from '@/core/events';
 import {
   CategoryCreateDto,
   CategoryDto,
@@ -13,12 +14,14 @@ import {
 } from '@/core/models';
 import { CategorySerive } from '@/core/services';
 import { Injectable } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Not, Repository } from 'typeorm';
 
 @Injectable()
 export class TypeormCategoryService implements CategorySerive {
   constructor(
+    private eventEmitter: EventEmitter2,
     @InjectRepository(CourseEntity)
     private courseRepo: Repository<CourseEntity>,
     @InjectRepository(CategoryEntity)
@@ -32,6 +35,15 @@ export class TypeormCategoryService implements CategorySerive {
         return this.categoryRepo.existsBy({ slug: v });
       }),
     });
+
+    this.eventEmitter.emit(
+      'audit.created',
+      new AuditEvent({
+        resourceId: result.identifiers[0].id,
+        resourceType: 'category',
+        context: JSON.stringify({ title: values.name }),
+      }),
+    );
 
     return result.identifiers[0].id;
   }
@@ -50,11 +62,35 @@ export class TypeormCategoryService implements CategorySerive {
       }),
     });
 
+    this.eventEmitter.emit(
+      'audit.updated',
+      new AuditEvent({
+        resourceId: values.id.toString(),
+        resourceType: 'category',
+        context: JSON.stringify({ title: values.name }),
+      }),
+    );
+
     return values.id;
   }
 
   async delete(id: number): Promise<void> {
+    const entity = await this.categoryRepo.findOneBy({ id: id });
+
+    if (!entity) {
+      throw new DomainError('Category not found');
+    }
+
     await this.categoryRepo.delete({ id: id });
+
+    this.eventEmitter.emit(
+      'audit.deleted',
+      new AuditEvent({
+        resourceId: id.toString(),
+        resourceType: 'category',
+        context: JSON.stringify({ title: entity.name }),
+      }),
+    );
   }
 
   async findById(id: number): Promise<CategoryDto | undefined> {

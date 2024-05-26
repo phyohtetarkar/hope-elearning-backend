@@ -1,8 +1,13 @@
 import { Exclude } from 'class-transformer';
-import { IsDateString, IsNotEmpty, MaxLength } from 'class-validator';
+import {
+  IsDateString,
+  IsNotEmpty,
+  IsNumberString,
+  MaxLength,
+} from 'class-validator';
 
 export class ChapterUpdateDto {
-  @IsNotEmpty()
+  @IsNumberString()
   id: string;
 
   @Exclude()

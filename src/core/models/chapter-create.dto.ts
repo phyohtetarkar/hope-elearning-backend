@@ -3,7 +3,7 @@ import { IsInt, IsNotEmpty, MaxLength } from 'class-validator';
 
 export class ChapterCreateDto {
   @Exclude()
-  courseId: string;
+  courseId: number;
 
   @IsNotEmpty()
   @MaxLength(2000)

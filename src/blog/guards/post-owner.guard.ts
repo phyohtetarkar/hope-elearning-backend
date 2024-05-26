@@ -26,7 +26,7 @@ export class PostOwnerGuard implements CanActivate {
 
     const postId = request.params['id'] || request.body['id'];
 
-    if (postId) {
+    if (postId && !isNaN(parseInt(postId))) {
       return await this.postAuthorService.existByPostAndAuthor(postId, user.id);
     }
 

@@ -7,6 +7,7 @@ import {
   Delete,
   Inject,
   Param,
+  ParseIntPipe,
   Post,
   Put,
   UseGuards,
@@ -25,7 +26,7 @@ export class ChapterAdminController {
 
   @Post()
   async create(
-    @Param('courseId') courseId: string,
+    @Param('courseId', ParseIntPipe) courseId: number,
     @Body() values: ChapterCreateDto,
   ) {
     return await this.chapterService.create({
@@ -47,8 +48,8 @@ export class ChapterAdminController {
 
   @Delete(':chapterId')
   async delete(
-    @Param('courseId') courseId: string,
-    @Param('chapterId') chapterId: string,
+    @Param('courseId', ParseIntPipe) courseId: number,
+    @Param('chapterId', ParseIntPipe) chapterId: number,
   ) {
     await this.chapterService.delete(courseId, chapterId);
   }

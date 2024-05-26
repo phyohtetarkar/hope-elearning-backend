@@ -1,4 +1,4 @@
-import { Expose } from 'class-transformer';
+import { Expose, Transform } from 'class-transformer';
 import { AuditingDto } from './auditing.dto';
 import { CategoryDto } from './category.dto';
 import { ChapterDto } from './chapter.dto';
@@ -22,7 +22,8 @@ export enum CourseAccess {
 }
 
 export class CourseDto {
-  id: string;
+  @Transform(({ value }) => Number(value))
+  id: number;
   title: string;
   slug: string;
   cover?: string;

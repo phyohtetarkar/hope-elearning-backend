@@ -9,10 +9,10 @@ export class CompletedLessonEntity {
   userId: string;
 
   @PrimaryColumn({ name: 'course_id', type: 'bigint' })
-  courseId: string;
+  courseId: number;
 
   @PrimaryColumn({ name: 'lesson_id', type: 'bigint' })
-  lessonId: string;
+  lessonId: number;
 
   @ManyToOne(() => LessonEntity)
   @JoinColumn({ name: 'lesson_id' })

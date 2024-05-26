@@ -1,26 +1,77 @@
 import { SiteSettingEntity } from '@/core/entities/site-setting.entity';
+import { AuditEvent } from '@/core/events';
 import { SiteSettingDto } from '@/core/models';
 import { SiteSettingService } from '@/core/services';
 import { Injectable } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 @Injectable()
 export class TypeormSiteSettingService implements SiteSettingService {
-  private DEFAULT_ID = 'setting-default';
+  private DEFAULT_ID = 1;
 
   constructor(
+    private eventEmitter: EventEmitter2,
     @InjectRepository(SiteSettingEntity)
     private siteSettingRepo: Repository<SiteSettingEntity>,
   ) {}
 
-  async save(values: SiteSettingDto): Promise<void> {
-    await this.siteSettingRepo.save({
-      id: this.DEFAULT_ID,
-      aboutUs: values.aboutUs,
-      privacyPolicy: values.privacyPolicy,
-      termsAndConditions: values.termsAndConditions,
-    });
+  async updateAboutUs(values: string): Promise<void> {
+    await this.siteSettingRepo.upsert(
+      {
+        id: this.DEFAULT_ID,
+        aboutUs: values,
+      },
+      ['id'],
+    );
+
+    this.eventEmitter.emit(
+      'audit.updated',
+      new AuditEvent({
+        resourceId: 'about-us',
+        resourceType: 'setting',
+        context: JSON.stringify({ title: 'About Us' }),
+      }),
+    );
+  }
+
+  async updatePrivacyPolicy(values: string): Promise<void> {
+    await this.siteSettingRepo.upsert(
+      {
+        id: this.DEFAULT_ID,
+        privacyPolicy: values,
+      },
+      ['id'],
+    );
+
+    this.eventEmitter.emit(
+      'audit.updated',
+      new AuditEvent({
+        resourceId: 'privacy-policy',
+        resourceType: 'setting',
+        context: JSON.stringify({ title: 'Privacy Policy' }),
+      }),
+    );
+  }
+
+  async updateTermsAndConditions(values: string): Promise<void> {
+    await this.siteSettingRepo.upsert(
+      {
+        id: this.DEFAULT_ID,
+        termsAndConditions: values,
+      },
+      ['id'],
+    );
+
+    this.eventEmitter.emit(
+      'audit.updated',
+      new AuditEvent({
+        resourceId: 'terms-and-conditions',
+        resourceType: 'setting',
+        context: JSON.stringify({ title: 'Terms And Conditions' }),
+      }),
+    );
   }
 
   async getAboutUs(): Promise<string> {

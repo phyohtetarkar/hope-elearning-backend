@@ -1,7 +1,11 @@
 import { SiteSettingDto } from '../models';
 
 export interface SiteSettingService {
-  save(values: SiteSettingDto): Promise<void>;
+  updateAboutUs(values: string): Promise<void>;
+
+  updatePrivacyPolicy(values: string): Promise<void>;
+
+  updateTermsAndConditions(values: string): Promise<void>;
 
   getAboutUs(): Promise<string>;
 

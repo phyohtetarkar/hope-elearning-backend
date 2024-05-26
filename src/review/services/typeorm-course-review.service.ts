@@ -74,7 +74,7 @@ export class TypeormCourseReviewService implements CourseReviewService {
     });
   }
 
-  async remove(userId: string, courseId: string): Promise<void> {
+  async remove(userId: string, courseId: number): Promise<void> {
     await this.dataSource.transaction(async (em) => {
       await em.delete(CourseReviewEntity, {
         userId: userId,
@@ -95,7 +95,7 @@ export class TypeormCourseReviewService implements CourseReviewService {
 
   async findByUserIdAndCourseId(
     userId: string,
-    courseId: string,
+    courseId: number,
   ): Promise<CourseReviewDto | undefined> {
     const entity = await this.courseReviewRepo
       .createQueryBuilder('review')
@@ -108,7 +108,7 @@ export class TypeormCourseReviewService implements CourseReviewService {
   }
 
   async findByCourseId(
-    courseId: string,
+    courseId: number,
     query: QueryDto,
   ): Promise<PageDto<CourseReviewDto>> {
     const { limit, offset } = QueryDto.getPageable(query);

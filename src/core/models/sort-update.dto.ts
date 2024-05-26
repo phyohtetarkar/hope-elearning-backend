@@ -1,8 +1,8 @@
-import { IsInt, IsNotEmpty } from 'class-validator';
+import { IsInt, IsNumber } from 'class-validator';
 
 export class SortUpdateDto {
-  @IsNotEmpty()
-  id: string;
+  @IsNumber()
+  id: number;
 
   @IsInt()
   sortOrder: number;

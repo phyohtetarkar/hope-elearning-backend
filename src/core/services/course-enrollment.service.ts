@@ -8,9 +8,9 @@ import {
 } from '../models';
 
 export interface CourseEnrollmentService {
-  enroll(userId: string, courseId: string): Promise<void>;
+  enroll(userId: string, courseId: number): Promise<void>;
 
-  remove(userId: string, courseId: string): Promise<void>;
+  remove(userId: string, courseId: number): Promise<void>;
 
   updateResumeLesson(values: ResumeLessonUpdateDto): Promise<void>;
 
@@ -22,7 +22,7 @@ export interface CourseEnrollmentService {
 
   findByUserIdAndCourseId(
     userId: string,
-    courseId: string,
+    courseId: number,
   ): Promise<EnrolledCourseDto | undefined>;
 
   findEnrolledCourseLesson(

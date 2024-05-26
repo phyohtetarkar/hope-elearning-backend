@@ -25,6 +25,7 @@ import {
   HttpStatus,
   Inject,
   Param,
+  ParseIntPipe,
   Put,
   Query,
   Req,
@@ -96,7 +97,7 @@ export class UserProfileController {
 
   @Get('reviews/:courseId/me')
   async getCourseReviewByUser(
-    @Param('courseId') courseId: string,
+    @Param('courseId', ParseIntPipe) courseId: number,
     @Res({ passthrough: true }) resp: Response,
   ) {
     const user = this.security.getAuthenticatedUser();

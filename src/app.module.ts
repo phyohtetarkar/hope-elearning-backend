@@ -1,7 +1,6 @@
 import { UserModule } from '@/user/user.module';
 import { ClassSerializerInterceptor, Module } from '@nestjs/common';
 import { APP_INTERCEPTOR } from '@nestjs/core';
-import { AppController } from './app.controller';
 import { BlogModule } from './blog/blog.module';
 import { BookmarkModule } from './bookmark/bookmark.module';
 import { CoreModule } from './core/core.module';
@@ -29,6 +28,5 @@ import { SettingModule } from './setting/setting.module';
       useClass: ClassSerializerInterceptor,
     },
   ],
-  controllers: [AppController],
 })
 export class AppModule {}

@@ -4,8 +4,8 @@ import { AuditingEntity } from './auditing.entity';
 
 @Entity({ name: 'site_setting' })
 export class SiteSettingEntity extends AuditingEntity {
-  @PrimaryColumn({ length: 100 })
-  id: string;
+  @PrimaryColumn({ type: 'bigint' })
+  id: number;
 
   @Column({ name: 'about_us', type: 'text', nullable: true })
   aboutUs?: string | null;

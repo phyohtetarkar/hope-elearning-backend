@@ -6,7 +6,7 @@ export class CourseReviewUpdateDto {
   userId: string;
 
   @Exclude()
-  courseId: string;
+  courseId: number;
 
   @IsInt()
   @Min(1)

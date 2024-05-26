@@ -14,7 +14,7 @@ import { LessonEntity } from './lesson.entity';
 @Entity({ name: 'chapter' })
 export class ChapterEntity extends AuditingEntity {
   @PrimaryGeneratedColumn({ type: 'bigint' })
-  id: string;
+  id: number;
 
   @Column({ length: 2000 })
   title: string;

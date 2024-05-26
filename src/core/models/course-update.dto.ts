@@ -4,16 +4,16 @@ import {
   IsArray,
   IsDateString,
   IsEnum,
-  IsInt,
   IsNotEmpty,
+  IsNumber,
   IsOptional,
   MaxLength,
 } from 'class-validator';
 import { CourseAccess, CourseLevel } from './course.dto';
 
 export class CourseUpdateDto {
-  @IsNotEmpty()
-  id: string;
+  @IsNumber()
+  id: number;
 
   @IsNotEmpty()
   @MaxLength(2000)
@@ -37,7 +37,7 @@ export class CourseUpdateDto {
   @IsEnum(CourseAccess)
   access?: CourseAccess;
 
-  @IsInt()
+  @IsNumber()
   categoryId: number;
 
   @IsOptional()

@@ -1,10 +1,10 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-import { AuditingEntity } from './auditing.entity';
 import { TagDto } from '../models';
+import { AuditingEntity } from './auditing.entity';
 
 @Entity({ name: 'tag' })
 export class TagEntity extends AuditingEntity {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn({ type: 'bigint' })
   id: number;
 
   @Column({ unique: true })

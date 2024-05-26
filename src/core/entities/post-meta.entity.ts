@@ -5,7 +5,7 @@ import { PostMetaDto } from '../models';
 @Entity({ name: 'post_meta' })
 export class PostMetaEntity {
   @PrimaryColumn({ type: 'bigint' })
-  id: string;
+  id: number;
 
   @Column({ name: 'view_count', type: 'bigint', default: 0 })
   viewCount: string;

@@ -5,7 +5,7 @@ import { CourseEntity } from './course.entity';
 @Entity({ name: 'course_author' })
 export class CourseAuthorEntity {
   @PrimaryColumn({ name: 'course_id', type: 'bigint' })
-  courseId: string;
+  courseId: number;
 
   @PrimaryColumn({ name: 'author_id' })
   authorId: string;

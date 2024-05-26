@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { APP_FILTER } from '@nestjs/core';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 import { DatabaseModule } from './database/database.module';
+import { DomainExceptionFilter } from './filters';
 import { SecurityModule } from './security/security.module';
 import { StorageModule } from './storage/storage.module';
-import { APP_FILTER } from '@nestjs/core';
-import { DomainExceptionFilter } from './filters';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { DomainExceptionFilter } from './filters';
       isGlobal: true,
       envFilePath: ['.env.development.local'],
     }),
+    EventEmitterModule.forRoot(),
     DatabaseModule,
     SecurityModule,
     StorageModule,

@@ -1,4 +1,4 @@
-import { Exclude, Expose } from 'class-transformer';
+import { Exclude, Expose, Transform } from 'class-transformer';
 import { AuditingDto } from './auditing.dto';
 import { ChapterDto } from './chapter.dto';
 import { CourseDto } from './course.dto';
@@ -14,7 +14,8 @@ export enum LessonType {
 }
 
 export class LessonDto {
-  id: string;
+  @Transform(({ value }) => Number(value))
+  id: number;
   title: string;
   slug: string;
   trial: boolean;
@@ -28,10 +29,11 @@ export class LessonDto {
 
   sortOrder: number;
 
-  courseId: string;
+  @Transform(({ value }) => Number(value))
+  courseId: number;
 
   @Exclude()
-  chapterId: string;
+  chapterId: number;
 
   @Expose({ groups: ['lesson-detail'] })
   chapter?: ChapterDto;

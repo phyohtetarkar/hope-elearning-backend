@@ -1,10 +1,11 @@
-import { Expose } from 'class-transformer';
+import { Expose, Transform } from 'class-transformer';
 import { AuditingDto } from './auditing.dto';
 import { CourseDto } from './course.dto';
 import { LessonDto } from './lesson.dto';
 
 export class ChapterDto {
-  id: string;
+  @Transform(({ value }) => Number(value))
+  id: number;
   title: string;
   slug: string;
   sortOrder: number;
