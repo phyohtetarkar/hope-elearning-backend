@@ -98,6 +98,10 @@ export class TypeormLessonService implements LessonService {
           : undefined,
     });
 
+    if (!values.title && !values.lexical) {
+      return;
+    }
+
     const lesson = await this.lessonRepo.findOneByOrFail({ id: values.id });
 
     this.lessonRevisionService.save(entity.toDto(), lesson.toDto());
