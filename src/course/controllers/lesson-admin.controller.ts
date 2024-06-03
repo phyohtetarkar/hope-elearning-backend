@@ -44,7 +44,7 @@ export class LessonAdminController {
     @Param('courseId', ParseIntPipe) courseId: number,
     @Body(LessonUpdateTransformPipe) values: LessonUpdateDto,
   ) {
-    await this.lessonService.update({
+    return await this.lessonService.update({
       ...values,
       courseId: courseId,
     });

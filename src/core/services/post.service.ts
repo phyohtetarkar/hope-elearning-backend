@@ -9,7 +9,7 @@ import {
 export interface PostService {
   create(values: PostCreateDto): Promise<number>;
 
-  update(values: PostUpdateDto): Promise<void>;
+  update(values: PostUpdateDto): Promise<PostDto>;
 
   publish(userId: string, postId: number): Promise<void>;
 

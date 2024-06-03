@@ -96,7 +96,7 @@ export class TypeormPostService implements PostService {
     return postId;
   }
 
-  async update(values: PostUpdateDto): Promise<void> {
+  async update(values: PostUpdateDto): Promise<PostDto> {
     const postId = values.id;
     const entity = await this.postRepo.findOneBy({ id: postId });
 
@@ -111,7 +111,7 @@ export class TypeormPostService implements PostService {
       throw new DomainError('Update conflict by another user. Please refresh.');
     }
 
-    const post = await this.dataSource.transaction(async (em) => {
+    await this.dataSource.transaction(async (em) => {
       await em.update(PostEntity, postId, {
         title: values.title,
         cover: values.cover ?? null,
@@ -152,22 +152,35 @@ export class TypeormPostService implements PostService {
         await em.delete(PostTagEntity, { postId: postId });
         await em.insert(PostTagEntity, postTags);
       }
-
-      return em.findOneByOrFail(PostEntity, { id: postId });
     });
 
-    const newPost = post.toDto();
+    const newPost = await this.findById(postId);
+
+    if (!newPost) {
+      throw new DomainError('Post not found');
+    }
 
     this.postRevisionService.save(entity.toDto(), newPost);
+
+    const lastUpdatedAt = dbUpdatedAt / 1000;
+    const currentUpdatedAt =
+      new Date(newPost.audit!.updatedAt).getTime() / 1000;
+    const timeSince = currentUpdatedAt - lastUpdatedAt;
+
+    if (newPost.status === PostStatus.DRAFT && timeSince <= 900) {
+      return newPost;
+    }
 
     this.eventEmitter.emit(
       'audit.updated',
       new AuditEvent({
         resourceId: `${postId}`,
         resourceType: 'post',
-        context: JSON.stringify({ title: post.title ?? '(Untitled)' }),
+        context: JSON.stringify({ title: newPost.title ?? '(Untitled)' }),
       }),
     );
+
+    return newPost;
   }
 
   async publish(userId: string, postId: number): Promise<void> {

@@ -8,7 +8,7 @@ import {
 export interface LessonService {
   create(values: LessonCreateDto): Promise<number>;
 
-  update(values: LessonUpdateDto): Promise<void>;
+  update(values: LessonUpdateDto): Promise<LessonDto>;
 
   updateSort(values: SortUpdateDto[]): Promise<void>;
 

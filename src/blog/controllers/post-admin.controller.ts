@@ -59,7 +59,7 @@ export class PostAdminController {
   @UseGuards(PostOwnerGuard)
   @Put()
   async update(@Body(PostUpdateTransformPipe) values: PostUpdateDto) {
-    await this.postService.update(values);
+    return await this.postService.update(values);
   }
 
   @ApiOkResponsePaginated(PostDto)

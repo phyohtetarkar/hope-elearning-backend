@@ -63,7 +63,7 @@ export class TypeormLessonService implements LessonService {
     return result.identifiers[0].id;
   }
 
-  async update(values: LessonUpdateDto): Promise<void> {
+  async update(values: LessonUpdateDto): Promise<LessonDto> {
     const entity = await this.lessonRepo
       .createQueryBuilder('lesson')
       .where('lesson.id = :id', { id: values.id })
@@ -98,15 +98,15 @@ export class TypeormLessonService implements LessonService {
           : undefined,
     });
 
-    if (!values.title && !values.lexical) {
-      return;
-    }
-
     const lesson = await this.lessonRepo.findOneByOrFail({ id: values.id });
+
+    if (!values.title && !values.lexical) {
+      return lesson.toDto();
+    }
 
     this.lessonRevisionService.save(entity.toDto(), lesson.toDto());
 
-    // return lesson.toDto();
+    return lesson.toDto();
   }
 
   async updateSort(values: SortUpdateDto[]): Promise<void> {
