@@ -3,11 +3,13 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { LessonDto, LessonType } from '../models';
 import { AuditingEntity } from './auditing.entity';
 import { ChapterEntity } from './chapter.entity';
+import { QuizEntity } from './quiz.entity';
 
 @Entity({ name: 'lesson' })
 export class LessonEntity extends AuditingEntity {
@@ -39,9 +41,14 @@ export class LessonEntity extends AuditingEntity {
   @Column({ name: 'sort_order', default: 0 })
   sortOrder: number;
 
-  @ManyToOne(() => ChapterEntity, (type) => type.lessons)
+  @ManyToOne(() => ChapterEntity, (type) => type.lessons, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'chapter_id' })
   chapter?: ChapterEntity;
+
+  @OneToMany(() => QuizEntity, (type) => type.lesson)
+  quizzes?: QuizEntity[];
 
   toDto(compact?: boolean): LessonDto {
     if (compact) {
@@ -67,6 +74,14 @@ export class LessonEntity extends AuditingEntity {
       wordCount: this.wordCount,
       sortOrder: this.sortOrder,
       chapter: this.chapter?.toDto(true),
+      quizzes: this.quizzes
+        ?.sort((a, b) => {
+          if (a.sortOrder === b.sortOrder) {
+            return a.createdAt.getTime() - b.createdAt.getTime();
+          }
+          return a.sortOrder - b.sortOrder;
+        })
+        .map((q) => q.toDto()),
       audit: this.toAudit(),
     });
   }

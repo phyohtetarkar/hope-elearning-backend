@@ -1,10 +1,8 @@
 import { DomainError } from '@/common/errors';
 import { normalizeSlug } from '@/common/utils';
 import { ChapterEntity } from '@/core/entities/chapter.entity';
-import { CompletedLessonEntity } from '@/core/entities/completed-lesson.entity';
 import { CourseEntity } from '@/core/entities/course.entity';
 import { EnrolledCourseEntity } from '@/core/entities/enrolled-course.entity';
-import { LessonRevisionEntity } from '@/core/entities/lesson-revision.entity';
 import { LessonEntity } from '@/core/entities/lesson.entity';
 import {
   CourseStatus,
@@ -143,15 +141,6 @@ export class TypeormLessonService implements LessonService {
       throw new DomainError('Lesson not found');
     }
     await this.dataSource.transaction(async (em) => {
-      await em.delete(CompletedLessonEntity, {
-        courseId: courseId,
-        lessonId: lessonId,
-      });
-
-      await em.delete(LessonRevisionEntity, {
-        lessonId: lessonId,
-      });
-
       const firstLesson = await em
         .createQueryBuilder(LessonEntity, 'lesson')
         .leftJoin('lesson.chapter', 'chapter')
@@ -178,6 +167,8 @@ export class TypeormLessonService implements LessonService {
       .createQueryBuilder('lesson')
       .leftJoinAndSelect('lesson.chapter', 'chapter')
       .leftJoinAndSelect('chapter.course', 'course')
+      .leftJoinAndSelect('lesson.quizzes', 'quiz')
+      .leftJoinAndSelect('quiz.answers', 'answer')
       .where('lesson.id = :id', { id })
       .getOne();
 
@@ -189,6 +180,8 @@ export class TypeormLessonService implements LessonService {
       .createQueryBuilder('lesson')
       .leftJoinAndSelect('lesson.chapter', 'chapter')
       .leftJoinAndSelect('chapter.course', 'course')
+      .leftJoinAndSelect('lesson.quizzes', 'quiz')
+      .leftJoinAndSelect('quiz.answers', 'answer')
       .where('lesson.slug = :slug', { slug })
       .andWhere('course.status = :status', { status: CourseStatus.PUBLISHED })
       .getOne();

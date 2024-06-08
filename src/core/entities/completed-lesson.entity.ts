@@ -13,11 +13,15 @@ export class CompletedLessonEntity {
   @PrimaryColumn({ name: 'lesson_id', type: 'bigint' })
   lessonId: number;
 
-  @ManyToOne(() => LessonEntity)
+  @ManyToOne(() => LessonEntity, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'lesson_id' })
   lesson?: LessonEntity;
 
-  @ManyToOne(() => EnrolledCourseEntity, (type) => type.completedLessons)
+  @ManyToOne(() => EnrolledCourseEntity, (type) => type.completedLessons, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn([
     { name: 'user_id', referencedColumnName: 'userId' },
     { name: 'course_id', referencedColumnName: 'courseId' },

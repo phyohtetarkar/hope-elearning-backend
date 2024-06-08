@@ -5,6 +5,7 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { QuizAnswerDto } from '../models';
 import { AuditingEntity } from './auditing.entity';
 import { QuizEntity } from './quiz.entity';
 
@@ -22,7 +23,19 @@ export class QuizAnswerEntity extends AuditingEntity {
   @Column({ name: 'sort_order', default: 0 })
   sortOrder: number;
 
-  @ManyToOne(() => QuizEntity, (type) => type.answers)
+  @ManyToOne(() => QuizEntity, (type) => type.answers, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'quiz_id' })
   quiz?: QuizEntity;
+
+  toDto() {
+    return new QuizAnswerDto({
+      id: this.id,
+      answer: this.answer,
+      correct: this.correct,
+      sortOrder: this.sortOrder,
+      audit: this.toAudit(),
+    });
+  }
 }

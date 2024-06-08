@@ -82,10 +82,6 @@ export class TypeormCourseEnrollmentService implements CourseEnrollmentService {
 
   async remove(userId: string, courseId: number): Promise<void> {
     await this.dataSource.transaction(async (em) => {
-      await em.delete(CompletedLessonEntity, {
-        userId: userId,
-        courseId: courseId,
-      });
       await em.delete(EnrolledCourseEntity, {
         userId: userId,
         courseId: courseId,
@@ -218,6 +214,8 @@ export class TypeormCourseEnrollmentService implements CourseEnrollmentService {
       .createQueryBuilder('lesson')
       .leftJoinAndSelect('lesson.chapter', 'chapter')
       .leftJoinAndSelect('chapter.course', 'course')
+      .leftJoinAndSelect('lesson.quizzes', 'quiz')
+      .leftJoinAndSelect('quiz.answers', 'answer')
       .innerJoin(EnrolledCourseEntity, 'ec', 'chapter.course_id = ec.courseId')
       .where('lesson.slug = :lessonSlug', { lessonSlug })
       .andWhere('ec.userId = :userId', { userId })

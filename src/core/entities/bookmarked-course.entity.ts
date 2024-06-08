@@ -15,7 +15,9 @@ export class BookmarkedCourseEntity extends AuditingEntity {
   @JoinColumn({ name: 'user_id' })
   user?: UserEntity;
 
-  @ManyToOne(() => CourseEntity)
+  @ManyToOne(() => CourseEntity, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'course_id' })
   course: CourseEntity;
 }

@@ -33,7 +33,9 @@ export class PostRevisionEntity {
   })
   status: PostStatus;
 
-  @ManyToOne(() => PostEntity)
+  @ManyToOne(() => PostEntity, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'post_id' })
   post?: PostEntity;
 

@@ -1,16 +1,9 @@
 import { DomainError } from '@/common/errors';
 import { normalizeSlug } from '@/common/utils';
-import { BookmarkedCourseEntity } from '@/core/entities/bookmarked-course.entity';
 import { CategoryEntity } from '@/core/entities/category.entity';
-import { ChapterEntity } from '@/core/entities/chapter.entity';
-import { CompletedLessonEntity } from '@/core/entities/completed-lesson.entity';
 import { CourseAuthorEntity } from '@/core/entities/course-author.entity';
 import { CourseMetaEntity } from '@/core/entities/course-meta.entity';
-import { CourseReviewEntity } from '@/core/entities/course-review.entity';
 import { CourseEntity } from '@/core/entities/course.entity';
-import { EnrolledCourseEntity } from '@/core/entities/enrolled-course.entity';
-import { LessonRevisionEntity } from '@/core/entities/lesson-revision.entity';
-import { LessonEntity } from '@/core/entities/lesson.entity';
 import { AuditEvent } from '@/core/events';
 import {
   CourseCreateDto,
@@ -197,46 +190,6 @@ export class TypeormCourseService implements CourseService {
     }
 
     await this.dataSource.transaction(async (em) => {
-      await em.delete(CompletedLessonEntity, { courseId: id });
-      await em.delete(EnrolledCourseEntity, { courseId: id });
-      await em.delete(BookmarkedCourseEntity, { courseId: id });
-      await em.delete(CourseReviewEntity, { courseId: id });
-      await em
-        .createQueryBuilder(LessonRevisionEntity, 'lesson_revision')
-        .innerJoin('lesson_revision.lesson', 'lesson')
-        .innerJoin('lesson.chapter', 'chapter')
-        .innerJoin('chapter.course', 'course')
-        .where('course.id = :id', { id })
-        .getMany()
-        .then((entities) => {
-          if (entities.length === 0) return;
-          return em.delete(
-            LessonRevisionEntity,
-            entities.map((en) => {
-              return {
-                lessonId: en.lessonId,
-              };
-            }),
-          );
-        });
-
-      await em
-        .createQueryBuilder(LessonEntity, 'lesson')
-        .innerJoin('lesson.chapter', 'chapter')
-        .innerJoin('chapter.course', 'course')
-        .where('course.id = :id', { id })
-        .getMany()
-        .then((entities) => {
-          if (entities.length === 0) return;
-          return em.delete(
-            LessonEntity,
-            entities.map((en) => en.id),
-          );
-        });
-
-      await em.delete(ChapterEntity, { course: { id } });
-      await em.delete(CourseAuthorEntity, { courseId: id });
-      await em.delete(CourseMetaEntity, id);
       await em.delete(CourseEntity, id);
     });
 

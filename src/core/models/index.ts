@@ -46,6 +46,8 @@ export * from './lesson-update.dto';
 export * from './lesson.dto';
 
 export * from './quiz.dto';
+export * from './quiz-answer.dto';
+export * from './quiz-update.dto';
 
 export * from './completed-lesson-update.dto';
 export * from './monthly-enrollment.dto';

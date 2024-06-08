@@ -1,6 +1,6 @@
 import { Column, Entity, JoinColumn, OneToOne, PrimaryColumn } from 'typeorm';
-import { CourseEntity } from './course.entity';
 import { CourseMetaDto } from '../models';
+import { CourseEntity } from './course.entity';
 
 @Entity({ name: 'course_meta' })
 export class CourseMetaEntity {
@@ -16,7 +16,9 @@ export class CourseMetaEntity {
   @Column({ name: 'enrolled_count', type: 'bigint', default: 0 })
   enrolledCount: string;
 
-  @OneToOne(() => CourseEntity, (type) => type.meta)
+  @OneToOne(() => CourseEntity, (type) => type.meta, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'id' })
   course?: CourseEntity;
 

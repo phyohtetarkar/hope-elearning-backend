@@ -1,10 +1,8 @@
 import { DomainError } from '@/common/errors';
 import { normalizeSlug } from '@/common/utils';
 import { ChapterEntity } from '@/core/entities/chapter.entity';
-import { CompletedLessonEntity } from '@/core/entities/completed-lesson.entity';
 import { CourseEntity } from '@/core/entities/course.entity';
 import { EnrolledCourseEntity } from '@/core/entities/enrolled-course.entity';
-import { LessonRevisionEntity } from '@/core/entities/lesson-revision.entity';
 import { LessonEntity } from '@/core/entities/lesson.entity';
 import {
   ChapterCreateDto,
@@ -111,42 +109,6 @@ export class TypeormChapterService implements ChapterService {
     }
 
     await this.dataSource.transaction(async (em) => {
-      await em
-        .createQueryBuilder(CompletedLessonEntity, 'completed_lesson')
-        .innerJoin('completed_lesson.lesson', 'lesson')
-        .innerJoin('lesson.chapter', 'chapter')
-        .where('chapter.id = :id', { id: chapterId })
-        .getMany()
-        .then((entities) => {
-          if (entities.length === 0) return;
-          return em.delete(
-            CompletedLessonEntity,
-            entities.map((en) => {
-              return {
-                lessonId: en.lessonId,
-              };
-            }),
-          );
-        });
-
-      await em
-        .createQueryBuilder(LessonRevisionEntity, 'lesson_revision')
-        .innerJoin('lesson_revision.lesson', 'lesson')
-        .innerJoin('lesson.chapter', 'chapter')
-        .where('chapter.id = :id', { id: chapterId })
-        .getMany()
-        .then((entities) => {
-          if (entities.length === 0) return;
-          return em.delete(
-            LessonRevisionEntity,
-            entities.map((en) => {
-              return {
-                lessonId: en.lessonId,
-              };
-            }),
-          );
-        });
-
       const firstLesson = await em
         .createQueryBuilder(LessonEntity, 'lesson')
         .leftJoin('lesson.chapter', 'chapter')
@@ -174,19 +136,6 @@ export class TypeormChapterService implements ChapterService {
             {
               resumeLesson: firstLesson ? { id: firstLesson.id } : null,
             },
-          );
-        });
-
-      await em
-        .createQueryBuilder(LessonEntity, 'lesson')
-        .innerJoin('lesson.chapter', 'chapter')
-        .where('chapter.id = :id', { id: chapterId })
-        .getMany()
-        .then((entities) => {
-          if (entities.length === 0) return;
-          return em.delete(
-            LessonEntity,
-            entities.map((en) => en.id),
           );
         });
 

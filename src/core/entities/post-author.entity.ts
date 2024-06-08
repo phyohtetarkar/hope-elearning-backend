@@ -13,7 +13,9 @@ export class PostAuthorEntity {
   @Column({ name: 'sort_order', default: 0 })
   sortOrder: number;
 
-  @ManyToOne(() => PostEntity, (type) => type.authors)
+  @ManyToOne(() => PostEntity, (type) => type.authors, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'post_id' })
   post: PostEntity;
 

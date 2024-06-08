@@ -13,7 +13,9 @@ export class CourseAuthorEntity {
   @Column({ name: 'sort_order', default: 0 })
   sortOrder: number;
 
-  @ManyToOne(() => CourseEntity, (type) => type.authors)
+  @ManyToOne(() => CourseEntity, (type) => type.authors, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'course_id' })
   course?: CourseEntity;
 

@@ -13,11 +13,15 @@ export class PostTagEntity {
   @Column({ name: 'sort_order', default: 0 })
   sortOrder: number;
 
-  @ManyToOne(() => PostEntity, (type) => type.tags)
+  @ManyToOne(() => PostEntity, (type) => type.tags, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'post_id' })
   post: PostEntity;
 
-  @ManyToOne(() => TagEntity)
+  @ManyToOne(() => TagEntity, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'tag_id' })
   tag: TagEntity;
 }

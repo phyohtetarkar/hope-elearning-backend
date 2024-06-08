@@ -2,7 +2,6 @@ import { DomainError } from '@/common/errors/domain.error';
 import { normalizeSlug, transformToArray } from '@/common/utils';
 import { PostAuthorEntity } from '@/core/entities/post-author.entity';
 import { PostMetaEntity } from '@/core/entities/post-meta.entity';
-import { PostRevisionEntity } from '@/core/entities/post-revision.entity';
 import { PostTagEntity } from '@/core/entities/post-tag.entity';
 import { PostEntity } from '@/core/entities/post.entity';
 import { AuditEvent } from '@/core/events';
@@ -224,10 +223,6 @@ export class TypeormPostService implements PostService {
     }
 
     await this.dataSource.transaction(async (em) => {
-      await em.delete(PostTagEntity, { postId: id });
-      await em.delete(PostRevisionEntity, { postId: id });
-      await em.delete(PostAuthorEntity, { postId: id });
-      await em.delete(PostMetaEntity, id);
       await em.delete(PostEntity, id);
     });
 

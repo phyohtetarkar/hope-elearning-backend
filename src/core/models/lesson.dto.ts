@@ -1,6 +1,7 @@
 import { Expose, Transform } from 'class-transformer';
 import { AuditingDto } from './auditing.dto';
 import { ChapterDto } from './chapter.dto';
+import { QuizDto } from './quiz.dto';
 
 export enum LessonType {
   TEXT = 'text',
@@ -26,8 +27,8 @@ export class LessonDto {
   @Expose({ groups: ['lesson-detail'] })
   chapter?: ChapterDto;
 
-  // @Expose({ groups: ['lesson-detail'] })
-  // course?: CourseDto;
+  @Expose({ groups: ['lesson-detail'] })
+  quizzes?: QuizDto[];
 
   @Expose({ groups: ['lesson-detail'] })
   completed?: boolean;

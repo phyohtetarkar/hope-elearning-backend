@@ -1,8 +1,8 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
-import { UserEntity } from './user.entity';
-import { CourseEntity } from './course.entity';
 import { CourseReviewDto } from '../models';
 import { AuditingEntity } from './auditing.entity';
+import { CourseEntity } from './course.entity';
+import { UserEntity } from './user.entity';
 
 @Entity({ name: 'course_review' })
 export class CourseReviewEntity extends AuditingEntity {
@@ -18,11 +18,15 @@ export class CourseReviewEntity extends AuditingEntity {
   @Column({ type: 'varchar', length: 5000, nullable: true })
   message?: string | null;
 
-  @ManyToOne(() => UserEntity)
+  @ManyToOne(() => UserEntity, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'user_id' })
   user: UserEntity;
 
-  @ManyToOne(() => CourseEntity)
+  @ManyToOne(() => CourseEntity, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'course_id' })
   course?: CourseEntity;
 

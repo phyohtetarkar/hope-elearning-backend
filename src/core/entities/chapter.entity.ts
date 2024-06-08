@@ -25,7 +25,9 @@ export class ChapterEntity extends AuditingEntity {
   @Column({ name: 'sort_order', default: 0 })
   sortOrder: number;
 
-  @ManyToOne(() => CourseEntity, (type) => type.chapters)
+  @ManyToOne(() => CourseEntity, (type) => type.chapters, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'course_id' })
   course?: CourseEntity;
 

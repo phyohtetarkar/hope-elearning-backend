@@ -90,7 +90,6 @@ export class TypeormTagService implements TagService {
     }
 
     await this.dataSource.transaction(async (em) => {
-      await em.delete(PostTagEntity, { tagId: id });
       await em.delete(TagEntity, { id });
     });
 

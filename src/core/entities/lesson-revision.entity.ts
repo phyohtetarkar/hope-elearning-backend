@@ -22,7 +22,9 @@ export class LessonRevisionEntity {
   @Column({ type: 'text', nullable: true })
   lexical?: string | null;
 
-  @ManyToOne(() => LessonEntity)
+  @ManyToOne(() => LessonEntity, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'lesson_id' })
   lesson?: LessonEntity;
 
