@@ -1,5 +1,5 @@
 import { LessonRevisionEntity } from '@/core/entities/lesson-revision.entity';
-import { LessonDto, LessonStatus } from '@/core/models';
+import { CourseStatus, LessonDto } from '@/core/models';
 import { LessonRevisionService } from '@/core/services';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -21,7 +21,7 @@ export class TypeormLessonRevisionService implements LessonRevisionService {
 
     let needToSave = false;
     let reason = 'background_save';
-    if (oldLesson.status === LessonStatus.PUBLISHED) {
+    if (oldLesson.chapter?.course?.status === CourseStatus.PUBLISHED) {
       reason = 'explicit_save';
       needToSave = true;
     } else if (oldLesson.audit?.updatedBy !== newLesson.audit?.updatedBy) {
@@ -37,8 +37,6 @@ export class TypeormLessonRevisionService implements LessonRevisionService {
     await this.lessonRevisionRepo.insert({
       lessonId: oldLesson.id,
       authorId: oldLesson.audit?.updatedBy,
-      chapter: { id: oldLesson.chapterId },
-      course: { id: oldLesson.courseId },
       createdAt: new Date(),
       title: oldLesson.title,
       lexical: oldLesson.lexical,

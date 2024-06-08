@@ -31,8 +31,11 @@ export class TypeormCategoryService implements CategorySerive {
   async create(values: CategoryCreateDto): Promise<number> {
     const result = await this.categoryRepo.insert({
       name: values.name,
-      slug: await normalizeSlug(values.slug, (v) => {
-        return this.categoryRepo.existsBy({ slug: v });
+      slug: await normalizeSlug({
+        value: values.slug,
+        exists: (v) => {
+          return this.categoryRepo.existsBy({ slug: v });
+        },
       }),
     });
 
@@ -57,8 +60,11 @@ export class TypeormCategoryService implements CategorySerive {
 
     await this.categoryRepo.update(values.id, {
       name: values.name,
-      slug: await normalizeSlug(values.slug, (v) => {
-        return this.categoryRepo.existsBy({ id: Not(values.id), slug: v });
+      slug: await normalizeSlug({
+        value: values.slug,
+        exists: (v) => {
+          return this.categoryRepo.existsBy({ id: Not(values.id), slug: v });
+        },
       }),
     });
 

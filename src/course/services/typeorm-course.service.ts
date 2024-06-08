@@ -18,7 +18,6 @@ import {
   CourseQueryDto,
   CourseStatus,
   CourseUpdateDto,
-  LessonStatus,
   PageDto,
   QueryDto,
 } from '@/core/models';
@@ -57,8 +56,11 @@ export class TypeormCourseService implements CourseService {
         title: values.title,
         level: values.level,
         category: { id: values.categoryId },
-        slug: await normalizeSlug(values.slug, (v) => {
-          return em.existsBy(CourseEntity, { slug: v });
+        slug: await normalizeSlug({
+          value: values.slug,
+          exists: (v) => {
+            return em.existsBy(CourseEntity, { slug: v });
+          },
         }),
       });
 
@@ -127,8 +129,11 @@ export class TypeormCourseService implements CourseService {
         category: { id: values.categoryId },
         slug:
           entity.slug !== values.slug
-            ? await normalizeSlug(values.slug, (v) => {
-                return em.existsBy(CourseEntity, { slug: v });
+            ? await normalizeSlug({
+                value: values.slug,
+                exists: (v) => {
+                  return em.existsBy(CourseEntity, { slug: v });
+                },
               })
             : undefined,
       });
@@ -166,21 +171,10 @@ export class TypeormCourseService implements CourseService {
     const now = new Date();
     now.setMilliseconds(0);
 
-    await this.dataSource.transaction(async (em) => {
-      await em.update(CourseEntity, courseId, {
-        status: CourseStatus.PUBLISHED,
-        publishedBy: userId,
-        publishedAt: entity.publishedAt ?? now,
-      });
-
-      await em
-        .createQueryBuilder()
-        .update(LessonEntity, {
-          status: LessonStatus.PUBLISHED,
-        })
-        .where('courseId = :courseId', { courseId })
-        .callListeners(false)
-        .execute();
+    this.courseRepo.update(courseId, {
+      status: CourseStatus.PUBLISHED,
+      publishedBy: userId,
+      publishedAt: entity.publishedAt ?? now,
     });
   }
 
@@ -190,19 +184,8 @@ export class TypeormCourseService implements CourseService {
       throw new DomainError('Course not found');
     }
 
-    await this.dataSource.transaction(async (em) => {
-      await em.update(CourseEntity, courseId, {
-        status: CourseStatus.DRAFT,
-      });
-
-      await em
-        .createQueryBuilder()
-        .update(LessonEntity, {
-          status: LessonStatus.DRAFT,
-        })
-        .where('courseId = :courseId', { courseId })
-        .callListeners(false)
-        .execute();
+    this.courseRepo.update(courseId, {
+      status: CourseStatus.DRAFT,
     });
   }
 
@@ -218,8 +201,39 @@ export class TypeormCourseService implements CourseService {
       await em.delete(EnrolledCourseEntity, { courseId: id });
       await em.delete(BookmarkedCourseEntity, { courseId: id });
       await em.delete(CourseReviewEntity, { courseId: id });
-      await em.delete(LessonRevisionEntity, { course: { id } });
-      await em.delete(LessonEntity, { course: { id } });
+      await em
+        .createQueryBuilder(LessonRevisionEntity, 'lesson_revision')
+        .innerJoin('lesson_revision.lesson', 'lesson')
+        .innerJoin('lesson.chapter', 'chapter')
+        .innerJoin('chapter.course', 'course')
+        .where('course.id = :id', { id })
+        .getMany()
+        .then((entities) => {
+          if (entities.length === 0) return;
+          return em.delete(
+            LessonRevisionEntity,
+            entities.map((en) => {
+              return {
+                lessonId: en.lessonId,
+              };
+            }),
+          );
+        });
+
+      await em
+        .createQueryBuilder(LessonEntity, 'lesson')
+        .innerJoin('lesson.chapter', 'chapter')
+        .innerJoin('chapter.course', 'course')
+        .where('course.id = :id', { id })
+        .getMany()
+        .then((entities) => {
+          if (entities.length === 0) return;
+          return em.delete(
+            LessonEntity,
+            entities.map((en) => en.id),
+          );
+        });
+
       await em.delete(ChapterEntity, { course: { id } });
       await em.delete(CourseAuthorEntity, { courseId: id });
       await em.delete(CourseMetaEntity, id);

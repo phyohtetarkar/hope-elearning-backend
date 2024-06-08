@@ -1,7 +1,6 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
+import { Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { EnrolledCourseEntity } from './enrolled-course.entity';
 import { LessonEntity } from './lesson.entity';
-import { ChapterEntity } from './chapter.entity';
 
 @Entity({ name: 'completed_lesson' })
 export class CompletedLessonEntity {
@@ -17,10 +16,6 @@ export class CompletedLessonEntity {
   @ManyToOne(() => LessonEntity)
   @JoinColumn({ name: 'lesson_id' })
   lesson?: LessonEntity;
-
-  @ManyToOne(() => ChapterEntity)
-  @JoinColumn({ name: 'chapter_id' })
-  chapter?: ChapterEntity;
 
   @ManyToOne(() => EnrolledCourseEntity, (type) => type.completedLessons)
   @JoinColumn([

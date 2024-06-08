@@ -15,7 +15,7 @@ import {
 import { ChapterService } from '@/core/services';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, In, Repository } from 'typeorm';
 
 @Injectable()
 export class TypeormChapterService implements ChapterService {
@@ -36,13 +36,14 @@ export class TypeormChapterService implements ChapterService {
       title: values.title,
       sortOrder: values.sortOrder,
       course: { id: values.courseId },
-      slug: await normalizeSlug(
-        values.slug,
-        (v) => {
+      slug: await normalizeSlug({
+        value: values.slug,
+        exists: (v) => {
           return this.chapterRepo.existsBy({ slug: v });
         },
-        false,
-      ),
+        serial: false,
+        separator: `-${values.courseId}`,
+      }),
     });
 
     return result.identifiers[0].id;
@@ -70,13 +71,14 @@ export class TypeormChapterService implements ChapterService {
       title: values.title,
       slug:
         entity.slug !== values.slug
-          ? await normalizeSlug(
-              values.slug,
-              (v) => {
+          ? await normalizeSlug({
+              value: values.slug,
+              exists: (v) => {
                 return this.chapterRepo.existsBy({ slug: v });
               },
-              false,
-            )
+              serial: false,
+              separator: `-${values.courseId}`,
+            })
           : undefined,
     });
   }
@@ -98,41 +100,98 @@ export class TypeormChapterService implements ChapterService {
   }
 
   async delete(courseId: number, chapterId: number): Promise<void> {
-    await this.dataSource.transaction(async (em) => {
-      await em.delete(CompletedLessonEntity, {
-        courseId: courseId,
-        chapter: { chapterId },
-      });
+    const exists = await this.chapterRepo
+      .createQueryBuilder('chapter')
+      .where('chapter.id = :chapterId', { chapterId })
+      .andWhere('chapter.course_id = :courseId', { courseId })
+      .getExists();
 
-      await em.delete(LessonRevisionEntity, {
-        course: { id: courseId },
-        chapter: { id: chapterId },
-      });
+    if (!exists) {
+      throw new DomainError('Chapter not found');
+    }
+
+    await this.dataSource.transaction(async (em) => {
+      await em
+        .createQueryBuilder(CompletedLessonEntity, 'completed_lesson')
+        .innerJoin('completed_lesson.lesson', 'lesson')
+        .innerJoin('lesson.chapter', 'chapter')
+        .where('chapter.id = :id', { id: chapterId })
+        .getMany()
+        .then((entities) => {
+          if (entities.length === 0) return;
+          return em.delete(
+            CompletedLessonEntity,
+            entities.map((en) => {
+              return {
+                lessonId: en.lessonId,
+              };
+            }),
+          );
+        });
+
+      await em
+        .createQueryBuilder(LessonRevisionEntity, 'lesson_revision')
+        .innerJoin('lesson_revision.lesson', 'lesson')
+        .innerJoin('lesson.chapter', 'chapter')
+        .where('chapter.id = :id', { id: chapterId })
+        .getMany()
+        .then((entities) => {
+          if (entities.length === 0) return;
+          return em.delete(
+            LessonRevisionEntity,
+            entities.map((en) => {
+              return {
+                lessonId: en.lessonId,
+              };
+            }),
+          );
+        });
 
       const firstLesson = await em
         .createQueryBuilder(LessonEntity, 'lesson')
         .leftJoin('lesson.chapter', 'chapter')
-        .where('lesson.courseId = :courseId', { courseId: courseId })
+        .where('chapter.course_id = :courseId', { courseId })
+        .andWhere('chapter.id != :chapterId', { chapterId })
         .orderBy('chapter.sortOrder', 'ASC')
         .addOrderBy('lesson.sortOrder', 'ASC')
         .limit(1)
         .getOne();
 
-      await em.update(
-        EnrolledCourseEntity,
-        { courseId: courseId, resumeLesson: { chapterId: chapterId } },
-        {
-          resumeLesson: firstLesson ? { id: firstLesson.id } : null,
-        },
-      );
+      await em
+        .createQueryBuilder(EnrolledCourseEntity, 'ec')
+        .innerJoin('ec.resumeLesson', 'lesson')
+        .where('ec.courseId = :courseId', { courseId })
+        .andWhere('lesson.chapter_id = :chapterId', { chapterId })
+        .getMany()
+        .then((entities) => {
+          if (entities.length === 0) return;
+          return em.update(
+            EnrolledCourseEntity,
+            {
+              courseId: courseId,
+              userId: In(entities.map((en) => en.userId)),
+            },
+            {
+              resumeLesson: firstLesson ? { id: firstLesson.id } : null,
+            },
+          );
+        });
 
-      await em.delete(LessonEntity, {
-        courseId: courseId,
-        chapterId: chapterId,
-      });
+      await em
+        .createQueryBuilder(LessonEntity, 'lesson')
+        .innerJoin('lesson.chapter', 'chapter')
+        .where('chapter.id = :id', { id: chapterId })
+        .getMany()
+        .then((entities) => {
+          if (entities.length === 0) return;
+          return em.delete(
+            LessonEntity,
+            entities.map((en) => en.id),
+          );
+        });
+
       await em.delete(ChapterEntity, {
         id: chapterId,
-        course: { id: courseId },
       });
     });
   }

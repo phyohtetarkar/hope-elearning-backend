@@ -113,8 +113,13 @@ export class CourseEntity extends AuditingEntity {
         ?.sort((a, b) => a.sortOrder - b.sortOrder)
         .map((e) => e.author.toDto()),
       chapters: this.chapters
-        ?.sort((a, b) => a.sortOrder - b.sortOrder)
-        .map((e) => e.toDto(true)),
+        ?.sort((a, b) => {
+          if (a.sortOrder === b.sortOrder) {
+            return a.createdAt.getTime() - b.createdAt.getTime();
+          }
+          return a.sortOrder - b.sortOrder;
+        })
+        .map((e) => e.toDto()),
       meta: this.meta?.toDto(),
       audit: this.toAudit(),
     });

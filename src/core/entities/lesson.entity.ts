@@ -5,10 +5,9 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { LessonDto, LessonStatus, LessonType } from '../models';
+import { LessonDto, LessonType } from '../models';
 import { AuditingEntity } from './auditing.entity';
 import { ChapterEntity } from './chapter.entity';
-import { CourseEntity } from './course.entity';
 
 @Entity({ name: 'lesson' })
 export class LessonEntity extends AuditingEntity {
@@ -26,13 +25,6 @@ export class LessonEntity extends AuditingEntity {
 
   @Column({
     type: 'enum',
-    enum: LessonStatus,
-    default: LessonStatus.DRAFT,
-  })
-  status: LessonStatus;
-
-  @Column({
-    type: 'enum',
     enum: LessonType,
     default: LessonType.TEXT,
   })
@@ -47,19 +39,9 @@ export class LessonEntity extends AuditingEntity {
   @Column({ name: 'sort_order', default: 0 })
   sortOrder: number;
 
-  @Column({ name: 'course_id', type: 'bigint' })
-  courseId: number;
-
-  @Column({ name: 'chapter_id', type: 'bigint' })
-  chapterId: number;
-
   @ManyToOne(() => ChapterEntity, (type) => type.lessons)
   @JoinColumn({ name: 'chapter_id' })
   chapter?: ChapterEntity;
-
-  @ManyToOne(() => CourseEntity)
-  @JoinColumn({ name: 'course_id' })
-  course?: CourseEntity;
 
   toDto(compact?: boolean): LessonDto {
     if (compact) {
@@ -70,10 +52,7 @@ export class LessonEntity extends AuditingEntity {
         trial: this.trial,
         wordCount: this.wordCount,
         sortOrder: this.sortOrder,
-        status: this.status,
         type: this.type,
-        courseId: this.courseId,
-        chapterId: this.chapterId,
         audit: this.toAudit(),
       });
     }
@@ -83,15 +62,11 @@ export class LessonEntity extends AuditingEntity {
       title: this.title,
       slug: this.slug,
       trial: this.trial,
-      status: this.status,
       type: this.type,
       lexical: this.lexical ?? undefined,
       wordCount: this.wordCount,
       sortOrder: this.sortOrder,
-      courseId: this.courseId,
-      chapterId: this.chapterId,
       chapter: this.chapter?.toDto(true),
-      course: this.course?.toDto(true),
       audit: this.toAudit(),
     });
   }

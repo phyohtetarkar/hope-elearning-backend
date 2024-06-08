@@ -1,4 +1,3 @@
-import { LessonStatus } from '@/core/models';
 import { LESSON_SERVICE, LessonService } from '@/core/services';
 import {
   Controller,
@@ -26,7 +25,7 @@ export class LessonController {
     @Res({ passthrough: true }) resp: Response,
   ) {
     const result = await this.lessonService.findBySlug(slug);
-    if (!result || result.status !== LessonStatus.PUBLISHED || !result.trial) {
+    if (!result || !result.trial) {
       resp.status(HttpStatus.NO_CONTENT);
       return undefined;
     }

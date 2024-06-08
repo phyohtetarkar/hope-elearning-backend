@@ -7,6 +7,7 @@ import { EnrolledCourseEntity } from '@/core/entities/enrolled-course.entity';
 import { LessonRevisionEntity } from '@/core/entities/lesson-revision.entity';
 import { LessonEntity } from '@/core/entities/lesson.entity';
 import {
+  CourseStatus,
   LessonCreateDto,
   LessonDto,
   LessonUpdateDto,
@@ -36,11 +37,12 @@ export class TypeormLessonService implements LessonService {
   ) {}
 
   async create(values: LessonCreateDto): Promise<number> {
-    if (!(await this.courseRepo.existsBy({ id: values.courseId }))) {
-      throw new DomainError('Course not found');
-    }
-
-    if (!(await this.chapterRepo.existsBy({ id: values.chapterId }))) {
+    if (
+      !(await this.chapterRepo.existsBy({
+        id: values.chapterId,
+        course: { id: values.courseId },
+      }))
+    ) {
       throw new DomainError('Chapter not found');
     }
 
@@ -49,15 +51,15 @@ export class TypeormLessonService implements LessonService {
       sortOrder: values.sortOrder,
       lexical: values.lexical,
       trial: values.trial,
-      course: { id: values.courseId },
-      chapterId: values.chapterId,
-      slug: await normalizeSlug(
-        values.slug,
-        (v) => {
+      chapter: { id: values.chapterId },
+      slug: await normalizeSlug({
+        value: values.slug,
+        exists: (v) => {
           return this.chapterRepo.existsBy({ slug: v });
         },
-        false,
-      ),
+        serial: false,
+        separator: `-${values.courseId}`,
+      }),
     });
 
     return result.identifiers[0].id;
@@ -66,8 +68,10 @@ export class TypeormLessonService implements LessonService {
   async update(values: LessonUpdateDto): Promise<LessonDto> {
     const entity = await this.lessonRepo
       .createQueryBuilder('lesson')
+      .leftJoinAndSelect('lesson.chapter', 'chapter')
+      .leftJoinAndSelect('chapter.course', 'course')
       .where('lesson.id = :id', { id: values.id })
-      .andWhere('lesson.course_id = :courseId', { courseId: values.courseId })
+      .andWhere('chapter.course_id = :courseId', { courseId: values.courseId })
       .getOne();
 
     if (!entity) {
@@ -88,13 +92,14 @@ export class TypeormLessonService implements LessonService {
       wordCount: values.wordCount,
       slug:
         entity.slug !== values.slug
-          ? await normalizeSlug(
-              values.slug,
-              (v) => {
+          ? await normalizeSlug({
+              value: values.slug,
+              exists: (v) => {
                 return this.chapterRepo.existsBy({ slug: v });
               },
-              false,
-            )
+              serial: false,
+              separator: `-${values.courseId}`,
+            })
           : undefined,
     });
 
@@ -127,6 +132,16 @@ export class TypeormLessonService implements LessonService {
   }
 
   async delete(courseId: number, lessonId: number): Promise<void> {
+    const exists = await this.lessonRepo
+      .createQueryBuilder('lesson')
+      .leftJoin('lesson.chapter', 'chapter')
+      .where('lesson.id = :id', { id: lessonId })
+      .andWhere('chapter.course_id = :courseId', { courseId: courseId })
+      .getExists();
+
+    if (!exists) {
+      throw new DomainError('Lesson not found');
+    }
     await this.dataSource.transaction(async (em) => {
       await em.delete(CompletedLessonEntity, {
         courseId: courseId,
@@ -135,13 +150,13 @@ export class TypeormLessonService implements LessonService {
 
       await em.delete(LessonRevisionEntity, {
         lessonId: lessonId,
-        course: { id: courseId },
       });
 
       const firstLesson = await em
         .createQueryBuilder(LessonEntity, 'lesson')
         .leftJoin('lesson.chapter', 'chapter')
-        .where('lesson.courseId = :courseId', { courseId: courseId })
+        .where('chapter.course_id = :courseId', { courseId })
+        .andWhere('lesson.id != :lessonId', { lessonId })
         .orderBy('chapter.sortOrder', 'ASC')
         .addOrderBy('lesson.sortOrder', 'ASC')
         .limit(1)
@@ -154,7 +169,7 @@ export class TypeormLessonService implements LessonService {
           resumeLesson: firstLesson ? { id: firstLesson.id } : null,
         },
       );
-      await em.delete(LessonEntity, { id: lessonId, courseId: courseId });
+      await em.delete(LessonEntity, { id: lessonId });
     });
   }
 
@@ -162,7 +177,7 @@ export class TypeormLessonService implements LessonService {
     const entity = await this.lessonRepo
       .createQueryBuilder('lesson')
       .leftJoinAndSelect('lesson.chapter', 'chapter')
-      .leftJoinAndSelect('lesson.course', 'course')
+      .leftJoinAndSelect('chapter.course', 'course')
       .where('lesson.id = :id', { id })
       .getOne();
 
@@ -173,8 +188,9 @@ export class TypeormLessonService implements LessonService {
     const entity = await this.lessonRepo
       .createQueryBuilder('lesson')
       .leftJoinAndSelect('lesson.chapter', 'chapter')
-      .leftJoinAndSelect('lesson.course', 'course')
+      .leftJoinAndSelect('chapter.course', 'course')
       .where('lesson.slug = :slug', { slug })
+      .andWhere('course.status = :status', { status: CourseStatus.PUBLISHED })
       .getOne();
 
     return entity?.toDto();

@@ -145,7 +145,7 @@ export class TypeormCourseEnrollmentService implements CourseEnrollmentService {
       userId: values.userId,
       courseId: values.courseId,
       lessonId: values.lessonId,
-      chapter: { id: lesson.chapterId },
+      // chapter: { id: lesson.chapterId },
     });
   }
 
@@ -195,7 +195,11 @@ export class TypeormCourseEnrollmentService implements CourseEnrollmentService {
     const dto = entity?.toDto();
 
     if (dto) {
-      const lessonCount = await this.lessonRepo.countBy({ courseId: courseId });
+      const lessonCount = await this.lessonRepo
+        .createQueryBuilder('lesson')
+        .leftJoin('lesson.chapter', 'chapter')
+        .where('chapter.course_id = :courseId', { courseId })
+        .getCount();
       const completedCount = dto.completedLessons?.length ?? 0;
 
       const progress = (completedCount / lessonCount) * 100;
@@ -212,9 +216,9 @@ export class TypeormCourseEnrollmentService implements CourseEnrollmentService {
   ): Promise<LessonDto | undefined> {
     const entity = await this.lessonRepo
       .createQueryBuilder('lesson')
-      .innerJoin(EnrolledCourseEntity, 'ec', 'lesson.courseId = ec.courseId')
-      .leftJoin('lesson.course', 'course')
       .leftJoinAndSelect('lesson.chapter', 'chapter')
+      .leftJoinAndSelect('chapter.course', 'course')
+      .innerJoin(EnrolledCourseEntity, 'ec', 'chapter.course_id = ec.courseId')
       .where('lesson.slug = :lessonSlug', { lessonSlug })
       .andWhere('ec.userId = :userId', { userId })
       .andWhere('course.slug = :courseSlug', { courseSlug })
@@ -242,7 +246,8 @@ export class TypeormCourseEnrollmentService implements CourseEnrollmentService {
         return qb
           .select('COUNT(lesson.id)')
           .from(LessonEntity, 'lesson')
-          .where('ec.courseId = lesson.courseId');
+          .leftJoin('lesson.chapter', 'chapter')
+          .where('ec.courseId = chapter.course_id');
       }, 'course_lesson_count')
       .leftJoinAndSelect('ec.course', 'course')
       .leftJoinAndSelect('ec.resumeLesson', 'resumeLesson')

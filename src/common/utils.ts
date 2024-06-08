@@ -6,19 +6,34 @@ export function stringToSlug(value: string) {
     .toLowerCase();
 }
 
-export async function normalizeSlug(
-  slug: string,
-  exists: (value: string) => Promise<boolean>,
-  serial: boolean = true,
-) {
-  let result = stringToSlug(slug);
+/**
+ * Normalize slug to be unique.
+ * @param slug - Initial value
+ * @param exists -  A function to check each slug variant
+ * @param serial -  Default true
+ * @param separator -  Default '-'
+ * @returns A promise that contains unique slug.
+ */
+export async function normalizeSlug({
+  value,
+  exists,
+  serial = true,
+  separator = '-',
+}: {
+  value: string;
+  exists: (value: string) => Promise<boolean>;
+  serial?: boolean;
+  separator?: string;
+}) {
+  const slug = stringToSlug(value);
+  let result = slug;
   let i = 1;
   while (await exists(result)) {
     if (serial) {
-      result = slug + '-' + i;
+      result = slug + separator + i;
       i += 1;
     } else {
-      result = slug + '-' + generateRandomCode(5);
+      result = slug + separator + generateRandomCode(4);
     }
   }
 

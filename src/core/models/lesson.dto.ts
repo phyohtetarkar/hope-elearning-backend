@@ -1,16 +1,11 @@
-import { Exclude, Expose, Transform } from 'class-transformer';
+import { Expose, Transform } from 'class-transformer';
 import { AuditingDto } from './auditing.dto';
 import { ChapterDto } from './chapter.dto';
-import { CourseDto } from './course.dto';
-
-export enum LessonStatus {
-  DRAFT = 'draft',
-  PUBLISHED = 'published',
-}
 
 export enum LessonType {
   TEXT = 'text',
   VIDEO = 'video',
+  QUIZ = 'quiz',
 }
 
 export class LessonDto {
@@ -19,7 +14,6 @@ export class LessonDto {
   title: string;
   slug: string;
   trial: boolean;
-  status: LessonStatus;
   type: LessonType;
 
   @Expose({ groups: ['lesson-detail'] })
@@ -29,17 +23,11 @@ export class LessonDto {
 
   sortOrder: number;
 
-  @Transform(({ value }) => Number(value))
-  courseId: number;
-
-  @Exclude()
-  chapterId: number;
-
   @Expose({ groups: ['lesson-detail'] })
   chapter?: ChapterDto;
 
-  @Expose({ groups: ['lesson-detail'] })
-  course?: CourseDto;
+  // @Expose({ groups: ['lesson-detail'] })
+  // course?: CourseDto;
 
   @Expose({ groups: ['lesson-detail'] })
   completed?: boolean;

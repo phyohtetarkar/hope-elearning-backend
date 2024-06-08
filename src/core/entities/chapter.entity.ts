@@ -39,9 +39,10 @@ export class ChapterEntity extends AuditingEntity {
         title: this.title,
         slug: this.slug,
         sortOrder: this.sortOrder,
-        lessons: this.lessons
-          ?.sort((a, b) => a.sortOrder - b.sortOrder)
-          .map((e) => e.toDto()),
+        course: this.course?.toDto(true),
+        // lessons: this.lessons
+        //   ?.sort((a, b) => a.sortOrder - b.sortOrder)
+        //   .map((e) => e.toDto(true)),
         audit: this.toAudit(),
       });
     }
@@ -50,9 +51,14 @@ export class ChapterEntity extends AuditingEntity {
       title: this.title,
       slug: this.slug,
       sortOrder: this.sortOrder,
-      course: this.course?.toDto(),
+      // course: this.course?.toDto(true),
       lessons: this.lessons
-        ?.sort((a, b) => a.sortOrder - b.sortOrder)
+        ?.sort((a, b) => {
+          if (a.sortOrder === b.sortOrder) {
+            return a.createdAt.getTime() - b.createdAt.getTime();
+          }
+          return a.sortOrder - b.sortOrder;
+        })
         .map((e) => e.toDto(true)),
       audit: this.toAudit(),
     });

@@ -36,10 +36,19 @@ export class StorageController {
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
   async uploadImage(@UploadedFile() file: Express.Multer.File) {
+    const sizeInMB = file.size / Math.pow(1024, 2);
+    if (sizeInMB <= 0) {
+      throw new BadRequestException('File must not empty');
+    }
+
+    if (sizeInMB > 10) {
+      throw new BadRequestException('File size limit exceeds');
+    }
+
     const result = await this.fileStorageService.writeFile(file);
 
     if (!result) {
-      throw new BadRequestException('Required upload file');
+      throw new BadRequestException('File must not empty');
     }
 
     return result.url;

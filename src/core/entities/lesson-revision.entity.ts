@@ -1,6 +1,4 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
-import { ChapterEntity } from './chapter.entity';
-import { CourseEntity } from './course.entity';
 import { LessonEntity } from './lesson.entity';
 import { UserEntity } from './user.entity';
 
@@ -23,14 +21,6 @@ export class LessonRevisionEntity {
 
   @Column({ type: 'text', nullable: true })
   lexical?: string | null;
-
-  @ManyToOne(() => CourseEntity)
-  @JoinColumn({ name: 'course_id' })
-  course?: CourseEntity;
-
-  @ManyToOne(() => ChapterEntity)
-  @JoinColumn({ name: 'chapter_id' })
-  chapter?: ChapterEntity;
 
   @ManyToOne(() => LessonEntity)
   @JoinColumn({ name: 'lesson_id' })

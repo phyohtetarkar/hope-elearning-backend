@@ -32,8 +32,11 @@ export class TypeormTagService implements TagService {
   async create(values: TagCreateDto): Promise<number> {
     const result = await this.tagRepo.insert({
       name: values.name,
-      slug: await normalizeSlug(values.slug, (v) => {
-        return this.tagRepo.existsBy({ slug: v });
+      slug: await normalizeSlug({
+        value: values.slug,
+        exists: (v) => {
+          return this.tagRepo.existsBy({ slug: v });
+        },
       }),
     });
 
@@ -59,8 +62,11 @@ export class TypeormTagService implements TagService {
 
     await this.tagRepo.update(values.id, {
       name: values.name,
-      slug: await normalizeSlug(values.slug, (v) => {
-        return this.tagRepo.existsBy({ id: Not(id), slug: v });
+      slug: await normalizeSlug({
+        value: values.slug,
+        exists: (v) => {
+          return this.tagRepo.existsBy({ id: Not(id), slug: v });
+        },
       }),
     });
 

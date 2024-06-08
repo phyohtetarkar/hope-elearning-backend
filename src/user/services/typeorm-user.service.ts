@@ -28,8 +28,11 @@ export class TypeormUserService implements UserService {
       id: values.id,
       nickname: values.nickname,
       email: values.email,
-      username: await normalizeSlug(values.nickname, (v) => {
-        return this.userRepo.existsBy({ username: v });
+      username: await normalizeSlug({
+        value: values.nickname,
+        exists: (v) => {
+          return this.userRepo.existsBy({ username: v });
+        },
       }),
       image: values.image,
     });
@@ -50,8 +53,11 @@ export class TypeormUserService implements UserService {
     await this.userRepo.update(values.id, {
       id: values.id,
       nickname: values.nickname,
-      username: await normalizeSlug(values.username, (v) => {
-        return this.userRepo.existsBy({ id: Not(values.id), username: v });
+      username: await normalizeSlug({
+        value: values.username,
+        exists: (v) => {
+          return this.userRepo.existsBy({ id: Not(values.id), username: v });
+        },
       }),
       headline: values.headline ?? null,
       bio: values.bio ?? null,

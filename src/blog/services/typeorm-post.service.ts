@@ -49,8 +49,11 @@ export class TypeormPostService implements PostService {
         title: values.title,
         excerpt: values.excerpt,
         lexical: values.lexical,
-        slug: await normalizeSlug(values.slug, (v) => {
-          return em.existsBy(PostEntity, { slug: v });
+        slug: await normalizeSlug({
+          value: values.slug,
+          exists: (v) => {
+            return em.existsBy(PostEntity, { slug: v });
+          },
         }),
       });
 
@@ -122,8 +125,11 @@ export class TypeormPostService implements PostService {
         publishedAt: values.publishedAt ? new Date(values.publishedAt) : null,
         slug:
           entity.slug !== values.slug
-            ? await normalizeSlug(values.slug, (v) => {
-                return em.existsBy(PostEntity, { slug: v });
+            ? await normalizeSlug({
+                value: values.slug,
+                exists: (v) => {
+                  return em.existsBy(PostEntity, { slug: v });
+                },
               })
             : undefined,
       });
