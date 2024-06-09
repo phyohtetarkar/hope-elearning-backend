@@ -2,7 +2,7 @@ import { DomainError } from '@/common/errors';
 import { LessonEntity } from '@/core/entities/lesson.entity';
 import { QuizAnswerEntity } from '@/core/entities/quiz-answer.entity';
 import { QuizEntity } from '@/core/entities/quiz.entity';
-import { QuizDto, QuizUpdateDto } from '@/core/models';
+import { QuizDto, QuizUpdateDto, SortUpdateDto } from '@/core/models';
 import { QuizService } from '@/core/services';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -42,22 +42,12 @@ export class TypeormQuizService implements QuizService {
       const quizId = result.identifiers[0].id;
 
       for (const answer of values.quiz.answers) {
-        if (answer.deleted) {
-          await em.delete(QuizAnswerEntity, answer.id);
-        } else if (answer.id > 0) {
-          await em.update(QuizAnswerEntity, answer.id, {
-            answer: answer.answer,
-            correct: answer.correct,
-            sortOrder: answer.sortOrder,
-          });
-        } else {
-          await em.insert(QuizAnswerEntity, {
-            answer: answer.answer,
-            correct: answer.correct,
-            sortOrder: answer.sortOrder,
-            quiz: { id: quizId },
-          });
-        }
+        await em.insert(QuizAnswerEntity, {
+          answer: answer.answer,
+          correct: answer.correct,
+          sortOrder: answer.sortOrder,
+          quiz: { id: quizId },
+        });
       }
 
       return quizId;
@@ -89,7 +79,6 @@ export class TypeormQuizService implements QuizService {
     await this.dataSource.transaction(async (em) => {
       await em.update(QuizEntity, values.quiz.id, {
         question: values.quiz.question,
-        type: values.quiz.type,
         feedback: values.quiz.feedback,
         sortOrder: values.quiz.sortOrder,
       });
@@ -121,6 +110,23 @@ export class TypeormQuizService implements QuizService {
     }
 
     return quiz;
+  }
+
+  async updateSort(values: SortUpdateDto[]): Promise<void> {
+    if (values.length === 0) return;
+
+    await this.dataSource.transaction(async (em) => {
+      for (const v of values) {
+        await em
+          .createQueryBuilder()
+          .update(QuizEntity, {
+            sortOrder: v.sortOrder,
+          })
+          .where('id = :id', { id: v.id })
+          .callListeners(false)
+          .execute();
+      }
+    });
   }
 
   async delete(quizId: number, courseId: number): Promise<void> {

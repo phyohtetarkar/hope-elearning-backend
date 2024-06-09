@@ -1,5 +1,12 @@
 import { Exclude } from 'class-transformer';
-import { IsInt, IsNotEmpty, IsNumber, MaxLength } from 'class-validator';
+import {
+  IsEnum,
+  IsInt,
+  IsNotEmpty,
+  IsNumber,
+  MaxLength,
+} from 'class-validator';
+import { LessonType } from './lesson.dto';
 
 export class LessonCreateDto {
   @IsNumber()
@@ -15,6 +22,9 @@ export class LessonCreateDto {
   @IsNotEmpty()
   @MaxLength(2000)
   slug: string;
+
+  @IsEnum(LessonType)
+  type: LessonType;
 
   lexical?: string;
 

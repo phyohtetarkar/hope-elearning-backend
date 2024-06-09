@@ -33,7 +33,7 @@ export async function normalizeSlug({
       result = slug + separator + i;
       i += 1;
     } else {
-      result = slug + separator + generateRandomCode(4);
+      result = slug + separator + generateRandomCode(5);
     }
   }
 

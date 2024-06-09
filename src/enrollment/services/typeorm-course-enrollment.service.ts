@@ -54,7 +54,7 @@ export class TypeormCourseEnrollmentService implements CourseEnrollmentService {
     const firstLesson = await this.lessonRepo
       .createQueryBuilder('lesson')
       .leftJoin('lesson.chapter', 'chapter')
-      .where('lesson.courseId = :courseId', { courseId: courseId })
+      .where('chapter.course_id = :courseId', { courseId })
       .orderBy('chapter.sortOrder', 'ASC')
       .addOrderBy('lesson.sortOrder', 'ASC')
       .limit(1)

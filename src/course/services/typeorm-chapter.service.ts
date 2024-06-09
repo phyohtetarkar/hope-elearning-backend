@@ -40,7 +40,6 @@ export class TypeormChapterService implements ChapterService {
           return this.chapterRepo.existsBy({ slug: v });
         },
         serial: false,
-        separator: `-${values.courseId}`,
       }),
     });
 
@@ -75,7 +74,6 @@ export class TypeormChapterService implements ChapterService {
                 return this.chapterRepo.existsBy({ slug: v });
               },
               serial: false,
-              separator: `-${values.courseId}`,
             })
           : undefined,
     });

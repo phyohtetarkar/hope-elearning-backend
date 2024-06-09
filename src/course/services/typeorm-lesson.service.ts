@@ -49,6 +49,7 @@ export class TypeormLessonService implements LessonService {
       sortOrder: values.sortOrder,
       lexical: values.lexical,
       trial: values.trial,
+      type: values.type,
       chapter: { id: values.chapterId },
       slug: await normalizeSlug({
         value: values.slug,
@@ -56,7 +57,6 @@ export class TypeormLessonService implements LessonService {
           return this.chapterRepo.existsBy({ slug: v });
         },
         serial: false,
-        separator: `-${values.courseId}`,
       }),
     });
 
@@ -96,7 +96,6 @@ export class TypeormLessonService implements LessonService {
                 return this.chapterRepo.existsBy({ slug: v });
               },
               serial: false,
-              separator: `-${values.courseId}`,
             })
           : undefined,
     });
