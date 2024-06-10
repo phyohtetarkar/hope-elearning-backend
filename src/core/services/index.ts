@@ -18,6 +18,7 @@ export * from './lesson-revision.service';
 export * from './lesson.service';
 
 export * from './quiz.service';
+export * from './quiz-response.service';
 
 export * from './dashboard.service';
 

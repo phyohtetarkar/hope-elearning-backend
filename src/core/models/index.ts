@@ -45,9 +45,11 @@ export * from './lesson-create.dto';
 export * from './lesson-update.dto';
 export * from './lesson.dto';
 
-export * from './quiz.dto';
 export * from './quiz-answer.dto';
+export * from './quiz-response-create.dto';
+export * from './quiz-response.dto';
 export * from './quiz-update.dto';
+export * from './quiz.dto';
 
 export * from './completed-lesson-update.dto';
 export * from './monthly-enrollment.dto';

@@ -10,6 +10,7 @@ import { EnrolledCourseEntity } from '@/core/entities/enrolled-course.entity';
 import { LessonRevisionEntity } from '@/core/entities/lesson-revision.entity';
 import { LessonEntity } from '@/core/entities/lesson.entity';
 import { QuizAnswerEntity } from '@/core/entities/quiz-answer.entity';
+import { QuizResponseEntity } from '@/core/entities/quiz-response.entity';
 import { QuizEntity } from '@/core/entities/quiz.entity';
 import {
   CATEGORY_SERVICE,
@@ -18,6 +19,7 @@ import {
   COURSE_SERVICE,
   LESSON_REVISION_SERVICE,
   LESSON_SERVICE,
+  QUIZ_RESPONSE_SERVICE,
   QUIZ_SERVICE,
 } from '@/core/services';
 import { Module } from '@nestjs/common';
@@ -29,14 +31,16 @@ import { CourseAdminController } from './controllers/course-admin.controller';
 import { CourseController } from './controllers/course.controller';
 import { LessonAdminController } from './controllers/lesson-admin.controller';
 import { LessonController } from './controllers/lesson.controller';
+import { QuizAdminController } from './controllers/quiz-admin.controller';
+import { QuizResponseController } from './controllers/quiz-response.controller';
 import { TypeormCategoryService } from './services/typeorm-category.service';
 import { TypeormChapterService } from './services/typeorm-chapter.service';
 import { TypeormCourseAuthorService } from './services/typeorm-course-author.service';
 import { TypeormCourseService } from './services/typeorm-course.service';
 import { TypeormLessonRevisionService } from './services/typeorm-lesson-revision.service';
 import { TypeormLessonService } from './services/typeorm-lesson.service';
+import { TypeormQuizResponseService } from './services/typeorm-quiz-response.service';
 import { TypeormQuizService } from './services/typeorm-quiz.service';
-import { QuizAdminController } from './controllers/quiz-admin.controller';
 
 @Module({
   imports: [
@@ -51,6 +55,7 @@ import { QuizAdminController } from './controllers/quiz-admin.controller';
       LessonRevisionEntity,
       QuizEntity,
       QuizAnswerEntity,
+      QuizResponseEntity,
       EnrolledCourseEntity,
       CompletedLessonEntity,
       BookmarkedCourseEntity,
@@ -85,6 +90,10 @@ import { QuizAdminController } from './controllers/quiz-admin.controller';
       provide: QUIZ_SERVICE,
       useClass: TypeormQuizService,
     },
+    {
+      provide: QUIZ_RESPONSE_SERVICE,
+      useClass: TypeormQuizResponseService,
+    },
   ],
   controllers: [
     CategoryAdminController,
@@ -95,6 +104,7 @@ import { QuizAdminController } from './controllers/quiz-admin.controller';
     LessonAdminController,
     LessonController,
     QuizAdminController,
+    QuizResponseController,
   ],
 })
 export class CourseModule {}
