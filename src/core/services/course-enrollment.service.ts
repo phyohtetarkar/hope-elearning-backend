@@ -27,8 +27,7 @@ export interface CourseEnrollmentService {
 
   findEnrolledCourseLesson(
     userId: string,
-    courseSlug: string,
-    lessonSlug: string,
+    slug: string,
   ): Promise<LessonDto | undefined>;
 
   findByUserId(

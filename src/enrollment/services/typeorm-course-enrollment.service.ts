@@ -4,11 +4,13 @@ import { CourseMetaEntity } from '@/core/entities/course-meta.entity';
 import { CourseEntity } from '@/core/entities/course.entity';
 import { EnrolledCourseEntity } from '@/core/entities/enrolled-course.entity';
 import { LessonEntity } from '@/core/entities/lesson.entity';
+import { QuizResponseEntity } from '@/core/entities/quiz-response.entity';
 import {
   CompletedLessonUpdateDto,
   CourseStatus,
   EnrolledCourseDto,
   LessonDto,
+  LessonType,
   PageDto,
   QueryDto,
   ResumeLessonUpdateDto,
@@ -16,7 +18,7 @@ import {
 import { CourseEnrollmentService } from '@/core/services';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, In, Repository } from 'typeorm';
 
 @Injectable()
 export class TypeormCourseEnrollmentService implements CourseEnrollmentService {
@@ -82,6 +84,20 @@ export class TypeormCourseEnrollmentService implements CourseEnrollmentService {
 
   async remove(userId: string, courseId: number): Promise<void> {
     await this.dataSource.transaction(async (em) => {
+      const quizLessons = await em
+        .createQueryBuilder(LessonEntity, 'lesson')
+        .leftJoin('lesson.chapter', 'chapter')
+        .where('chapter.course_id = :courseId', { courseId })
+        .andWhere('lesson.type = :type', { type: LessonType.QUIZ })
+        .getMany();
+
+      if (quizLessons.length > 0) {
+        await em.delete(QuizResponseEntity, {
+          userId: userId,
+          lessonId: In(quizLessons.map((l) => l.id)),
+        });
+      }
+
       await em.delete(EnrolledCourseEntity, {
         userId: userId,
         courseId: courseId,
@@ -207,8 +223,7 @@ export class TypeormCourseEnrollmentService implements CourseEnrollmentService {
 
   async findEnrolledCourseLesson(
     userId: string,
-    courseSlug: string,
-    lessonSlug: string,
+    slug: string,
   ): Promise<LessonDto | undefined> {
     const entity = await this.lessonRepo
       .createQueryBuilder('lesson')
@@ -217,9 +232,8 @@ export class TypeormCourseEnrollmentService implements CourseEnrollmentService {
       .leftJoinAndSelect('lesson.quizzes', 'quiz')
       .leftJoinAndSelect('quiz.answers', 'answer')
       .innerJoin(EnrolledCourseEntity, 'ec', 'chapter.course_id = ec.courseId')
-      .where('lesson.slug = :lessonSlug', { lessonSlug })
+      .where('lesson.slug = :slug', { slug })
       .andWhere('ec.userId = :userId', { userId })
-      .andWhere('course.slug = :courseSlug', { courseSlug })
       .andWhere('course.status = :status', { status: CourseStatus.PUBLISHED })
       .getOne();
 
