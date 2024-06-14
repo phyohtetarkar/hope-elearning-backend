@@ -1,6 +1,7 @@
 import { DomainError } from '@/common/errors';
 import { LessonEntity } from '@/core/entities/lesson.entity';
 import { QuizResponseEntity } from '@/core/entities/quiz-response.entity';
+import { QuizEntity } from '@/core/entities/quiz.entity';
 import {
   LessonType,
   QuizResponseCreateDto,
@@ -41,15 +42,24 @@ export class TypeormQuizResponseService implements QuizResponseService {
         lessonId: lessonId,
       });
 
-      const entities = responses.map((v) => {
-        return {
-          userId: userId,
-          lessonId: lessonId,
-          quizId: v.quizId,
-          answerId: v.answerId,
-          shortAnswer: v.shortAnswer,
-        } as QuizResponseEntity;
-      });
+      const entities: QuizResponseEntity[] = [];
+
+      for (const resp of responses) {
+        const quizExists = await em.existsBy(QuizEntity, { id: resp.quizId });
+        if (!quizExists) {
+          continue;
+        }
+
+        entities.push(
+          new QuizResponseEntity({
+            userId: userId,
+            lessonId: lessonId,
+            quizId: resp.quizId,
+            answerId: resp.answerId,
+            shortAnswer: resp.shortAnswer,
+          }),
+        );
+      }
 
       await em.insert(QuizResponseEntity, entities);
     });

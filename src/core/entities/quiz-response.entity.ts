@@ -52,6 +52,11 @@ export class QuizResponseEntity extends AuditingEntity {
   @JoinColumn({ name: 'user_id' })
   user: UserEntity;
 
+  constructor(partial: Partial<QuizResponseEntity> = {}) {
+    super();
+    Object.assign(this, partial);
+  }
+
   toDto() {
     return new QuizResponseDto({
       quizId: this.quizId,
