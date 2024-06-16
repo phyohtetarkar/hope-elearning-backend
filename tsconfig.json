@@ -20,9 +20,6 @@
     "paths": {
       "@/*": [
         "./src/*"
-      ],
-      "@/features": [
-        "./src/features/*"
       ]
     },
   }
