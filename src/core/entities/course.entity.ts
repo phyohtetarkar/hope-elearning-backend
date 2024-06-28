@@ -25,7 +25,7 @@ export class CourseEntity extends AuditingEntity {
   @Column({ length: 2000, unique: true })
   slug: string;
 
-  @Column({ type: 'text', nullable: true })
+  @Column({ type: 'varchar', length: 4000, nullable: true })
   excerpt?: string | null;
 
   @Column({ type: 'text', nullable: true })
