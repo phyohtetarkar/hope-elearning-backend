@@ -31,7 +31,7 @@ import { SecurityContextService } from './security-context.service';
     JwtVerificationService,
     FirebaseService,
   ],
-  exports: [SecurityContextService],
+  exports: [SecurityContextService, FirebaseService],
 })
 export class SecurityModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
@@ -45,10 +45,7 @@ export class SecurityModule implements NestModule {
       )
       .forRoutes('*')
       .apply(AuthenticationMiddleware)
-      .exclude(
-        { path: '/content/:path*', method: RequestMethod.GET },
-        { path: '/test/:path*', method: RequestMethod.ALL },
-      )
+      .exclude({ path: '/content/:path*', method: RequestMethod.GET })
       .forRoutes('*');
   }
 }

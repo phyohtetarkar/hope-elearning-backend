@@ -2,6 +2,23 @@
 
 E-learning backend application project developed with [NestJS](https://github.com/nestjs/nest).
 
+**Features**:
+<ul>
+	<li>- [x] Course Management</li>
+	<li>- [x] Blog Management</li>
+	<li>- [x] Quiz Management</li>
+	<li>- [x] Category</li>
+	<li>- [x] Tag</li>
+	<li>- [x] Course Bookmark</li>
+	<li>- [x] Course Review</li>
+	<li>- [x] User Management</li>
+	<li>- [x] AI powered content editor</li>
+	<li>- [x] Dark mode support</li>
+	<li>- [ ] Subscription</li>
+</ul>
+
+**Front-end website repository** => [E-learning website](https://github.com/phyohtetarkar/hope-elearning-web/)
+
 ## Requirements
 <ol>
 	<li>Node.js 16 or later</li>
@@ -10,6 +27,8 @@ E-learning backend application project developed with [NestJS](https://github.co
 </ol>
 
 ## Installation and setup
+
+**This project use Firebase auth as authentication layer. So, you first need to setup firebase auth and manually create one owner account. Or you can use any other authentication providers like AWS Cognito, Auth0 etc., and setup accordingly.**
 
 Required `.env.local` file properties.
 
@@ -30,6 +49,10 @@ ISSUER_URI=https://securetoken.google.com/<your-project-id>
 IMAGE_PATH=<image-base-path> 
 
 IMAGE_URL=(http|https)://<your-domain>/images
+
+# for owner account
+SUPER_USER_ID= # The one you created from firebase auth
+SUPER_USER_NAME= # Your preferred name
 ```
 
 Installing dependencies
@@ -63,3 +86,33 @@ $ npm run test:e2e
 # test coverage
 $ npm run test:cov
 ```
+
+## REST APIs
+
+You can explore api docs via path `http://localhost:3080/api-docs`.
+
+## Support me
+
+<a href="https://www.buymeacoffee.com/yzox2vc1i">
+	<img src="images/bmc-button.png" width="200">
+</a>
+<br/>
+<br/>
+
+## Screenshots
+
+<img src="images/landing.png">
+
+<img src="images/course-detail-dark.png">
+
+<img src="images/quiz-learn.png">
+
+<img src="images/dashboard.png">
+
+<img src="images/lesson-edit.png">
+
+<img src="images/lesson-edit-dark.png">
+
+<img src="images/post-edit.png">
+
+<img src="images/math-equations.png">
