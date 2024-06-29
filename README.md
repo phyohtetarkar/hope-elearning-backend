@@ -1,6 +1,6 @@
 # E-learning backend
 
-E-learning backend application project developed with [NestJS](https://github.com/nestjs/nest).
+E-learning backend application project developed with [NestJS](https://nestjs.com/).
 
 **Features**:
 <ul>
