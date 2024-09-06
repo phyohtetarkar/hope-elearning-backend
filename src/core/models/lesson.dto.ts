@@ -20,6 +20,9 @@ export class LessonDto {
   @Expose({ groups: ['lesson-detail'] })
   lexical?: string;
 
+  @Expose({ groups: ['lesson-detail'] })
+  html?: string;
+
   wordCount: number;
 
   sortOrder: number;

@@ -16,7 +16,7 @@ import { AuditingSubscriber } from './auditing.subscriber';
         entityPrefix: 'el_',
         autoLoadEntities: true,
         synchronize: true,
-        logging: true,
+        logging: false,
       }),
       inject: [ConfigService],
     }),

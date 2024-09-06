@@ -29,6 +29,8 @@ export class PostUpdateDto {
 
   lexical?: string;
 
+  html?: string;
+
   wordCount?: number;
 
   @IsOptional()

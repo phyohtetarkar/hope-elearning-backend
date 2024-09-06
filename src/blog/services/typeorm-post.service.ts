@@ -272,61 +272,94 @@ export class TypeormPostService implements PostService {
 
     const tags = transformToArray(query.tag);
 
-    const postQuery = this.postRepo
-      .createQueryBuilder('post')
-      .leftJoinAndSelect('post.meta', 'meta')
-      .leftJoinAndSelect('post.authors', 'post_author')
-      .leftJoinAndSelect('post.tags', 'post_tag')
-      .leftJoinAndSelect('post_author.author', 'author')
-      .leftJoinAndSelect('post_tag.tag', 'tag');
+    const baseQuery = this.postRepo.createQueryBuilder('post');
+
+    // const baseQuery = this.postRepo
+    //   .createQueryBuilder('post')
+    //   .leftJoinAndSelect('post.meta', 'meta')
+    //   .leftJoinAndSelect('post.authors', 'post_author')
+    //   .leftJoinAndSelect('post.tags', 'post_tag')
+    //   .leftJoinAndSelect('post_author.author', 'author')
+    //   .leftJoinAndSelect('post_tag.tag', 'tag');
 
     if (query.status) {
-      postQuery.andWhere('post.status = :status', { status: query.status });
+      baseQuery.andWhere('post.status = :status', { status: query.status });
     }
 
     if (query.visibility) {
-      postQuery.andWhere('post.visibility = :visibility', {
+      baseQuery.andWhere('post.visibility = :visibility', {
         visibility: query.visibility,
       });
     }
 
     if (query.featured) {
-      postQuery.andWhere('post.featured = :featured', {
+      baseQuery.andWhere('post.featured = :featured', {
         featured: query.featured,
       });
     }
 
     if (query.author) {
-      postQuery.andWhere('post_author.authorId = :authorId', {
+      baseQuery.andWhere('post_author.authorId = :authorId', {
         authorId: query.author,
       });
     }
 
     if (tags) {
-      postQuery.andWhere('post_tag.tagId IN(:...tags)', {
+      baseQuery.andWhere('post_tag.tagId IN(:...tags)', {
         tags: tags.filter((v) => !isNaN(v)),
       });
     }
 
     if (query.q) {
-      postQuery.andWhere('LOWER(post.title) LIKE LOWER(:title)', {
+      baseQuery.andWhere('LOWER(post.title) LIKE LOWER(:title)', {
         title: `%${query.q}%`,
       });
     }
 
-    if (query.orderBy === 'publishedAt') {
-      postQuery.orderBy(`post.publishedAt`, 'DESC');
-    } else {
-      postQuery.orderBy(`post.${query.orderBy ?? 'createdAt'}`, 'DESC');
+    // if (query.orderBy === 'publishedAt') {
+    //   baseQuery.addOrderBy(`post.publishedAt`, 'DESC');
+    // } else {
+    //   baseQuery.addOrderBy(`post.${query.orderBy ?? 'createdAt'}`, 'DESC');
+    // }
+
+    baseQuery.addOrderBy(`post.${query.orderBy ?? 'createdAt'}`, 'DESC');
+
+    const idQuery = baseQuery.clone();
+    const dataQuery = baseQuery.clone();
+
+    idQuery
+      .leftJoin('post.meta', 'meta')
+      .leftJoin('post.authors', 'post_author')
+      .leftJoin('post.tags', 'post_tag');
+
+    const count = await idQuery.getCount();
+
+    idQuery
+      .select(['post.id', `post.${query.orderBy ?? 'createdAt'}`])
+      .distinct();
+
+    idQuery.offset(offset).limit(limit);
+
+    const idList = await idQuery.getMany();
+
+    let list: PostEntity[] = [];
+
+    if (idList.length > 0) {
+      dataQuery
+        .andWhereInIds(idList.map((e) => e.id))
+        .leftJoinAndSelect('post.meta', 'meta')
+        .leftJoinAndSelect('post.authors', 'post_author')
+        .leftJoinAndSelect('post.tags', 'post_tag')
+        .leftJoinAndSelect('post_author.author', 'author')
+        .leftJoinAndSelect('post_tag.tag', 'tag');
+
+      list = await dataQuery.getMany();
     }
 
-    const [list, count] = await postQuery
-      .offset(offset)
-      .limit(limit)
-      .getManyAndCount();
-
-    return PageDto.from({
-      list: list.map((e) => e.toDto()),
+    return PageDto.from<PostDto>({
+      list: list.map((e) => {
+        return e.toDto();
+      }),
       count: count,
       offset: offset,
       limit: limit,
