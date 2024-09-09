@@ -119,6 +119,7 @@ export class TypeormPostService implements PostService {
         cover: values.cover ?? null,
         excerpt: values.excerpt,
         lexical: values.lexical,
+        html: values.html,
         visibility: values.visibility,
         wordCount: values.wordCount,
         publishedAt: values.publishedAt ? new Date(values.publishedAt) : null,
@@ -357,9 +358,7 @@ export class TypeormPostService implements PostService {
     }
 
     return PageDto.from<PostDto>({
-      list: list.map((e) => {
-        return e.toDto();
-      }),
+      list: list.map((e) => e.toDto()),
       count: count,
       offset: offset,
       limit: limit,

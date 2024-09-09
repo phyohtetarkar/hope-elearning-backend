@@ -81,6 +81,7 @@ export class PostEntity extends AuditingEntity {
       slug: this.slug,
       excerpt: this.excerpt ?? undefined,
       lexical: this.lexical ?? undefined,
+      html: this.html ?? undefined,
       wordCount: this.wordCount,
       status: this.status,
       visibility: this.visibility,

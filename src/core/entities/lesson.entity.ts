@@ -74,6 +74,7 @@ export class LessonEntity extends AuditingEntity {
       trial: this.trial,
       type: this.type,
       lexical: this.lexical ?? undefined,
+      html: this.html ?? undefined,
       wordCount: this.wordCount,
       sortOrder: this.sortOrder,
       chapter: this.chapter?.toDto(true),

@@ -86,6 +86,7 @@ export class TypeormLessonService implements LessonService {
     await this.lessonRepo.update(values.id, {
       title: values.title,
       lexical: values.lexical,
+      html: values.html,
       trial: values.trial,
       wordCount: values.wordCount,
       slug:
