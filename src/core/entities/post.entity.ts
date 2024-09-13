@@ -31,6 +31,9 @@ export class PostEntity extends AuditingEntity {
   @Column({ type: 'text', nullable: true })
   lexical?: string | null;
 
+  @Column({ type: 'text', nullable: true })
+  html?: string | null;
+
   @Column({ name: 'word_count', default: 0 })
   wordCount: number;
 
@@ -78,6 +81,7 @@ export class PostEntity extends AuditingEntity {
       slug: this.slug,
       excerpt: this.excerpt ?? undefined,
       lexical: this.lexical ?? undefined,
+      html: this.html ?? undefined,
       wordCount: this.wordCount,
       status: this.status,
       visibility: this.visibility,

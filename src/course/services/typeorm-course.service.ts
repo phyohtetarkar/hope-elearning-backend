@@ -256,65 +256,94 @@ export class TypeormCourseService implements CourseService {
   async find(query: CourseQueryDto): Promise<PageDto<CourseDto>> {
     const { limit, offset } = QueryDto.getPageable(query);
 
-    const courseQuery = this.courseRepo
-      .createQueryBuilder('course')
-      .leftJoinAndSelect('course.category', 'category')
-      .leftJoinAndSelect('course.meta', 'meta')
-      .leftJoinAndSelect('course.authors', 'course_author')
-      .leftJoinAndSelect('course_author.author', 'author');
+    const baseQuery = this.courseRepo.createQueryBuilder('course');
+    // .leftJoinAndSelect('course.category', 'category')
+    // .leftJoinAndSelect('course.meta', 'meta')
+    // .leftJoinAndSelect('course.authors', 'course_author')
+    // .leftJoinAndSelect('course_author.author', 'author');
 
     if (query.status) {
-      courseQuery.andWhere('course.status = :status', { status: query.status });
+      baseQuery.andWhere('course.status = :status', { status: query.status });
     }
 
     if (query.access) {
-      courseQuery.andWhere('course.access = :access', {
+      baseQuery.andWhere('course.access = :access', {
         access: query.access,
       });
     }
 
     if (query.level) {
-      courseQuery.andWhere('course.level = :level', {
+      baseQuery.andWhere('course.level = :level', {
         level: query.level,
       });
     }
 
     if (query.featured) {
-      courseQuery.andWhere('course.featured = :featured', {
+      baseQuery.andWhere('course.featured = :featured', {
         featured: query.featured,
       });
     }
 
     if (query.category) {
-      courseQuery.andWhere('category.slug = :category', {
+      baseQuery.andWhere('category.slug = :category', {
         category: query.category,
       });
     }
 
     if (query.author) {
-      courseQuery.andWhere('course_author.authorId = :authorId', {
+      baseQuery.andWhere('course_author.authorId = :authorId', {
         authorId: query.author,
       });
     }
 
     if (query.q) {
-      courseQuery.andWhere('LOWER(course.title) LIKE LOWER(:title)', {
+      baseQuery.andWhere('LOWER(course.title) LIKE LOWER(:title)', {
         title: `%${query.q}%`,
       });
     }
 
+    let orderBy = 'course.createdAt';
     if (query.orderBy === 'enrollment') {
-      courseQuery.orderBy(`meta.enrolledCount`, 'DESC');
+      orderBy = 'meta.enrolledCount';
     } else if (query.orderBy === 'publishedAt') {
-      courseQuery.orderBy(`course.publishedAt`, 'DESC');
-    } else {
-      courseQuery.orderBy(`course.createdAt`, 'DESC');
+      orderBy = 'course.publishedAt';
     }
 
-    const [list, count] = await courseQuery
-      .offset(offset)
-      .limit(limit)
-      .getManyAndCount();
+    baseQuery.orderBy(orderBy, 'DESC');
+
+    const idQuery = baseQuery.clone();
+    const dataQuery = baseQuery.clone();
+
+    idQuery
+      .leftJoin('course.category', 'category')
+      .leftJoin('course.meta', 'meta')
+      .leftJoin('course.authors', 'course_author');
+
+    const count = await idQuery.getCount();
+
+    idQuery.select(['course.id', orderBy]).distinct();
+
+    idQuery.offset(offset).limit(limit);
+
+    const idList = await idQuery.getMany();
+
+    let list: CourseEntity[] = [];
+
+    if (idList.length > 0) {
+      dataQuery
+        .andWhereInIds(idList.map((e) => e.id))
+        .leftJoinAndSelect('course.category', 'category')
+        .leftJoinAndSelect('course.meta', 'meta')
+        .leftJoinAndSelect('course.authors', 'course_author')
+        .leftJoinAndSelect('course_author.author', 'author');
+
+      list = await dataQuery.getMany();
+    }
+
+    // const [list, count] = await baseQuery
+    //   .offset(offset)
+    //   .limit(limit)
+    //   .getManyAndCount();
 
     return PageDto.from({
       list: list.map((e) => e.toDto()),

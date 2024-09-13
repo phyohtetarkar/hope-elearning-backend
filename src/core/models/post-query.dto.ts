@@ -17,7 +17,7 @@ export class PostQueryDto extends QueryDto {
 
   featured?: boolean;
 
-  orderBy?: 'publishedAt';
+  orderBy?: string;
 
   constructor(partial: Partial<PostQueryDto> = {}) {
     super();

@@ -35,6 +35,9 @@ export class LessonEntity extends AuditingEntity {
   @Column({ type: 'text', nullable: true })
   lexical?: string | null;
 
+  @Column({ type: 'text', nullable: true })
+  html?: string | null;
+
   @Column({ name: 'word_count', default: 0 })
   wordCount: number;
 
@@ -71,6 +74,7 @@ export class LessonEntity extends AuditingEntity {
       trial: this.trial,
       type: this.type,
       lexical: this.lexical ?? undefined,
+      html: this.html ?? undefined,
       wordCount: this.wordCount,
       sortOrder: this.sortOrder,
       chapter: this.chapter?.toDto(true),

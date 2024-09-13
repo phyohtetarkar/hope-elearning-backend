@@ -25,6 +25,8 @@ export class LessonUpdateDto {
 
   lexical?: string;
 
+  html?: string;
+
   wordCount?: number;
 
   trial?: boolean;

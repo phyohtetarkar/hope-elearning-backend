@@ -27,6 +27,9 @@ export class PostDto {
   @Expose({ groups: ['detail'] })
   lexical?: string;
 
+  @Expose({ groups: ['detail'] })
+  html?: string;
+
   status: PostStatus;
 
   visibility: PostVisibility;
