@@ -74,6 +74,7 @@ export class TypeormUserService implements UserService, OnApplicationBootstrap {
       id: values.id,
       nickname: values.nickname,
       email: values.email,
+      emailVerified: values.emailVerified,
       username: await normalizeSlug({
         value: values.nickname,
         exists: (v) => {
@@ -130,6 +131,20 @@ export class TypeormUserService implements UserService, OnApplicationBootstrap {
 
     await this.userRepo.update(userId, {
       image: image,
+    });
+  }
+
+  async updateEmailVerified(
+    userId: string,
+    emailVerified: boolean,
+  ): Promise<void> {
+    const exists = await this.userRepo.existsBy({ id: userId });
+    if (!exists) {
+      throw new DomainError('User not found');
+    }
+
+    await this.userRepo.update(userId, {
+      emailVerified: emailVerified,
     });
   }
 

@@ -12,6 +12,7 @@ import {
   QuizResponseService,
 } from '@/core/services';
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -132,6 +133,9 @@ export class EnrollmentController {
   @Post(':courseId')
   async enroll(@Param('courseId', ParseIntPipe) courseId: number) {
     const user = this.security.getAuthenticatedUser();
+    if (!user.emailVerified) {
+      throw new BadRequestException('Email verification required');
+    }
     await this.courseEnrollmentService.enroll(user.id, courseId);
   }
 

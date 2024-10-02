@@ -23,6 +23,9 @@ export class UserEntity extends AuditingEntity {
   @Column()
   email: string;
 
+  @Column({ name: 'email_verified', default: false })
+  emailVerified: boolean;
+
   @Column({
     type: 'varchar',
     length: 1000,
@@ -53,6 +56,7 @@ export class UserEntity extends AuditingEntity {
       username: this.username,
       role: this.role,
       email: this.email,
+      emailVerified: this.emailVerified,
       headline: this.headline ?? undefined,
       image: this.image ?? undefined,
       bio: this.bio ?? undefined,

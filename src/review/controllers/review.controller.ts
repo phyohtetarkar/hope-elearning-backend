@@ -7,6 +7,7 @@ import {
 import { SecurityContextService } from '@/core/security/security-context.service';
 import { COURSE_REVIEW_SERVICE, CourseReviewService } from '@/core/services';
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
@@ -33,6 +34,9 @@ export class ReviewController {
     @Body() values: CourseReviewUpdateDto,
   ) {
     const user = this.security.getAuthenticatedUser();
+    if (!user.emailVerified) {
+      throw new BadRequestException('Email verification required');
+    }
     await this.courseReviewService.save({
       ...values,
       userId: user.id,

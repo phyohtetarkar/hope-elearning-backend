@@ -19,7 +19,6 @@ import {
   UserService,
 } from '@/core/services';
 import {
-  BadRequestException,
   Body,
   Controller,
   Get,
@@ -36,9 +35,9 @@ import {
 import { ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 
-@ApiTags('Profile')
-@Controller('profile')
-export class UserProfileController {
+@ApiTags('User')
+@Controller('/content/user')
+export class UserController {
   constructor(
     private security: SecurityContextService,
     @Inject(USER_SERVICE)
@@ -62,9 +61,6 @@ export class UserProfileController {
   @Put()
   async update(@Body() values: UserUpdateDto) {
     const user = this.security.getAuthenticatedUser();
-    if (!user.emailVerified) {
-      throw new BadRequestException('Email verification required');
-    }
     await this.userService.update({
       ...values,
       id: user.id,

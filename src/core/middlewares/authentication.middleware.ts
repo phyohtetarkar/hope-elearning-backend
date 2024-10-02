@@ -51,6 +51,7 @@ export class AuthenticationMiddleware
           id: authUser.uid,
           nickname: authUser.displayName ?? 'New User',
           email: authUser.email,
+          emailVerified: authUser.emailVerified,
           image: authUser.photoURL,
         });
       }
