@@ -3,4 +3,5 @@ export class UserCreateDto {
   nickname: string;
   email?: string;
   image?: string;
+  emailVerified?: boolean;
 }

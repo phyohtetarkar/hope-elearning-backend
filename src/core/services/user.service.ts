@@ -16,6 +16,8 @@ export interface UserService {
 
   updateImage(userId: string, image: string): Promise<void>;
 
+  updateEmailVerified(userId: string, emailVerified: boolean): Promise<void>;
+
   findById(id: string): Promise<UserDto | undefined>;
 
   findByUsername(username: string): Promise<UserDto | undefined>;

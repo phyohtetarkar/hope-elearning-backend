@@ -6,6 +6,7 @@ import {
   CourseBookmarkService,
 } from '@/core/services';
 import {
+  BadRequestException,
   Controller,
   Delete,
   Get,
@@ -36,6 +37,9 @@ export class BookmarkController {
   @Post(':courseId')
   async add(@Param('courseId', ParseIntPipe) courseId: number) {
     const user = this.security.getAuthenticatedUser();
+    if (!user.emailVerified) {
+      throw new BadRequestException('Email verification required');
+    }
     await this.courseBookmarkService.add(user.id, courseId);
   }
 

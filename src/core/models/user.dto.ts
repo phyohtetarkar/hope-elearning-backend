@@ -15,6 +15,7 @@ export class UserDto {
   username: string;
   role: UserRole;
   email: string;
+  emailVerified: boolean;
   headline?: string;
   image?: string;
 
