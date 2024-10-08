@@ -19,6 +19,8 @@ E-learning backend application project developed with [NestJS](https://nestjs.co
 
 **Front-end website repository** => [E-learning website](https://github.com/phyohtetarkar/hope-elearning-web/)
 
+**Mobile app repository** => [E-learning mobile](https://github.com/phyohtetarkar/hope-elearning-mobile/) (On going)
+
 ## Requirements
 <ol>
 	<li>Node.js 16 or later</li>
@@ -41,6 +43,7 @@ DB_USERNAME=
 DB_PASSWORD=
 
 FIREBASE_SERVICE_ACCOUNT=/path/to/firebase-serviceaccount.json
+FIREBASE_API_KEY= # Firebase api key
 
 JWK_SET_URI=https://www.googleapis.com/service_accounts/v1/jwk/securetoken%40system.gserviceaccount.com
 ISSUER_URI=https://securetoken.google.com/<your-project-id>
