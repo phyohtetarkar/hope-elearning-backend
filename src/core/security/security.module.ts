@@ -47,6 +47,7 @@ export class SecurityModule implements NestModule {
       .apply(AuthenticationMiddleware)
       .exclude({ path: '/content/:path*', method: RequestMethod.GET })
       .exclude({ path: '/auth/verify-email', method: RequestMethod.POST })
+      .exclude({ path: '/auth/refresh', method: RequestMethod.POST })
       .forRoutes('*');
   }
 }

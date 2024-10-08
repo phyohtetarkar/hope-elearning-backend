@@ -25,7 +25,8 @@ export class AuthenticationMiddleware
 
   async use(req: Request, res: Response, next: NextFunction) {
     try {
-      const token = this.extractTokenFromCookie(req);
+      const token =
+        this.extractTokenFromHeader(req) ?? this.extractTokenFromCookie(req);
 
       if (!token) {
         throw new Error('Access token not found');
@@ -67,7 +68,10 @@ export class AuthenticationMiddleware
   }
 
   private extractTokenFromHeader(request: Request): string | undefined {
-    const [type, token] = request.headers.authorization?.split(' ') ?? [];
+    const [type, token] = request.headers.authorization?.split(' ') ?? [
+      undefined,
+      undefined,
+    ];
     return type === 'Bearer' ? token : undefined;
   }
 

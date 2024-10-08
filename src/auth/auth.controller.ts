@@ -2,6 +2,7 @@ import { FirebaseService } from '@/core/security/firebase.service';
 import { USER_SERVICE, UserService } from '@/core/services';
 import {
   BadRequestException,
+  Body,
   Controller,
   Inject,
   Post,
@@ -30,5 +31,10 @@ export class AuthController {
     await this.userService.updateEmailVerified(uid, emailVerified);
 
     return await this.userService.findById(uid);
+  }
+
+  @Post('refresh')
+  async refresh(@Body('token') token: string) {
+    return await this.firebaseService.refreshAccessToken(token);
   }
 }
